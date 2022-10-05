@@ -61,10 +61,10 @@ usernameField.addEventListener("keyup", (e) => {
             .then((res) => res.json())
             .then((data) => {
                 if (data.username_error) {
-                    submitBtn.disabled = true;
                     usernameField.classList.add("is-invalid");
                     feedBackArea.style.display = "block";
                     feedBackArea.innerHTML = `<p>${data.username_error}</p>`;
+                    submitBtn.disabled = true;
                 } else {
                     submitBtn.removeAttribute("disabled");
                 }
