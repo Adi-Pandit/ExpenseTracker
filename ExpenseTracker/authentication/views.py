@@ -51,7 +51,7 @@ class RegistrationView(View):
                 uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
 
                 domain = get_current_site(request).domain
-                link = reverse('activate',kwargs={'uidb64': uidb64, 'token': token_generator.make_token(user)})
+                link = reverse('activate',kwargs={'uidb64': uidb64, 'token': account_activation_token.make_token(user)})
 
                 activate_url = 'http://'+domain+link
                 email_subject = 'Activate your account'
