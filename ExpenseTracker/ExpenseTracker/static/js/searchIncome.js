@@ -12,7 +12,7 @@ searchField.addEventListener('keyup', (e) => {
     if (searchValue.trim().length > 0) {
         paginationContainer.style.display = "none";
         tbody.innerHTML = "";
-        fetch("http://127.0.0.1:8000/search-expenses", {
+        fetch("http://127.0.0.1:8000/income/search-income", {
             body: JSON.stringify({ searchText: searchValue }),
             method: "POST",
         })
@@ -32,7 +32,7 @@ searchField.addEventListener('keyup', (e) => {
                         tbody.innerHTML += `
                             <tr>
                                 <td>${item.amount}</td>
-                                <td>${item.category}</td>
+                                <td>${item.source}</td>
                                 <td>${item.description}</td>
                                 <td>${item.date}</td>
                             </tr>`;
