@@ -13,6 +13,7 @@ django = "*"
 validate-email = "*"
 six = "*"
 xlwt = "*"
+weasyprint = "*"
 
 [dev-packages]
 
