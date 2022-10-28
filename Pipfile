@@ -12,6 +12,7 @@ gunicorn = "*"
 django = "*"
 validate-email = "*"
 six = "*"
+xlwt = "*"
 
 [dev-packages]
 
