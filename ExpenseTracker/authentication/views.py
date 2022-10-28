@@ -13,9 +13,17 @@ from django.contrib.sites.shortcuts import get_current_site
 from .utils import account_activation_token
 from django.contrib import auth
 from django.contrib.auth.tokens import PasswordResetTokenGenerator 
+import threading
 
 # Create your views here.
 
+class EmailThread(threading.Thread):
+    def __init__(self, email):
+        self.email = email
+        threading.Thread.__init__(self)
+    
+    def run(self):
+        self.email.send(fail_silently=False)
 
 class RegistrationView(View):
     def get(self, request):
@@ -64,7 +72,7 @@ class RegistrationView(View):
                         'noreply@semycolon.com',
                         [email],
                     )
-                email.send(fail_silently=False)
+                EmailThread(email).start()
                 messages.success(request, 'Account successfully created')
                 return render(request, 'authentication/register.html')
 
@@ -181,11 +189,12 @@ class RequestPasswordResetEmail(View):
                 'noreply@semycolon.com',
                 [email],
             )
-            email.send(fail_silently=False)
-
-        messages.success(request, 'We have sent you an email to reset your password')
-        
-        return render(request,'authentication/reset-password.html')
+            EmailThread(email).start()
+            messages.success(request, 'We have sent you an email to reset your password')
+            return render(request,'authentication/reset-password.html')
+        else:
+            messages.info(request, 'User with this email id does not found, please register')
+            return render(request,'authentication/reset-password.html')
 
 class CompletePasswordReset(View):
     def get(self, request, uidb64, token):
@@ -200,9 +209,9 @@ class CompletePasswordReset(View):
             user = User.objects.get(pk=user_id)
             #user.set_password(password)
             #user.save()
-
-            messages.success(request,'Password link is invalid, please request a new one')
-            return render(request,'authentication/reset-password.html')
+            if not PasswordResetTokenGenerator().check_token(user,token):
+                messages.info(request,'Password link is invalid, please request a new one')
+                return render(request,'authentication/reset-password.html')
         except Exception as identifier:
             pass
 
