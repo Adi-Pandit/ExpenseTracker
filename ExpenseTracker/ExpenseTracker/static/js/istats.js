@@ -1,11 +1,11 @@
 const renderChart = (data, labels) => {
-    const ctx = document.getElementById('myChart').getContext('2d');
-    const myChart = new Chart(ctx, {
+    const ctx = document.getElementById('imyChart').getContext('2d');
+    const imyChart = new Chart(ctx, {
         type: 'pie',
         data: {
             labels: labels,
             datasets: [{
-                label: 'Last 6 months expenses',
+                label: 'Last 6 months incomes',
                 data: data,
                 backgroundColor: [
                     'rgba(255, 99, 132)',
@@ -29,19 +29,19 @@ const renderChart = (data, labels) => {
         options: {
             title: {
                 display: true,
-                text: "Expense per category",
+                text: "Source wise income",
             }
         }
     });
 }
 
 const getChartData = () => {
-    fetch('http://127.0.0.1:8000/expense_category_summary')
+    fetch('http://127.0.0.1:8000/income/income_source_summary')
         .then((res) => res.json())
         .then((results) => {
             console.log("results", results);
-            const category_data = results.expense_category_data;
-            const [labels, data] = [Object.keys(category_data), Object.values(category_data),];
+            const source_data = results.income_source_data;
+            const [labels, data] = [Object.keys(source_data), Object.values(source_data),];
             renderChart(data, labels);
         });
 };
