@@ -142,7 +142,38 @@ def expense_category_summary(request):
     return JsonResponse({'expense_category_data': finalrep},safe=False)
 
 def stats_view(request):
-    return render(request, 'expenses/stats.html')
+    todays_date = datetime.date.today()
+    today = todays_date-datetime.timedelta(days=0)
+    expenseToday = Expense.objects.filter(owner=request.user,date__gte=today,date__lte=todays_date)
+    sumToday= expenseToday.aggregate(Sum('amount'))
+    for value in sumToday.values():
+        sumToday=value
+
+    week = todays_date-datetime.timedelta(days=7)
+    expenseWeek = Expense.objects.filter(owner=request.user,date__gte=week,date__lte=todays_date)
+    sumWeek= expenseWeek.aggregate(Sum('amount'))
+    for value in sumWeek.values():
+        sumWeek=value
+
+    month = todays_date-datetime.timedelta(days=30)
+    expenseMonth = Expense.objects.filter(owner=request.user,date__gte=month,date__lte=todays_date)
+    sumMonth= expenseMonth.aggregate(Sum('amount'))
+    for value in sumMonth.values():
+        sumMonth=value
+
+    year = todays_date-datetime.timedelta(days=365)
+    expenseYear = Expense.objects.filter(owner=request.user,date__gte=year,date__lte=todays_date)
+    sumYear= expenseYear.aggregate(Sum('amount'))
+    for value in sumYear.values():
+        sumYear=value
+
+    context={
+        'sumToday':sumToday,
+        'sumWeek':sumWeek,
+        'sumMonth':sumMonth,
+        'sumYear':sumYear,
+    }
+    return render(request, 'expenses/stats.html', context)
 
 def export_csv(request):
     response =  HttpResponse(content_type="text/csv")
@@ -196,3 +227,13 @@ def export_pdf(request):
         output.seek(0)
         response.write(output.read())
     return response
+
+def expense_summary_today(request):
+    todays_date = datetime.date.today()
+    today = todays_date-datetime.timedelta(days=1)
+    expenses = Expense.objects.filter(owner=request.user,date__gte=today,date__lte=todays_date)
+    sumToday=expenses.aggregate(Sum('amount'))
+    context={
+        'sumToday':sumToday,
+    }
+    return render(request, 'expenses/stats.html', context)

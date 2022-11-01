@@ -139,7 +139,39 @@ def income_source_summary(request):
     return JsonResponse({'income_source_data': finalrep},safe=False)
 
 def istats_view(request):
-    return render(request, 'income/istats.html')
+    todays_date = datetime.date.today()
+    today = todays_date-datetime.timedelta(days=0)
+    incomeToday = UserIncome.objects.filter(owner=request.user,date__gte=today,date__lte=todays_date)
+    sumToday= incomeToday.aggregate(Sum('amount'))
+    for value in sumToday.values():
+        sumToday=value
+
+    week = todays_date-datetime.timedelta(days=7)
+    incomeWeek = UserIncome.objects.filter(owner=request.user,date__gte=week,date__lte=todays_date)
+    sumWeek= incomeWeek.aggregate(Sum('amount'))
+    for value in sumWeek.values():
+        sumWeek=value
+
+    month = todays_date-datetime.timedelta(days=30)
+    incomeMonth = UserIncome.objects.filter(owner=request.user,date__gte=month,date__lte=todays_date)
+    sumMonth= incomeMonth.aggregate(Sum('amount'))
+    for value in sumMonth.values():
+        sumMonth=value
+
+    year = todays_date-datetime.timedelta(days=365)
+    incomeYear = UserIncome.objects.filter(owner=request.user,date__gte=year,date__lte=todays_date)
+    sumYear= incomeYear.aggregate(Sum('amount'))
+    for value in sumYear.values():
+        sumYear=value
+
+    context={
+        'sumToday':sumToday,
+        'sumWeek':sumWeek,
+        'sumMonth':sumMonth,
+        'sumYear':sumYear,
+    }
+    return render(request, 'income/istats.html', context)
+    #return render(request, 'income/istats.html')
 
 def iexport_csv(request):
     response =  HttpResponse(content_type="text/csv")
@@ -193,3 +225,6 @@ def iexport_pdf(request):
         output.seek(0)
         response.write(output.read())
     return response
+
+def income_summary_today(request):
+    pass

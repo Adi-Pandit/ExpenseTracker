@@ -19,28 +19,28 @@
                 <div class="card-header"><h5>TODAY</h5></div>
                 <div class="card-body">
                     <img src="{% static 'img/money.png' %}" />
-                    <p class="card-text float-end">50000</p>
+                    <p class="card-text float-end">{{sumToday}}</p>
                 </div>
             </div>
             <div class="card text-white bg-success mx-auto" style="width:220px; height:130px; border-radius:7%">
                 <div class="card-header"><h5>THIS WEEK</h5></div>
                 <div class="card-body">
                     <img src="{% static 'img/money.png' %}"/>
-                    <p class="card-text float-end">50000</p>
+                    <p class="card-text float-end">{{sumWeek}}</p>
                 </div>
             </div>
             <div class="card text-white bg-info mx-auto" style="width:220px; height:130px; border-radius:7%">
                 <div class="card-header"><h5>THIS MONTH</h5></div>
                 <div class="card-body">
                     <img src="{% static 'img/money.png' %}" />
-                    <p class="card-text float-end">50000</p>
+                    <p class="card-text float-end">{{sumMonth}}</p>
                 </div>
             </div>
             <div class="card text-white bg-dark mx-auto" style="width:220px; height:130px; border-radius:7%">
                 <div class="card-header"><h5>THIS YEAR</h5></div>
                 <div class="card-body">
                     <img src="{% static 'img/money.png' %}" />
-                    <p class="card-text float-end">50000</p>
+                    <p class="card-text float-end">{{sumYear}}</p>
                 </div>
             </div>
         </div>
