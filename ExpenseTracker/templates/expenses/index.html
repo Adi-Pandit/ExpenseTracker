@@ -15,7 +15,7 @@
         </div>
 
         <div class="col-md-3">
-            <a href="{% url 'add-expenses' %}" class="btn btn-primary">Add Expense</a>
+            <a href="{% url 'add-expenses' %}" class="btn btn-secondary"><img src="{% static 'img/add.png' %}" width="30" height="30"> Add</a>
         </div>
     </div>
     <div class="container mt-3">
@@ -35,17 +35,17 @@
                 </div>
             </div>
         </div>
-        <hr>
+        <div><hr></div>
         
         <div class="app-table">
             <table class="table table-stripped table-hover">
                 <thead>
                     <tr>
-                        <th>Amount Spend({{currency}})</th>
+                        <th>Amount Spend<br>({{currency}})</th>
                         <th>Catgory</th>
                         <th>Description</th>
                         <th>Date</th>
-                        <th></th>
+                        <th>Operations</th>
                     <tr>
                 </thead>
                 
@@ -57,7 +57,7 @@
                         <td>{{expense.category}}</td>
                         <td>{{expense.description}}</td>
                         <td>{{expense.date}}</td>
-                        <td><a href="{% url 'expense-edit' expense.id %}" class="btn btn-secondary btn-sm">Edit</a></td>
+                        <td class="edit"><a href="{% url 'expense-edit' expense.id %}" class="btn btn-secondary btn-sm">Edit</a><a href="{% url 'expense-delete' expense.id %}"><img src="{% static 'img/delete.png' %}" width="35" height="35"/></a></td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -68,16 +68,16 @@
             <table class="table table-stripped table-hover">
                 <thead>
                     <tr>
-                        <th>Amount Spend({{currency}})</th>
+                        <th>Amount Spend<br>({{currency}})</th>
                         <th>Catgory</th>
                         <th>Description</th>
                         <th>Date</th>
-                        <th></th>
+                        <th>Operations</th>
                     <tr>
                 </thead>
                 
                 <tbody class="table-body">
-                    
+
                 </tbody>
             </table>
         

@@ -14,9 +14,37 @@
             </nav>
         </div>
 
-        <div class="col-md-3">
-            <a href="" class="btn btn-primary">BACK</a>
+        <div class="row">
+            <div class="card text-white bg-primary mx-auto" style="width:220px; height:130px; border-radius:7%">
+                <div class="card-header"><h5>TODAY</h5></div>
+                <div class="card-body">
+                    <img src="{% static 'img/money.png' %}" />
+                    <p class="card-text float-end">50000</p>
+                </div>
+            </div>
+            <div class="card text-white bg-success mx-auto" style="width:220px; height:130px; border-radius:7%">
+                <div class="card-header"><h5>THIS WEEK</h5></div>
+                <div class="card-body">
+                    <img src="{% static 'img/money.png' %}"/>
+                    <p class="card-text float-end">50000</p>
+                </div>
+            </div>
+            <div class="card text-white bg-info mx-auto" style="width:220px; height:130px; border-radius:7%">
+                <div class="card-header"><h5>THIS MONTH</h5></div>
+                <div class="card-body">
+                    <img src="{% static 'img/money.png' %}" />
+                    <p class="card-text float-end">50000</p>
+                </div>
+            </div>
+            <div class="card text-white bg-dark mx-auto" style="width:220px; height:130px; border-radius:7%">
+                <div class="card-header"><h5>THIS YEAR</h5></div>
+                <div class="card-body">
+                    <img src="{% static 'img/money.png' %}" />
+                    <p class="card-text float-end">50000</p>
+                </div>
+            </div>
         </div>
+        <div><hr></div>     
         <div class="chart-container" style="position: relative; height:40vh; width:80vw">
             <canvas id="imyChart"></canvas>
         </div>

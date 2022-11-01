@@ -5,10 +5,10 @@ const paginationContainer = document.querySelector(".pagination-container");
 tableOutput.style.display = 'none';
 const noResults = document.querySelector(".no-results");
 const tbody = document.querySelector(".table-body");
+const edit = document.querySelector(".edit");
 
 searchField.addEventListener('keyup', (e) => {
     const searchValue = e.target.value;
-
     if (searchValue.trim().length > 0) {
         paginationContainer.style.display = "none";
         tbody.innerHTML = "";
@@ -25,6 +25,7 @@ searchField.addEventListener('keyup', (e) => {
                 if (data.length === 0) {
                     noResults.style.display = "block";
                     tableOutput.style.display = "none";
+
                 }
                 else {
                     noResults.style.display = "none";
@@ -35,8 +36,8 @@ searchField.addEventListener('keyup', (e) => {
                                 <td>${item.category}</td>
                                 <td>${item.description}</td>
                                 <td>${item.date}</td>
+                                <td>${item.date}</td>
                             </tr>`;
-
                     });
                 }
             });

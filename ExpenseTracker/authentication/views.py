@@ -14,6 +14,7 @@ from .utils import account_activation_token
 from django.contrib import auth
 from django.contrib.auth.tokens import PasswordResetTokenGenerator 
 import threading
+from userpreferences.models import UserPreference
 
 # Create your views here.
 
@@ -137,6 +138,9 @@ class LoginView(View):
                 if user.is_active:
                     auth.login(request,user)
                     messages.success(request, 'Welcome '+user.username+' You are now logged in')
+                    exists=UserPreference.objects.filter(user=request.user).exists()
+                    if not exists:
+                        UserPreference.objects.create(user=request.user, currency="AED - United Arab Emirates Dirham")
                     return redirect('expenses')
 
                 messages.error(request, 'Account is not active, please check your email')

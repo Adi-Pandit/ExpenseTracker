@@ -15,7 +15,7 @@
         </div>
 
         <div class="col-md-3">
-            <a href="{% url 'add-income' %}" class="btn btn-primary">Add Income</a>
+            <a href="{% url 'add-income' %}" class="btn btn-secondary"><img src="{% static 'img/add.png' %}" width="30" height="30"> Add</a>
         </div>
     </div>
     <div class="container mt-3">
@@ -35,17 +35,18 @@
                 </div>
             </div>
         </div>
-        <hr>
+
+        <div><hr></div>
         
         <div class="app-table">
             <table class="table table-stripped table-hover">
                 <thead>
                     <tr>
-                        <th>Amount Spend({{currency}})</th>
+                        <th>Amount Spend<br>({{currency}})</th>
                         <th>Source</th>
                         <th>Description</th>
                         <th>Date</th>
-                        <th></th>
+                        <th>Operations</th>
                     <tr>
                 </thead>
                 
@@ -57,7 +58,8 @@
                         <td>{{income.source}}</td>
                         <td>{{income.description}}</td>
                         <td>{{income.date}}</td>
-                        <td><a href="{% url 'income-edit' income.id %}" class="btn btn-secondary btn-sm">Edit</a></td>
+                        <td><a href="{% url 'income-edit' income.id %}" class="btn btn-secondary btn-sm">Edit</a>
+                            <a href="{% url 'income-delete' income.id %}"><img src="{% static 'img/delete.png' %}" width="35" height="35"/></a></td>
                     </tr>
                     {% endfor %}
                 </tbody>
