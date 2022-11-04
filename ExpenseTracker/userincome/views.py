@@ -15,6 +15,7 @@ import tempfile
 from django.db.models import Sum
 # Create your views here.
 
+@login_required(login_url='/authentication/login')
 def search_income(request):
     if request.method=='POST':
         search_str=json.loads(request.body).get('searchText')
@@ -110,6 +111,7 @@ def income_edit(request, id):
         #messages.info(request,'Handling post form')
         #return render(request, 'income/edit_income.html',context)
 
+@login_required(login_url='/authentication/login')
 def delete_income(request,id):
     income=UserIncome.objects.get(pk=id)
     income.delete()
@@ -138,6 +140,7 @@ def income_source_summary(request):
             finalrep[y]=get_income_source_amount(y)
     return JsonResponse({'income_source_data': finalrep},safe=False)
 
+@login_required(login_url='/authentication/login')
 def istats_view(request):
     todays_date = datetime.date.today()
     today = todays_date-datetime.timedelta(days=0)
@@ -173,6 +176,7 @@ def istats_view(request):
     return render(request, 'income/istats.html', context)
     #return render(request, 'income/istats.html')
 
+@login_required(login_url='/authentication/login')
 def iexport_csv(request):
     response =  HttpResponse(content_type="text/csv")
     response['Content-Disposition'] = 'attachment; filename=Income/'+str(datetime.datetime.now())+'.csv'
@@ -205,6 +209,7 @@ def iexport_excel(request):
     wb.save(response)
     return response
 
+@login_required(login_url='/authentication/login')
 def iexport_pdf(request):
     response = HttpResponse(content_type="application/pdf")
     response['Content-Disposition'] = 'attachment; filename=Income/'+str(datetime.datetime.now())+'.pdf'
@@ -225,6 +230,3 @@ def iexport_pdf(request):
         output.seek(0)
         response.write(output.read())
     return response
-
-def income_summary_today(request):
-    pass

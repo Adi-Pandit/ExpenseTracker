@@ -3,7 +3,8 @@ from . import views
 from django.views.decorators.csrf import csrf_exempt
 
 urlpatterns = [
-    path('', views.index, name='expenses'),
+    path('', views.home, name="home"),
+    path('expenses', views.index, name='expenses'),
     path('add-expenses', views.add_expenses, name='add-expenses'),
     path('edit-expense/<int:id>', views.expense_edit, name='expense-edit'),
     path('expense-delete/<int:id>', views.delete_expense, name='expense-delete'),

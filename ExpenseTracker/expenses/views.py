@@ -19,6 +19,10 @@ import tempfile
 from django.db.models import Sum 
 # Create your views here.
 
+def home(request):
+    return render(request, 'expenses/home.html')
+
+@login_required(login_url='/authentication/login')
 def search_expenses(request):
     if request.method=='POST':
         search_str=json.loads(request.body).get('searchText')
@@ -42,6 +46,7 @@ def index(request):
     }
     return render(request, 'expenses/index.html', context)
 
+@login_required(login_url='/authentication/login')
 def add_expenses(request):
     categories = Category.objects.all()
     context={
@@ -70,6 +75,7 @@ def add_expenses(request):
         messages.success(request,'Expense saved successfully')
         return redirect('expenses')
 
+@login_required(login_url='/authentication/login')
 def expense_edit(request, id):
     expense=Expense.objects.get(pk=id)
     categories=Category.objects.all()
@@ -113,12 +119,14 @@ def expense_edit(request, id):
         #messages.info(request,'Handling post form')
         #return render(request, 'expenses/edit-expense.html',context)
 
+@login_required(login_url='/authentication/login')
 def delete_expense(request,id):
     expense=Expense.objects.get(pk=id)
     expense.delete()
     messages.success(request,'Expense removed')
     return redirect('expenses')
 
+@login_required(login_url='/authentication/login')
 def expense_category_summary(request):
     todays_date = datetime.date.today()
     six_months_ago = todays_date-datetime.timedelta(days=30*6)
@@ -141,6 +149,7 @@ def expense_category_summary(request):
             finalrep[y]=get_expense_category_amount(y)
     return JsonResponse({'expense_category_data': finalrep},safe=False)
 
+@login_required(login_url='/authentication/login')
 def stats_view(request):
     todays_date = datetime.date.today()
     today = todays_date-datetime.timedelta(days=0)
@@ -175,6 +184,7 @@ def stats_view(request):
     }
     return render(request, 'expenses/stats.html', context)
 
+@login_required(login_url='/authentication/login')
 def export_csv(request):
     response =  HttpResponse(content_type="text/csv")
     response['Content-Disposition'] = 'attachment; filename=Expenses/'+str(datetime.datetime.now())+'.csv'
@@ -185,6 +195,7 @@ def export_csv(request):
         writer.writerow([expense.amount,expense.description,expense.category,expense.date])
     return response
 
+@login_required(login_url='/authentication/login')
 def export_excel(request):
     response = HttpResponse(content_type="application/ms-excel")
     response['Content-Disposition'] = 'attachment; filename=Expenses/'+str(datetime.datetime.now())+'.xls'
@@ -207,6 +218,7 @@ def export_excel(request):
     wb.save(response)
     return response
 
+@login_required(login_url='/authentication/login')
 def export_pdf(request):
     response = HttpResponse(content_type="application/pdf")
     response['Content-Disposition'] = 'attachment; filename=Expenses/'+str(datetime.datetime.now())+'.pdf'
@@ -228,6 +240,7 @@ def export_pdf(request):
         response.write(output.read())
     return response
 
+@login_required(login_url='/authentication/login')
 def expense_summary_today(request):
     todays_date = datetime.date.today()
     today = todays_date-datetime.timedelta(days=1)

@@ -5,7 +5,6 @@ const paginationContainer = document.querySelector(".pagination-container");
 tableOutput.style.display = 'none';
 const noResults = document.querySelector(".no-results");
 const tbody = document.querySelector(".table-body");
-const edit = document.querySelector(".edit");
 
 searchField.addEventListener('keyup', (e) => {
     const searchValue = e.target.value;
@@ -36,7 +35,7 @@ searchField.addEventListener('keyup', (e) => {
                                 <td>${item.category}</td>
                                 <td>${item.description}</td>
                                 <td>${item.date}</td>
-                                <td>${item.date}</td>
+                                <td><a href="{% url 'expense-edit' expense.id %}" class="btn btn-secondary btn-sm">Edit</a><a href="{% url 'expense-delete' expense.id %}"><img src="{% static 'img/delete.png' %}" width="35" height="35"/></a></td>
                             </tr>`;
                     });
                 }
