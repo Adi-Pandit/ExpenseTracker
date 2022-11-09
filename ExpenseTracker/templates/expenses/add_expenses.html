@@ -33,10 +33,33 @@
                     <option name="category" value="{{category.name}}">{{category.name}}</option>
 
                     {% endfor %}
-                </select>
+                    {% for usercategory in usercategories %}
+                    <option name="category" value="{{usercategory.usercategory}}">{{usercategory.usercategory}}</option>
 
-                <input type="button" value="Add new" class="btn btn-primary btn-primary-sm"/>
+                    {% endfor %}
+                </select>
             </div>
+            <!--div class="form-group mb-3">
+                <button class="btn btn-primary btn-sm" id="add">Add new</button>
+                <div class="input-text">
+
+                </div>
+                <script>
+                    const addBtn = document.querySelector("#add");
+                    const input = document.querySelector(".input-text");
+                    function addNew() {
+                        const x = document.createElement("input");
+                        x.type = "text";
+                        
+                        const d = document.createElement("div");
+                        //d.className = "form-group mb-3";
+
+                        input.appendChild(d);
+                        d.appendChild(x);
+                    }
+                    addBtn.addEventListener("click", addNew);
+                 </script>
+            </div-->
             <div class="form-group mb-3">
                 <label for="">Date of Expense</label>
                 <input class="form-control form-control-sm" type="date" name="expense_date"/>
@@ -47,5 +70,4 @@
     </div>
     
 </div>
-
 {% endblock %}

@@ -8,6 +8,7 @@ from django.core.paginator import Paginator
 import json
 from django.http import JsonResponse,HttpResponse
 from userpreferences.models import UserPreference
+from usercategory.models import UserCategory
 import datetime
 import csv
 import xlwt
@@ -49,8 +50,10 @@ def index(request):
 @login_required(login_url='/authentication/login')
 def add_expenses(request):
     categories = Category.objects.all()
+    usercategories = UserCategory.objects.filter(owner=request.user)
     context={
             'categories': categories,
+            'usercategories' : usercategories,
             'values': request.POST
     }
     if request.method == 'GET':
