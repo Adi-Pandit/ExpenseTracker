@@ -13,7 +13,7 @@
         </ol>
       </nav>
     
-    <div class="card w-50">
+      <div class="card w-50" style="margin:0 auto;">
         <div class="card-body">
             <form action="{% url 'add-income' %}" method="post">
             {% include 'partials/messages.html' %}
@@ -31,6 +31,10 @@
                 <select class="form-control" name="source">
                     {% for source in sources %}
                     <option name="source" value="{{source.name}}">{{source.name}}</option>
+
+                    {% endfor %}
+                    {% for usersource in usersources %}
+                    <option name="source" value="{{usersource.usersource}}">{{usersource.usersource}}</option>
 
                     {% endfor %}
                 </select>

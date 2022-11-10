@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from .models import Source, UserIncome
 from django.core.paginator import Paginator
 from userpreferences.models import UserPreference
+from usersource.models import UserSource
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 import json
@@ -42,8 +43,10 @@ def index(request):
 @login_required(login_url='/authentication/login')
 def add_income(request):
     sources = Source.objects.all()
+    usersources = UserSource.objects.filter(owner=request.user)
     context={
             'sources': sources,
+            'usersources': usersources,
             'values': request.POST
     }
     if request.method == 'GET':
@@ -72,10 +75,12 @@ def add_income(request):
 def income_edit(request, id):
     income=UserIncome.objects.get(pk=id)
     sources=Source.objects.all()
+    usersources = UserSource.objects.filter(owner=request.user)
     context = {
         'income': income,
         'values': income,
         'sources':sources,
+        'usersources':usersources
     }
     if request.method=='GET':
         return render(request, 'income/edit_income.html',context)

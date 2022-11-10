@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-9">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="">Source</a></li>
+                <li class="breadcrumb-item active" aria-current="page">My Sources</li>
+                </ol>
+            </nav>
+        </div>
+
+        <div class="col-md-3">
+            <a href="{% url 'add-source' %}" class="btn btn-secondary"><img src="{% static 'img/add.png' %}" width="30" height="30"> Add</a>
+        </div>
+    </div>
+    <div class="container mt-3">
+        {% include 'partials/messages.html' %}
+        {% if usersources.count %}
+        <div><hr></div>
+        
+        <div class="app-table">
+            <table class="table table-stripped table-hover">
+                <thead>
+                    <tr>
+                        <th>Source</th>
+                        <th>Operations</th>
+                    <tr>
+                </thead>
+                
+                <tbody>
+                    
+                    {% for usersource in usersources %}
+                    <tr>
+                        <td>{{usersource.usersource}}</td>
+                        <td><a href="{% url 'source-delete' usersource.usersource %}"><img src="{% static 'img/delete.png' %}" width="35" height="35"/></a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+            <h4>No source added</h4>
+        {% endif %}
+    </div>
+</div>
+
+
+{% endblock content %}
