@@ -24,11 +24,11 @@
             </div>    
             <div class="form-group mb-3">
                 <label for="">Description</label>
-                <input class="form-control form-control-sm" type="text" size="40" name="description" value="{{values.description}}"/>
+                <textarea class="form-control form-control-sm" rows="3" name="description" value="{{values.description}}"></textarea>
             </div>
             <div class="form-group mb-3">
                 <label for="">Sources</label>
-                <select class="form-control" name="source">
+                <select class="form-control form-control-sm" name="source">
                     {% for source in sources %}
                     <option name="source" value="{{source.name}}">{{source.name}}</option>
 
@@ -38,8 +38,6 @@
 
                     {% endfor %}
                 </select>
-
-                <input type="button" value="Add new" class="btn btn-primary btn-primary-sm"/>
             </div>
             <div class="form-group mb-3">
                 <label for="">Date of Income</label>

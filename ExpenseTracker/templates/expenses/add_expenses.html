@@ -24,11 +24,11 @@
             </div>    
             <div class="form-group mb-3">
                 <label for="">Description</label>
-                <input class="form-control form-control-sm" type="text" size="40" name="description" value="{{values.description}}"/>
+                <textarea class="form-control form-control-sm" rows="3" name="description" value="{{values.description}}"></textarea>
             </div>
             <div class="form-group mb-3">
                 <label for="">Category</label>
-                <select class="form-control" name="category">
+                <select class="form-control form-control-sm" name="category">
                     {% for category in categories %}
                     <option name="category" value="{{category.name}}">{{category.name}}</option>
 
@@ -38,8 +38,6 @@
 
                     {% endfor %}
                 </select>
-
-                <button class="btn btn-primary btn-sm float-end">Add new</button>
             </div>
             <!--div class="form-group mb-3">
                 <button class="btn btn-primary btn-sm" id="add">Add new</button>
@@ -65,8 +63,8 @@
             <div class="form-group mb-3">
                 <label for="">Date of Expense</label>
                 <input class="form-control form-control-sm" type="date" name="expense_date"/>
-            </div>
-            <input type="submit" value="Submit" class="btn btn-primary btn-primary-sm"/>
+            </div> 
+            <input type="submit" value="Submit" class="btn btn-primary btn-primary-sm" />
         </form>
         </div>
     </div>
