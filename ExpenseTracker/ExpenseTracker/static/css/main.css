@@ -57,3 +57,12 @@
 .showPasswordToggle:hover {
     transform: scale(1.2);
 }
+
+.showPasswordToggle1 {
+    cursor: pointer;
+    transition: all;
+}
+
+.showPasswordToggle1:hover {
+    transform: scale(1.2);
+}

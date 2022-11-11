@@ -255,3 +255,5 @@ def expense_summary_today(request):
         'sumToday':sumToday,
     }
     return render(request, 'expenses/stats.html', context)
+
+

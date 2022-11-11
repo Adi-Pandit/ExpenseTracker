@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'userincome',
     'usercategory',
     'usersource',
+    'overview',
 ]
 
 MIDDLEWARE = [

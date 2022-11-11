@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-9">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="">Overview</a></li>
+                <li class="breadcrumb-item active" aria-current="page">My Income-Expense Overview</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+    {% include 'partials/messages.html' %}
+    <div class="row">
+        <div class="col-sm-4">
+          <div class="card" style="width:300px; height:220px;"> 
+            <div class="card-body">
+              <h5 class="card-title">Total Expenditure</h5>
+              <hr>
+              <div class="card-header"><b>Total Expense  :  {{sumExpense}}</b></div><br>
+              <div class="card-header"><b>Total Income  :  {{sumIncome}}</b></div>
+            </div>
+          </div><br>
+          <div class="card" style="width:300px; height:220px;"> 
+            <div class="card-body">
+              <h5 class="card-title">Todays Transaction</h5>
+              <hr>
+              <div class="card-header"><b>Expense  :  {{sumTodayExpense}}</b>(Trans : {{expenseCount}})</div><br>
+              <div class="card-header"><b>Income  :  {{sumTodayIncome}}</b>(Trans : {{incomeCount}})</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="card" style="width:500px; height:465px;">
+            <div class="card-body">
+              <h5 class="card-title">Total Income-Expense Summary</h5>
+              <hr><br><br>
+                <canvas id="incomeExpenseChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+        
+</div>
+
+<script src="{% static 'js/incomeexpense.js' %}">
+
+
+</script>
+{% endblock content %}

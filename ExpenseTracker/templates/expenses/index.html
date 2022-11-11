@@ -57,7 +57,7 @@
                         <td>{{expense.category}}</td>
                         <td>{{expense.description}}</td>
                         <td>{{expense.date}}</td>
-                        <td><a href="{% url 'expense-edit' expense.id %}" class="btn btn-secondary btn-sm">Edit</a><a href="{% url 'expense-delete' expense.id %}"><img src="{% static 'img/delete.png' %}" width="35" height="35"/></a></td>
+                        <td><a href="{% url 'expense-edit' expense.id %}" class="btn btn-secondary btn-sm">Edit</a><a onclick="checker()" href="{% url 'expense-delete' expense.id %}"><img src="{% static 'img/delete.png' %}" width="35" height="35"/></a></td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -148,7 +148,7 @@
                                     <td>${item.category}</td>
                                     <td>${item.description}</td>
                                     <td>${item.date}</td>
-                                    <td><a href="/edit-expense/${item.id}" class="btn btn-secondary btn-sm">Edit</a><a href="/expense-delete/${item.id}"><img src="{% static 'img/delete.png' %}" width="35" height="35"/></a></td>
+                                    <td><a href="/edit-expense/${item.id}" class="btn btn-secondary btn-sm">Edit</a><a onclick="checker()" href="/expense-delete/${item.id}"><img src="{% static 'img/delete.png' %}" width="35" height="35"/></a></td>
                                 </tr>`;
                         });
                     }
@@ -161,6 +161,13 @@
             paginationContainer.style.display = "block";
         }
     });
+
+    function checker() {
+        var result = confirm("Are you sure you want to delete?");
+        if(result==false) {
+            event.preventDefault();
+        }
+    }
 </script>
 
 {% endblock content %}

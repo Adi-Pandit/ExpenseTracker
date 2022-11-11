@@ -141,7 +141,7 @@ class LoginView(View):
                     exists=UserPreference.objects.filter(user=request.user).exists()
                     if not exists:
                         UserPreference.objects.create(user=request.user, currency="AED - United Arab Emirates Dirham")
-                    return redirect('expenses')
+                    return redirect('overview')
 
                 messages.error(request, 'Account is not active, please check your email')
                 return render(request, 'authentication/login.html')
