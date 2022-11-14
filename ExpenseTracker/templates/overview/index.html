@@ -14,10 +14,9 @@
             </nav>
         </div>
     </div>
-    {% include 'partials/messages.html' %}
     <div class="row">
-        <div class="col-sm-4">
-          <div class="card" style="width:300px; height:220px;"> 
+        <div class="col-md-4">
+          <div class="card col-md-4" style="width:300px; height:220px;"> 
             <div class="card-body">
               <h5 class="card-title">Total Expenditure</h5>
               <hr>
@@ -25,7 +24,7 @@
               <div class="card-header"><b>Total Income  :  {{sumIncome}}</b></div>
             </div>
           </div><br>
-          <div class="card" style="width:300px; height:220px;"> 
+          <div class="card col-md-4" style="width:300px; height:220px;"> 
             <div class="card-body">
               <h5 class="card-title">Todays Transaction</h5>
               <hr>
@@ -34,17 +33,14 @@
             </div>
           </div>
         </div>
-        <div class="col-sm-6">
-          <div class="card" style="width:500px; height:465px;">
-            <div class="card-body">
-              <h5 class="card-title">Total Income-Expense Summary</h5>
-              <hr><br><br>
-                <canvas id="incomeExpenseChart"></canvas>
-            </div>
-          </div>
-        </div>
+      <div class="card col-md-8" style="width:500px; height:465px;">
+      <div class="card-body">
+          <h5 class="card-title">Total Income-Expense Summary</h5>
+            <hr><br><br>
+              <canvas id="incomeExpenseChart"></canvas>
       </div>
-        
+    </div>
+  </div>      
 </div>
 
 <script src="{% static 'js/incomeexpense.js' %}">

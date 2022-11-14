@@ -3,7 +3,7 @@
 
 {% block content %}
 
-<div class="container mt-4">
+<div class="container mt-3">
     <div class="row">
         <div class="col-md-9">
             <nav aria-label="breadcrumb">
@@ -15,35 +15,33 @@
         </div>
 
         <div class="col-md-3">
-            <a href="{% url 'add-expenses' %}" class="btn btn-secondary"><img src="{% static 'img/add.png' %}" width="30" height="30"> Add</a>
+            <a href="{% url 'add-expenses' %}"><button class="add">Add</button></a>
         </div>
     </div>
-    <div class="container mt-3">
-        {% include 'partials/messages.html' %}
+    <div class="container mt-2">
         {% if expenses.count %}
 
         <div class="row">
             <div class="col-md-8">
-                <a href="{% url 'export-pdf' %}" class="btn btn-info">Export PDF</a>
-                <a href="{% url 'export-excel' %}" class="btn btn-primary">Export Excel</a>
-                <a href="{% url 'export-csv' %}" class="btn btn-secondary">Export CSV</a>
+                <a href="{% url 'export-pdf' %}"><button class="pdf">Export PDF</button></a>
+                <a href="{% url 'export-excel' %}"><button class="excel">Export Excel</button></a>
+                <a href="{% url 'export-csv' %}"><button class="csv">Export CSV</button></a>
 
             </div>
             <div class="col-md-4">
-                <div class="form-group">
-                    <input type="text" class="form-control" id="searchField" placeholder="Search">
+                <div>
+                    <input type="text" class="search-bar" id="searchField" placeholder="Search">
                 </div>
             </div>
         </div>
-        <div><hr></div>
         
         <div class="app-table">
-            <table class="table table-stripped table-hover">
+            <table class="content-table">
                 <thead>
                     <tr>
-                        <th>Amount Spend<br>({{currency}})</th>
+                        <th>Amount Spend</th>
                         <th>Catgory</th>
-                        <th>Description</th>
+                        <th width="300">Description</th>
                         <th>Date</th>
                         <th>Operations</th>
                     <tr>
@@ -56,8 +54,8 @@
                         <td>{{expense.amount}}</td>
                         <td>{{expense.category}}</td>
                         <td>{{expense.description}}</td>
-                        <td>{{expense.date}}</td>
-                        <td><a href="{% url 'expense-edit' expense.id %}" class="btn btn-secondary btn-sm">Edit</a><a onclick="checker()" href="{% url 'expense-delete' expense.id %}"><img src="{% static 'img/delete.png' %}" width="35" height="35"/></a></td>
+                        <td>{{expense.date|date:"Y-m-d"}}</td>
+                        <td><a href="{% url 'expense-edit' expense.id %}"><button class="edit">Edit</button></a><a onclick="checker()" href="{% url 'expense-delete' expense.id %}"><img src="{% static 'img/delete.png' %}" width="30" height="30"/></a></td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -65,12 +63,12 @@
         </div>
         <p class="no-results" style="display:none;">No results</p>
         <div class="table-output">
-            <table class="table table-stripped table-hover">
+            <table class="content-table">
                 <thead>
                     <tr>
-                        <th>Amount Spend<br>({{currency}})</th>
+                        <th>Amount Spend</th>
                         <th>Catgory</th>
-                        <th>Description</th>
+                        <th width="300">Description</th>
                         <th>Date</th>
                         <th>Operations</th>
                     <tr>
@@ -84,26 +82,24 @@
         </div>
 
         <div class="pagination-container">
-
-            <div class="">
                 Showing page {{page_obj.number}} of {{ page_obj.paginator.num_pages }}
+                <ul class="pagination float-end" >
+                    {% if page_obj.has_previous %}
+                    <li class="pagination-item"> <a class="page-link" href="?page={{ page_obj.previous_page_number }}"><button class="pagination-left">Previous</button></a></li>
+                    {% endif %}
+                    {% for number in page_obj.number %}
+                    <li class="pagination-item active"><a class="page-link" href="?page=1"><button class="pagination-left">{{number}}</button></a></li>
+                    {% endfor %}
+                    <li class="pagination-item"> <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}"><button class="pagination-right">{{ page_obj.paginator.num_pages}} &raquo;</button></a></li>
+
+                    {% if page_obj.has_next %}
+                    <li class="pagination-item"> <a class="page-link" href="?page={{ page_obj.next_page_number }}"><button class="pagination-right">Next</button></a></li>
+                    {% endif %}
             
-            </div>
+            
+                </ul
 
-            <ul class="pagination float-end mr-auto">
-                {% if page_obj.has_previous %}
-                <li {% if page_obj.number == 1 %} class="page-item active" {% endif %}><a class="page-link" href="?page=1">&laquo; 1</a></li>
-                <li class="page-item"> <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
-                {% endif %}
-        
-                {% if page_obj.has_next %}
-                <li class="page-item"> <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
-                <li class="page-item"> <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages}} &raquo;</a></li>
-                {% endif %}
-        
-        
-                </ul>
-
+            
             {% endif %}
         </div>
     </div>
@@ -148,7 +144,7 @@
                                     <td>${item.category}</td>
                                     <td>${item.description}</td>
                                     <td>${item.date}</td>
-                                    <td><a href="/edit-expense/${item.id}" class="btn btn-secondary btn-sm">Edit</a><a onclick="checker()" href="/expense-delete/${item.id}"><img src="{% static 'img/delete.png' %}" width="35" height="35"/></a></td>
+                                    <td><a href="/edit-expense/${item.id}"><button class="edit">Edit</button></a><a onclick="checker()" href="/expense-delete/${item.id}"><img src="{% static 'img/delete.png' %}" width="30" height="30"/></a></td>
                                 </tr>`;
                         });
                     }

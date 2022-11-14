@@ -19,7 +19,6 @@
         <div class="card w-50" style="margin:0 auto;">
         <div class="card-body">
             <form action="{% url 'income-edit' income.id %}" method="post">
-            {% include 'partials/messages.html' %}
             {% csrf_token %}
             <div class="form-group mb-3">
                 <label for="">Amount</label>
