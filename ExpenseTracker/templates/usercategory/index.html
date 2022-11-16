@@ -3,30 +3,29 @@
 
 {% block content %}
 
-<div class="container mt-4">
+<div class="container mt-3">
     <div class="row">
-        <div class="col-md-9">
+        <div class="col-md-8 mx-3">
             <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="">Category</a></li>
-                <li class="breadcrumb-item active" aria-current="page">My Categories</li>
+                <ol class="breadcrumb shadow p-2 mb-3 bg-white rounded">
+                <li class="breadcrumb-item"><a href=""><small><b>Category</b></small></a></li>
+                <li class="breadcrumb-item active" aria-current="page"><small><b>My Categories</b></small></li>
                 </ol>
             </nav>
         </div>
 
-        <div class="col-md-3">
-            <a href="{% url 'add-category' %}" class="btn btn-secondary"><img src="{% static 'img/add.png' %}" width="30" height="30"> Add</a>
+        <div class="col-md-2 mx-auto">
+            <a href="{% url 'add-category' %}"><button class="add">Add</button></a>
         </div>
     </div>
     <div class="container mt-3">
         {% if usercategories.count %}
-        <div><hr></div>
         
         <div class="app-table">
-            <table class="table table-stripped table-hover">
+            <table class="content-table mx-auto">
                 <thead>
                     <tr>
-                        <th>Catgory</th>
+                        <th width="200">Catgory</th>
                         <th>Operations</th>
                     <tr>
                 </thead>
@@ -36,7 +35,7 @@
                     {% for usercategory in usercategories %}
                     <tr>
                         <td>{{usercategory.usercategory}}</td>
-                        <td><a href="{% url 'category-delete' usercategory.usercategory %}"><img src="{% static 'img/delete.png' %}" width="35" height="35"/></a></td>
+                        <td><a href="{% url 'category-delete' usercategory.usercategory %}"><img src="{% static 'img/delete.png' %}" width="30" height="30"/></a></td>
                     </tr>
                     {% endfor %}
                 </tbody>

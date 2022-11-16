@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect
 from .models import Source, UserIncome
 from django.core.paginator import Paginator
-from userpreferences.models import UserPreference
 from usersource.models import UserSource
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -29,14 +28,16 @@ def search_income(request):
 def index(request):
     categories = Source.objects.all()
     income = UserIncome.objects.filter(owner=request.user)
-    paginator = Paginator(income, 5)
+    paginator = Paginator(income, 8)
+    page_list = []
+    for i in range(1,paginator.num_pages+1):
+        page_list.append(i)
     page_number = request.GET.get('page')
     page_obj = Paginator.get_page(paginator,page_number)
-    currency = UserPreference.objects.get(user=request.user).currency
     context={
         'income': income,
         'page_obj' : page_obj,
-        'currency' : currency
+        'page_list': page_list
     }
     return render(request, 'income/index.html', context)
 

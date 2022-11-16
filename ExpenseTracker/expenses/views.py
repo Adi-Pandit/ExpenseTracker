@@ -7,7 +7,6 @@ from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 import json
 from django.http import JsonResponse,HttpResponse
-from userpreferences.models import UserPreference
 from usercategory.models import UserCategory
 import datetime
 import csv
@@ -36,14 +35,16 @@ def search_expenses(request):
 def index(request):
     categories = Category.objects.all()
     expenses = Expense.objects.filter(owner=request.user)
-    paginator = Paginator(expenses, 3)
+    paginator = Paginator(expenses, 8)
+    page_list = []
+    for i in range(1,paginator.num_pages+1):
+        page_list.append(i)
     page_number = request.GET.get('page')
     page_obj = Paginator.get_page(paginator,page_number)
-    currency = UserPreference.objects.get(user=request.user).currency
     context={
         'expenses': expenses,
-        'page_obj' : page_obj,
-        'currency' : currency
+        'page_obj': page_obj,
+        'page_list': page_list 
     }
     return render(request, 'expenses/index.html', context)
 

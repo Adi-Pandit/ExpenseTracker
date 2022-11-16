@@ -3,47 +3,45 @@
 
 {% block content %}
 
-<div class="container mt-4">
+<div class="container mt-3">
     <div class="row">
-        <div class="col-md-9">
+        <div class="col-md-8 mx-3">
             <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="">Income</a></li>
-                <li class="breadcrumb-item active" aria-current="page">My Income</li>
+                <ol class="breadcrumb shadow p-2 mb-3 bg-white rounded">
+                <li class="breadcrumb-item"><a href=""><small><b>Income</b></small></a></li>
+                <li class="breadcrumb-item active" aria-current="page"><small><b>My Income</b></small></li>
                 </ol>
             </nav>
         </div>
 
-        <div class="col-md-3">
-            <a href="{% url 'add-income' %}" class="btn btn-secondary"><img src="{% static 'img/add.png' %}" width="30" height="30"> Add</a>
+        <div class="col-md-2 mx-auto">
+            <a href="{% url 'add-income' %}"><button class="add">Add</button></a>
         </div>
     </div>
-    <div class="container mt-3">
+    <div class="container mt-1">
         {% if income.count %}
 
         <div class="row">
             <div class="col-md-8">
-                <a href="{% url 'iexport-pdf' %}" class="btn btn-info">Export PDF</a>
-                <a href="{% url 'iexport-excel' %}" class="btn btn-primary">Export Excel</a>
-                <a href="{% url 'iexport-csv' %}" class="btn btn-secondary">Export CSV</a>
+                <a href="{% url 'iexport-pdf' %}"><button class="pdf">Export PDF</button></a>
+                <a href="{% url 'iexport-excel' %}"><button class="excel">Export Excel</button></a>
+                <a href="{% url 'iexport-csv' %}"><button class="csv">Export CSV</button></a>
             </div>
-            <div class="col-md-4">
-                
-                <div class="form-group">
-                    <input type="text" class="form-control" id="searchField" placeholder="Search">
+
+            <div class="col-md-4">    
+                <div>
+                    <input type="text" class="search-bar" id="searchField" placeholder="Search">
                 </div>
             </div>
         </div>
 
-        <div><hr></div>
-        
         <div class="app-table">
-            <table class="table table-stripped table-hover">
+            <table class="content-table">
                 <thead>
                     <tr>
-                        <th>Amount<br>({{currency}})</th>
+                        <th>Amount</th>
                         <th>Source</th>
-                        <th>Description</th>
+                        <th width="310">Description</th>
                         <th>Date</th>
                         <th>Operations</th>
                     <tr>
@@ -57,8 +55,8 @@
                         <td>{{income.source}}</td>
                         <td>{{income.description}}</td>
                         <td>{{income.date}}</td>
-                        <td><a href="{% url 'income-edit' income.id %}" class="btn btn-secondary btn-sm">Edit</a>
-                            <a onclick="checker()" href="{% url 'income-delete' income.id %}"><img src="{% static 'img/delete.png' %}" width="35" height="35"/></a></td>
+                        <td><a href="{% url 'income-edit' income.id %}"><button class="edit">Edit</button></a>
+                            <a onclick="checker()" href="{% url 'income-delete' income.id %}"><img src="{% static 'img/delete.png' %}" width="30" height="30"/></a></td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -66,12 +64,12 @@
         </div>
         <p class="no-results" style="display:none;">No results</p>
         <div class="table-output">
-            <table class="table table-stripped table-hover">
+            <table class="content-table">
                 <thead>
                     <tr>
-                        <th>Amount<br>({{currency}})</th>
+                        <th>Amount</th>
                         <th>Source</th>
-                        <th>Description</th>
+                        <th width="310">Description</th>
                         <th>Date</th>
                         <th>Operations</th>
                     <tr>
@@ -86,24 +84,26 @@
 
         <div class="pagination-container">
 
-            <div class="">
-                Showing page {{page_obj.number}} of {{ page_obj.paginator.num_pages }}
-            
-            </div>
-
-            <ul class="pagination float-end mr-auto">
+            <ul class="pagination shadow p-2 mb-3 bg-white rounded float-end pagination-sm">
                 {% if page_obj.has_previous %}
-                <li {% if page_obj.number == 1 %} class="page-item active" {% endif %}><a class="page-link" href="?page=1">&laquo; 1</a></li>
-                <li class="page-item"> <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+                {% else %}
+                    <li class="page-item"><a class="page-link" href="#">Previous</a></li>
                 {% endif %}
-        
+                {% for number in page_list %}
+                    {% if number == page_obj.number %}
+                        <li class="page-item"><a class="page-link active" href="?page={{number}}">{{number}}</a></li>
+                    {% else %}
+                        <li class="page-item"><a class="page-link" href="?page={{number}}">{{number}}</a></li>
+                    {% endif %}
+                {% endfor %}
+
                 {% if page_obj.has_next %}
-                <li class="page-item"> <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
-                <li class="page-item"> <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages}} &raquo;</a></li>
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+                {% else %}
+                    <li class="page-item"><a class="page-link" href="#">Next</a></li>
                 {% endif %}
-        
-        
-                </ul>
+            </ul>
 
             {% endif %}
         </div>
@@ -149,7 +149,7 @@
                                     <td>${item.source}</td>
                                     <td>${item.description}</td>
                                     <td>${item.date}</td>
-                                    <td><a href="edit-income/${item.id}" class="btn btn-secondary btn-sm">Edit</a><a onclick="checker()" href="income-delete/${item.id}"><img src="{% static 'img/delete.png' %}" width="35" height="35"/></a></td>
+                                    <td><a href="edit-income/${item.id}"><button class="edit">Edit</button></a><a onclick="checker()" href="income-delete/${item.id}"><img src="{% static 'img/delete.png' %}" width="30" height="30"/></a></td>
                                 </tr>`;
     
                         });
