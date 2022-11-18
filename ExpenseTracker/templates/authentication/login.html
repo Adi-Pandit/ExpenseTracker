@@ -1,52 +1,140 @@
-{% extends 'base_auth.html' %}
 {% load static %}
 
-
-{% block content %}
-
-<div class="row">
-    <div class="col-md-4 mt-5">
-        <a href="{% url 'home' %}"><img class="float-end" src="{% static 'img/home.png' %}" width="40" height="40"/></a>
-    </div>
-
-    <div class="col-md-4">
-        <div class="card mt-5">
-            
-            <div class="card-body">
-                <div class="card-title py-3">
-                    <h4 class="text-center">Login to your account</h4>
+<html>
+<head>
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/table.css' %}" rel="stylesheet">
+</head>
+<body>
+    <div class="hero">
+            <div class="image-box">
+                <img src="{% static 'img/index.webp' %}">
+            </div>
+            <div class="form-box">
+                <div>{% include 'partials/messages.html' %}</div>
+                <div class="button-box">
+                    <div id="btn"></div>
+                    <button type="button" class="toggle-btn" style="color:white;" id="loginbtn" onclick="Login()">Log In</button>
+                    <button type="button" class="toggle-btn" id="registerbtn" onclick="Register()">Register</button>
                 </div>
-
-                <form action="{% url 'login' %}" method="post">
-                    
+                <form id="login" class="input-group" action="{% url 'login' %}" method="post">
                     {% csrf_token %}
-
-                    {% include 'partials/messages.html' %}
-                    <div class="form-group mb-3">
-                        <input type="text" name="username" id="usernameField" placeholder="Username" class="form-control form-control-sm" value="{{fieldValues.username}}"/>
-                    </div>
-
-                    <div class="form-group mb-3">
-                        <input type="password" name="password" id="passwordField" placeholder="Password" class="form-control form-control-sm"/>
-                    </div>
-                    <div>
-                        <input type="submit" value="Login" class="w-100 btn btn-primary submit-btn"/>
-                    </div>
+                    <input type="text" class="input-field" name="username" id="usernameField" placeholder="Username" value="{{fieldValues.username}}"/>
+                    <input type="Password" class="input-field" name="password" id="passwordField" placeholder="Password">
+                    <button type="submit" class="submit-btn">Log In</button>
+                    <div class="mx-auto">Forgot Password? <a href="{% url 'request-password' %}"> Reset password</a> </div>
                 </form>
-                <div class="container text-center">
+                <form id="register" class="input-group" action="{% url 'register' %}" method="post">
+                    {% csrf_token %}
+                    <input type="text" class="input-field" name="username" id="usernameField" placeholder="Username" value="{{fieldValues.username}}">
+                    <input type="email" class="input-field" name="email" id="emailField" placeholder="Email" value="{{fieldValues.email}}">
+                    <input type="password" class="input-field" name="password" id="passwordField" placeholder="Password">
+                    <button type="submit" class="submit-btn">Register</button>
+                </form>
+                <!--footer>
                     <span>Don't have an account? </span><a href="{% url 'register' %}">Register</a><br>
                     <span>Forgot Password? </span><a href="{% url 'request-password' %}">Reset password</a>
-                </div>
+                </footer-->
             </div>
-
         </div>
     </div>
+</body>
 
-    <div class="col-md-4">
+<script> 
+    /*const usernameField = document.querySelector("#usernameField");
+    const feedBackArea = document.querySelector(".invalid_feedback");
+    const emailField = document.querySelector('#emailField');
+    const passwordField = document.querySelector('#passwordField');
+    const emailFeedBackArea = document.querySelector(".emailFeedBackArea");
+    const showPasswordToggle = document.querySelector(".showPasswordToggle");
+    const submitBtn = document.querySelector(".submit-btn");
 
-    </div>
-</div>
 
-<script src="{% static 'js/register.js' %}"> </script>
+    const handleToggleInput = (e) => {
+        if (showPasswordToggle.textContent === "show") {
+            showPasswordToggle.textContent = "hide";
+            passwordField.setAttribute("type", "text");
+        } else {
+            showPasswordToggle.textContent = "show";
+            passwordField.setAttribute("type", "password");
+        }
+    };
 
-{% endblock content %}
+
+    showPasswordToggle.addEventListener("click", handleToggleInput);
+
+
+    emailField.addEventListener("keyup", (e) => {
+        const emailVal = e.target.value;
+        emailField.classList.remove("is-invalid");
+        emailFeedBackArea.style.display = "none";
+
+        if (emailVal.length > 0) {
+            fetch("http://127.0.0.1:8000/authentication/validate-email", {
+                body: JSON.stringify({ email: emailVal }),
+                method: "POST",
+            })
+                .then((res) => res.json())
+                .then((data) => {
+                    console.log("data", data);
+                    if (data.email_error) {
+                        submitBtn.disabled = true;
+                        emailField.classList.add("is-invalid");
+                        emailFeedBackArea.style.display = "block";
+                        emailFeedBackArea.innerHTML = `<p>${data.email_error}</p>`;
+                    } else {
+                        submitBtn.removeAttribute("disabled");
+                    }
+                });
+        }
+
+    });
+
+
+    usernameField.addEventListener("keyup", (e) => {
+    const usernameVal = e.target.value;
+    usernameField.classList.remove("is-invalid");
+    feedBackArea.style.display = "none";
+
+    if (usernameVal.length > 0) {
+        fetch("http://127.0.0.1:8000/authentication/validate-username", {
+            body: JSON.stringify({ username: usernameVal }),
+            method: "POST",
+        })
+            .then((res) => res.json())
+            .then((data) => {
+                if (data.username_error) {
+                    usernameField.classList.add("is-invalid");
+                    feedBackArea.style.display = "block";
+                    feedBackArea.innerHTML = `<p>${data.username_error}</p>`;
+                    submitBtn.disabled = true;
+                } else {
+                    submitBtn.removeAttribute("disabled");
+                }
+            });
+        }
+    });*/
+
+    var x = document.getElementById("login");
+    var y = document.getElementById("register");
+    var z = document.getElementById("btn");
+    let loginbtn = document.getElementById("loginbtn");
+    let registerbtn = document.getElementById("registerbtn");
+
+    function Register() {
+        x.style.left = "-400px";
+        y.style.left = "50px";
+        z.style.left = "110px";
+        registerbtn.style.color = "white";
+        loginbtn.style.color = "black";
+    }
+
+    function Login() {
+        x.style.left = "50px";
+        y.style.left = "450px";
+        z.style.left = "0px";
+        registerbtn.style.color = "black";
+        loginbtn.style.color = "white";
+    }
+</script>
+</html>

@@ -27,7 +27,7 @@ class EmailThread(threading.Thread):
 
 class RegistrationView(View):
     def get(self, request):
-        return render(request, 'authentication/register.html')
+        return render(request, 'authentication/login.html')
     
     def post(self, request):
        #GET USER DATA
@@ -46,38 +46,41 @@ class RegistrationView(View):
             if not User.objects.filter(email=email).exists():
                 if len(password)<6:
                     messages.error(request, 'Password too short')
-                    return render(request, 'authentication/register.html',context)
-                
-                user= User.objects.create_user(username=username,email=email)
-                user.set_password(password)
-                user.is_active = False
-                user.save()
+                    return render(request, 'authentication/login.html',context)
+                else:
+                    user= User.objects.create_user(username=username,email=email)
+                    user.set_password(password)
+                    user.is_active = False
+                    user.save()
 
-                #path_to_view
-                # - getting domain we are on
-                # - relative url to verification
-                # - encode uid
-                # - token
-                uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+                    #path_to_view
+                    # - getting domain we are on
+                    # - relative url to verification
+                    # - encode uid
+                    # - token
+                    uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
 
-                domain = get_current_site(request).domain
-                link = reverse('activate',kwargs={'uidb64': uidb64, 'token': account_activation_token.make_token(user)})
+                    domain = get_current_site(request).domain
+                    link = reverse('activate',kwargs={'uidb64': uidb64, 'token': account_activation_token.make_token(user)})
 
-                activate_url = 'http://'+domain+link
-                email_subject = 'Activate your account'
-                email_body = 'Hi '+user.username+' Please use this link to verify your acount\n' + activate_url
-                email = EmailMessage(
-                        email_subject,
-                        email_body,
-                        'noreply@semycolon.com',
-                        [email],
-                    )
-                EmailThread(email).start()
-                messages.success(request, 'Account successfully created')
-                return render(request, 'authentication/register.html')
-
-
-       return render(request, 'authentication/register.html')
+                    activate_url = 'http://'+domain+link
+                    email_subject = 'Activate your account'
+                    email_body = 'Hi '+user.username+' Please use this link to verify your acount\n' + activate_url
+                    email = EmailMessage(
+                            email_subject,
+                            email_body,
+                            'noreply@semycolon.com',
+                            [email],
+                        )
+                    EmailThread(email).start()
+                    messages.success(request, 'Account successfully created')
+                    return render(request, 'authentication/login.html')
+            else:
+                messages.error(request, 'Sorry email in use, choose another email')
+                return render(request, 'authentication/login.html')
+       else:
+            messages.error(request, 'Sorry username in use, choose another ')
+            return render(request, 'authentication/login.html')
 
 
 class UsernameValidationView(View):
