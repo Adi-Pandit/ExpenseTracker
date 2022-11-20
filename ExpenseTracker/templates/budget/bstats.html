@@ -8,7 +8,7 @@
         <div class="col-md-9">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="">Income Summary</a></li>
+                <li class="breadcrumb-item"><a href="budget">Budget Summary</a></li>
                 <li class="breadcrumb-item active" aria-current="page">Summary</li>
                 </ol>
             </nav>
@@ -46,7 +46,7 @@
         </div>
         <div><hr></div>     
         <div class="chart-container" style="position: relative; height:40vh; width:80vw">
-            <canvas id="imyChart"></canvas>
+            <canvas id="bmyChart"></canvas>
         </div>
     </div>
 
@@ -54,8 +54,56 @@
 </div>
 
 
-<script src="{% static 'js/istats.js' %}">
-
+<script>
+    const renderChart = (data, labels) => {
+        const ctx = document.getElementById('bmyChart').getContext('2d');
+        const bmyChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Last 6 months budget',
+                    data: data,
+                    backgroundColor: [
+                        'rgba(255, 99, 132)',
+                        'rgba(54, 162, 235)',
+                        'rgba(255, 206, 86)',
+                        'rgba(75, 192, 192)',
+                        'rgba(153, 102, 255)',
+                        'rgba(255, 159, 64)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                title: {
+                    display: true,
+                    text: "Source wise budget",
+                }
+            }
+        });
+    }
+    
+    const getChartData = () => {
+        fetch('http://127.0.0.1:8000/budget/budget_source_summary')
+            .then((res) => res.json())
+            .then((results) => {
+                console.log("results", results);
+                const source_data = results.budget_source_data;
+                const [labels, data] = [Object.keys(source_data), Object.values(source_data),];
+                renderChart(data, labels);
+            });
+    };
+    
+    document.onload = getChartData();
 
 </script>
 

@@ -123,7 +123,8 @@
 }
 
 .form-wrap h2,
-.form-wrap p {
+.form-wrap p,
+.form-wrap h5 {
     text-align: center;
 }
 

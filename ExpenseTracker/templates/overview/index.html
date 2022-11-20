@@ -9,7 +9,7 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="">Overview</a></li>
-                <li class="breadcrumb-item active" aria-current="page">My Income-Expense Overview</li>
+                <li class="breadcrumb-item active" aria-current="page">My Budget-Expense Overview</li>
                 </ol>
             </nav>
         </div>
@@ -21,7 +21,7 @@
               <h5 class="card-title">Total Expenditure</h5>
               <hr>
               <div class="card-header"><b>Total Expense  :  {{sumExpense}}</b></div><br>
-              <div class="card-header"><b>Total Income  :  {{sumIncome}}</b></div>
+              <div class="card-header"><b>Total Budget  :  {{sumBudget}}</b></div>
             </div>
           </div><br>
           <div class="card col-md-4" style="width:300px; height:220px;"> 
@@ -29,22 +29,73 @@
               <h5 class="card-title">Todays Transaction</h5>
               <hr>
               <div class="card-header"><b>Expense  :  {{sumTodayExpense}}</b>(Trans : {{expenseCount}})</div><br>
-              <div class="card-header"><b>Income  :  {{sumTodayIncome}}</b>(Trans : {{incomeCount}})</div>
+              <div class="card-header"><b>Budget  :  {{sumTodayBudget}}</b>(Trans : {{budgetCount}})</div>
             </div>
           </div>
         </div>
       <div class="card col-md-8" style="width:500px; height:465px;">
       <div class="card-body">
-          <h5 class="card-title">Total Income-Expense Summary</h5>
+          <h5 class="card-title">Total Budget-Expense Summary</h5>
             <hr><br><br>
-              <canvas id="incomeExpenseChart"></canvas>
+              <canvas id="budgetExpenseChart"></canvas>
       </div>
     </div>
   </div>      
 </div>
 
-<script src="{% static 'js/incomeexpense.js' %}">
+<script>
+  const renderChart = (data, labels) => {
+    const ctx = document.getElementById('budgetExpenseChart').getContext('2d');
+    ctx.width = 1000;
+    ctx.height = 1000;
+    const budgetExpenseChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Total budget-expense',
+                data: data,
+                backgroundColor: [
+                    'rgba(255, 99, 132)',
+                    'rgba(54, 162, 235)',
+                    'rgba(255, 206, 86)',
+                    'rgba(75, 192, 192)',
+                    'rgba(153, 102, 255)',
+                    'rgba(255, 159, 64)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 1,
+                cutout: '90%'
+            }]
+        },
+        options: {
+            title: {
+                display: true,
+                text: "Total budget-expense",
+            }
+        }
+    });
+}
 
+const getChartData = () => {
+    fetch('http://127.0.0.1:8000/overview/budget_expense_summary')
+        .then((res) => res.json())
+        .then((results) => {
+            console.log("results", results);
+            const budget_expense_data = results.expense_budget_data;
+            const [labels, data] = [Object.keys(budget_expense_data), Object.values(budget_expense_data),];
+            renderChart(data, labels);
+        });
+};
+
+document.onload = getChartData();
 
 </script>
 {% endblock content %}

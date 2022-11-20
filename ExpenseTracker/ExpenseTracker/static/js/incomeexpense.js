@@ -25,7 +25,8 @@ const renderChart = (data, labels) => {
                     'rgba(153, 102, 255, 1)',
                     'rgba(255, 159, 64, 1)'
                 ],
-                borderWidth: 1
+                borderWidth: 1,
+                cutout: '90%'
             }]
         },
         options: {

@@ -33,7 +33,7 @@
 </head>
 
 <body>
-    <h2>Income List</h2>
+    <h2>Budget List</h2>
     <table>
         <thead>
             <tr>
@@ -45,13 +45,13 @@
             </tr>
         </thead>
         <tbody>
-            {% for income in incomes %}
+            {% for budget in budgets %}
             <tr>
                 <td>{{forloop.counter}}</td>
-                <td>{{income.amount}}</td>
-                <td>{{income.source}}</td>
-                <td>{{income.description}}</td>
-                <td>{{income.date}}</td>
+                <td>{{budget.amount}}</td>
+                <td>{{budget.source}}</td>
+                <td>{{budget.description}}</td>
+                <td>{{budget.date}}</td>
             </tr>
             {% endfor %}
             <!--tr>

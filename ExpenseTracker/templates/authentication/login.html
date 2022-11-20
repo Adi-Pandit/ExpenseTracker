@@ -6,12 +6,13 @@
     <link href="{% static 'css/table.css' %}" rel="stylesheet">
 </head>
 <body>
-    <div class="hero">
+    <d class="hero">
+        {% include 'partials/messages.html' %}
             <div class="image-box">
                 <img src="{% static 'img/index.webp' %}">
             </div>
             <div class="form-box">
-                <div>{% include 'partials/messages.html' %}</div>
+                
                 <div class="button-box">
                     <div id="btn"></div>
                     <button type="button" class="toggle-btn" style="color:white;" id="loginbtn" onclick="Login()">Log In</button>
@@ -22,7 +23,7 @@
                     <input type="text" class="input-field" name="username" id="usernameField" placeholder="Username" value="{{fieldValues.username}}"/>
                     <input type="Password" class="input-field" name="password" id="passwordField" placeholder="Password">
                     <button type="submit" class="submit-btn">Log In</button>
-                    <div class="mx-auto">Forgot Password? <a href="{% url 'request-password' %}"> Reset password</a> </div>
+                    <div class="mx-auto">Forgot Password? <a href="{% url 'request-password' %}"> Reset Password</a> </div>
                 </form>
                 <form id="register" class="input-group" action="{% url 'register' %}" method="post">
                     {% csrf_token %}
@@ -36,7 +37,6 @@
                     <span>Forgot Password? </span><a href="{% url 'request-password' %}">Reset password</a>
                 </footer-->
             </div>
-        </div>
     </div>
 </body>
 

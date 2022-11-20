@@ -2,52 +2,107 @@
 {% load static %}
 
 {% block content %}
-
-<div class="container mt-4">
+<html>
+<head>
+    <style type="text/css">
+        
+        .chartBox {
+            width: 400px;
+            height: 300px;
+            padding: 20px;
+            border-radius: 20px;
+            background: white;
+            box-shadow: 0 0 20px 9px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+<body>
+<div class="container mt-3"> 
     <div class="row">
-        <div class="col-md-9">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="">Expenses Summary</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Summary</li>
+        <div class="mx-2">
+            <nav aria-label="breadcrumb ">
+                <ol class="breadcrumb shadow p-2 mb-3 bg-white rounded">
+                <li class="breadcrumb-item"><a href=""><small><b>Expenses Summary</b></small></a></li>
+                <li class="breadcrumb-item active" aria-current="page"><small><b>Summary</b></small></li>
                 </ol>
             </nav>
         </div>
 
         <div class="row">
-            <div class="card text-white bg-primary mx-auto" style="width:220px; height:130px; border-radius:7%">
-                <div class="card-header"><h5>TODAY</h5></div>
+            <div class="card text-white bg-primary mx-auto" style="width:220px; height:100px; border-radius:10px; box-shadow: 0 0 20px 9px lightblue; border:none">
+                <div class="card-header"><h6>TODAY</h6></div>
                 <div class="card-body">
                     <img src="{% static 'img/money.png' %}" />
                     <p class="card-text float-end">{{sumToday}}</p>
                 </div>
             </div>
-            <div class="card text-white bg-success mx-auto" style="width:220px; height:130px; border-radius:7%">
-                <div class="card-header"><h5>THIS WEEK</h5></div>
+            <div class="card text-white bg-success mx-auto" style="width:220px; height:100px; border-radius:10px;
+            box-shadow: 0 0 20px 9px lightgreen; border:none">
+                <div class="card-header"><h6>THIS WEEK</h6></div>
                 <div class="card-body">
                     <img src="{% static 'img/money.png' %}"/>
                     <p class="card-text float-end">{{sumWeek}}</p>
                 </div>
             </div>
-            <div class="card text-white bg-info mx-auto" style="width:220px; height:130px; border-radius:7%">
-                <div class="card-header"><h5>THIS MONTH</h5></div>
+            <div class="card text-white bg-info mx-auto" style="width:220px; height:100px; border-radius:10px; box-shadow: 0 0 20px 9px pink; border:none">
+                <div class="card-header"><h6>THIS MONTH</h6></div>
                 <div class="card-body">
                     <img src="{% static 'img/money.png' %}" />
                     <p class="card-text float-end">{{sumMonth}}</p>
                 </div>
             </div>
-            <div class="card text-white bg-dark mx-auto" style="width:220px; height:130px; border-radius:7%">
-                <div class="card-header"><h5>THIS YEAR</h5></div>
+            <div class="card text-white bg-dark mx-auto" style="width:220px; height:100px; border-radius:10px;
+            box-shadow: 0 0 20px 9px grey; border:none">
+                <div class="card-header"><h6>THIS YEAR</h6></div>
                 <div class="card-body">
                     <img src="{% static 'img/money.png' %}" />
                     <p class="card-text float-end">{{sumYear}}</p>
                 </div>
             </div>
         </div>
-        <div><hr></div>
         
-        <div class="chart-container" style="position: relative; height:40vh; width:80vw">
-            <canvas id="myChart"></canvas>
+        <div class="row mt-3">
+            <div class="col-md-5 mx-2">
+                <div class="chartBox">
+                    <canvas id="myChart"></canvas>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-wrap">
+                    <form action="{% url 'stats' %}" method="post">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="form-group col-md-4">
+                            <label for="">Start date</label>
+                            <input type="date" name="startdate">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="">End date</label>
+                            <input type="date" name="enddate">
+                        </div>
+                        <div class="col-md-4">
+                            <input type="submit" class="csv" value="Submit">
+                        </div>
+                    </div>
+                    
+                    <h5>Total Expense Per Category</h5>
+                    <table class="content-table">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Total Expense</th>
+                            </tr>
+                        </thead>
+                        {% for key,value in finalrep.items %}
+                        <tbody>
+                            <tr>
+                                <td>{{key}}</td>
+                                <td>{{value}}</td>
+                        </tbody>
+                        {% endfor %}
+                    </table>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -55,9 +110,66 @@
 </div>
 
 
-<script src="{% static 'js/stats.js' %}">
+<script>
+    const renderChart = (data, labels) => {
+        const ctx = document.getElementById('myChart').getContext('2d');
+        const myChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Last 6 months expenses',
+                    data: data,
+                    backgroundColor: [
+                        'rgba(255, 99, 132)',
+                        'rgba(54, 162, 235)',
+                        'rgba(255, 206, 86)',
+                        'rgba(75, 192, 192)',
+                        'rgba(153, 102, 255)',
+                        'rgba(255, 159, 64)',
+                        'rgba(65, 175, 89)',
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)',
+                        'rgba(65, 175, 89, 1)',
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: {
+                        position: 'left'
+                    }
+                },
+                maintainAspectRatio: false,
+                title: {
+                    display: true,
+                    text: "Expense per category in percentage",
+                }
+            }
+        });
+    }
+    
+    const getChartData = () => {
+        fetch('http://127.0.0.1:8000/expense_category_summary')
+            .then((res) => res.json())
+            .then((results) => {
+                console.log("results", results);
+                const category_data = results.expense_category_data;
+                const [labels, data] = [Object.keys(category_data), Object.values(category_data),];
+                renderChart(data, labels);
+            });
+    };
+    
+    document.onload = getChartData();
 
 
 </script>
-
+</body>
 {% endblock content %}
