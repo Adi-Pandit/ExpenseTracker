@@ -4,17 +4,7 @@
 {% block content %}
 <html>
 <head>
-    <style type="text/css">
-        
-        .chartBox {
-            width: 400px;
-            height: 300px;
-            padding: 20px;
-            border-radius: 20px;
-            background: white;
-            box-shadow: 0 0 20px 9px rgba(0, 0, 0, 0.3);
-        }
-    </style>
+</head>
 <body>
 <div class="container mt-3"> 
     <div class="row">
@@ -68,23 +58,7 @@
             </div>
             <div class="col-md-6">
                 <div class="form-wrap">
-                    <form action="{% url 'stats' %}" method="post">
-                    {% csrf_token %}
-                    <div class="row">
-                        <div class="form-group col-md-4">
-                            <label for="">Start date</label>
-                            <input type="date" name="startdate">
-                        </div>
-                        <div class="form-group col-md-4">
-                            <label for="">End date</label>
-                            <input type="date" name="enddate">
-                        </div>
-                        <div class="col-md-4">
-                            <input type="submit" class="csv" value="Submit">
-                        </div>
-                    </div>
-                    
-                    <h5>Total Expense Per Category</h5>
+                    <h5>Total Expense Per Category ({{monthName}})</h5>
                     <table class="content-table">
                         <thead>
                             <tr>
@@ -150,7 +124,7 @@
                 maintainAspectRatio: false,
                 title: {
                     display: true,
-                    text: "Expense per category in percentage",
+                    text: "Expense per category in percentage ({{monthName}})",
                 }
             }
         });

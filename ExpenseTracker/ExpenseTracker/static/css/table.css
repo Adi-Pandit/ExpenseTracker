@@ -272,3 +272,12 @@
 #register {
     left: 450px;
 }
+
+.chartBox {
+    width: 400px;
+    height: 300px;
+    padding: 20px;
+    border-radius: 20px;
+    background: white;
+    box-shadow: 0 0 20px 9px rgba(0, 0, 0, 0.3);
+}

@@ -45,7 +45,6 @@ INSTALLED_APPS = [
     'expenses',
     'budget',
     'usercategory',
-    'usersource',
     'overview',
 ]
 

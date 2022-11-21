@@ -2,21 +2,26 @@ from django.shortcuts import render, redirect
 from .models import Budget, Budget_amount
 from django.core.paginator import Paginator
 from usercategory.models import UserCategory
-from usersource.models import UserSource
-from expenses.models import Category
+from expenses.models import Category,Expense
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 import json
 from django.http import JsonResponse, HttpResponse
 import csv
 import datetime
+import calendar
 import xlwt
 from datetime import date
 from django.template.loader import render_to_string
 from weasyprint import HTML
 import tempfile
 from django.db.models import Sum
+from django.template.defaulttags import register
 # Create your views here.
+
+@register.filter
+def get_item(dictionary, key):
+    return dictionary.get(key)
 
 @login_required(login_url='/authentication/login')
 def search_budget(request):
@@ -105,65 +110,47 @@ def delete_budget(request,id):
     messages.success(request,'Budget deleted successfully')
     return redirect('budget')
 
-"""
-def budget_source_summary(request):
+"""def budget_source_summary(request):
     todays_date = datetime.date.today()
     six_months_ago = todays_date-datetime.timedelta(days=30*6)
-    budgets = Budget.objects.filter(owner=request.user,date__gte=six_months_ago,date__lte=todays_date)
+    budgets = Budget.objects.filter(owner=request.user)
     finalrep={}
 
-    def get_source(budget):
-        return budget.source
-
-    def get_budget_source_amount(source):
-        amount = 0
-        filtered_by_source = budgets.filter(source=source)
-        for item in filtered_by_source:
-            amount += item.amount
-        return amount
-
-    source_list = list(set(map(get_source, budgets)))
-    for x in budgets:
-        for y in source_list:
-            finalrep[y]=get_budget_source_amount(y)
-    return JsonResponse({'budget_source_data': finalrep},safe=False)
+    category = request.POST[]
+    return JsonResponse({'budget_source_data': finalrep},safe=False)"""
 
 @login_required(login_url='/authentication/login')
 def bstats_view(request):
-    todays_date = datetime.date.today()
-    today = todays_date-datetime.timedelta(days=0)
-    budgetToday = Budget.objects.filter(owner=request.user,date__gte=today,date__lte=todays_date)
-    sumToday= budgetToday.aggregate(Sum('amount'))
-    for value in sumToday.values():
-        sumToday=value
-
-    week = todays_date-datetime.timedelta(days=7)
-    budgetWeek = Budget.objects.filter(owner=request.user,date__gte=week,date__lte=todays_date)
-    sumWeek= budgetWeek.aggregate(Sum('amount'))
-    for value in sumWeek.values():
-        sumWeek=value
-
-    month = todays_date-datetime.timedelta(days=30)
-    budgetMonth = Budget.objects.filter(owner=request.user,date__gte=month,date__lte=todays_date)
-    sumMonth= budgetMonth.aggregate(Sum('amount'))
-    for value in sumMonth.values():
-        sumMonth=value
-
-    year = todays_date-datetime.timedelta(days=365)
-    budgetYear = Budget.objects.filter(owner=request.user,date__gte=year,date__lte=todays_date)
-    sumYear= budgetYear.aggregate(Sum('amount'))
-    for value in sumYear.values():
-        sumYear=value
-
-    context={
-        'sumToday':sumToday,
-        'sumWeek':sumWeek,
-        'sumMonth':sumMonth,
-        'sumYear':sumYear,
+    currentDate = date.today()
+    monthName = currentDate.strftime("%B")
+    month = int(currentDate.strftime("%m"))
+    year = int(currentDate.strftime("%Y"))
+    day = int(currentDate.strftime("%d"))
+    first, last = calendar.monthrange(year, month)
+    categoryTable = {}
+    budgetTable = {}
+    if day in range(first,last+1):
+        categoryList = list(Category.objects.all())
+        usercategory = list(UserCategory.objects.filter(owner=request.user))
+        for category in usercategory:
+            categoryList.append(category)
+        for category in categoryList:
+            amount = 0
+            Budget_id = Budget.objects.get(owner=request.user,month=monthName,year=year)
+            budget_amount = Budget_amount.objects.get(category=category,budget_id=Budget_id.id)
+            expenses = Expense.objects.filter(category=category)
+            for expense in expenses:
+                amount += expense.amount
+            categoryTable[category] = amount
+            budgetTable[category] = budget_amount.amount
+    context = {
+        'categoryTable': categoryTable,
+        'monthname': monthName,
+        'budgetTable': budgetTable
     }
     return render(request, 'budget/bstats.html', context)
     #return render(request, 'budget/istats.html')
-
+"""
 @login_required(login_url='/authentication/login')
 def bexport_csv(request):
     response =  HttpResponse(content_type="text/csv")

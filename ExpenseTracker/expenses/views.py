@@ -8,8 +8,9 @@ from django.core.paginator import Paginator
 import json
 from django.http import JsonResponse,HttpResponse
 from usercategory.models import UserCategory
-from datetime import datetime
+from datetime import datetime, date
 import datetime
+import calendar
 import csv
 import xlwt
 from django.template.loader import render_to_string
@@ -137,43 +138,37 @@ def delete_expense(request,id):
 
 @login_required(login_url='/authentication/login')
 def expense_category_summary(request):
-        start_date = request.POST.get('startdate',False)
-        end_date = request.POST.get('enddate',False)
-        """if not start_date:
-            messages.success(request,'Expense Updated successfully')
-            return render(request, 'expenses/stats.html')
-        if not end_date:
-            messages.success(request,'Expense Updated successfully')
-            redirect('stats')"""
-        if not start_date:
-            if not end_date:
-                todays_date = datetime.date.today()
-                six_months_ago = todays_date-datetime.timedelta(days=30*6)
-                expenses = Expense.objects.filter(owner=request.user,date__gte=six_months_ago,date__lte=todays_date)
-                finalrep={}
+    currentDate = date.today()
+    monthName = currentDate.strftime("%B")
+    month = int(currentDate.strftime("%m"))
+    year = int(currentDate.strftime("%Y"))
+    first, last = calendar.monthrange(year, month)
+    start_date = datetime.datetime(year,month,first)
+    end_date = datetime.datetime(year,month,last)
+    expenses = Expense.objects.filter(owner=request.user,date__gte=start_date,date__lte=end_date)
+    finalrep={}
 
-                TotalExpense = Expense.objects.filter(owner=request.user)
-                sumExpense = TotalExpense.aggregate(Sum('amount'))
-                for value in sumExpense.values():
-                    sumExpense=value
+    sumExpense = expenses.aggregate(Sum('amount'))
+    for value in sumExpense.values():
+        sumExpense=value
 
-                def get_category(expense):
-                    return expense.category
+    def get_category(expense):
+        return expense.category
 
-                def get_expense_category_amount(category):
-                    global TotalAmount
-                    amount = 0
-                    filtered_by_category = expenses.filter(category=category)
-                    for item in filtered_by_category:
-                        amount += item.amount
-                    return round((amount/sumExpense)*100,2)
+    def get_expense_category_amount(category):
+        global TotalAmount
+        amount = 0
+        filtered_by_category = expenses.filter(category=category)
+        for item in filtered_by_category:
+            amount += item.amount
+        return round((amount/sumExpense)*100,2)
 
-                category_list = list(set(map(get_category, expenses)))
-                for x in expenses:
-                    for y in category_list:
-                        finalrep[y]=get_expense_category_amount(y)
-                return JsonResponse({'expense_category_data': finalrep},safe=False)
-        """if start_date==None:
+    category_list = list(set(map(get_category, expenses)))
+    for x in expenses:
+        for y in category_list:
+            finalrep[y]=get_expense_category_amount(y)
+    return JsonResponse({'expense_category_data': finalrep},safe=False)
+    """if start_date==None:
             messages.success(request,'Expense Updated successfully')
             redirect('stats')
         EndDate = datetime.strptime(end_date,'%d-%m-%Y')
@@ -230,9 +225,14 @@ def stats_view(request):
     for value in sumYear.values():
         sumYear=value
 
-    todays_date = datetime.date.today()
-    six_months_ago = todays_date-datetime.timedelta(days=30*6)
-    expenses = Expense.objects.filter(owner=request.user,date__gte=six_months_ago,date__lte=todays_date)
+    currentDate = date.today()
+    monthName = currentDate.strftime("%B")
+    month = int(currentDate.strftime("%m"))
+    year = int(currentDate.strftime("%Y"))
+    first, last = calendar.monthrange(year, month)
+    start_date = datetime.datetime(year,month,first)
+    end_date = datetime.datetime(year,month,last)
+    expenses = Expense.objects.filter(owner=request.user,date__gte=start_date,date__lte=end_date)
     finalrep = {}
     def get_category(expense):
         return expense.category
@@ -256,6 +256,7 @@ def stats_view(request):
         'sumMonth':sumMonth, 
         'sumYear':sumYear,
         'finalrep':finalrep,
+        'monthName':monthName
     }
     return render(request, 'expenses/stats.html', context)
 
