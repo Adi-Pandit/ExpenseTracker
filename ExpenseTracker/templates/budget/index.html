@@ -13,15 +13,12 @@
                 </ol>
             </nav>
         </div>
-
         <div class="col-md-1">
             <a href="{% url 'add-budget' %}"><button class="add">Add</button></a>
         </div>
+        {% if budgetset == 'set' %}
         <div class="col-md-1">
-            <a href="{% url 'budget-edit' %}"><button class="add">Edit</button></a>
-        </div>
-        <div class="col-md-1">
-            <a href=""><button class="add">Delete</button></a>
+            <a href="{% url 'budget-delete' budgets.id %}"><button class="add">Delete</button></a>
         </div>
     </div>
     <div class="container mt-1">
@@ -47,6 +44,7 @@
                         <th>Sr.No.</th>
                         <th>Category</th>
                         <th>Budget Amount</th>
+                        <th>Edit Budget Amount</th>
                     </tr>
                 </thead>
                 
@@ -57,11 +55,15 @@
                         <td>{{forloop.counter}}</td>
                         <td>{{amount.category}}</td>
                         <td>{{amount.amount}}</td>
+                        <td><a href="{% url 'budget-edit' amount.id %}"><button class="edit">Edit</button></a></td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
+        {% else %}
+            <h2 class="mx-3">Budget is not set</h2>
+        {% endif %}
     </div>
 </div>
 

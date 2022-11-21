@@ -84,6 +84,7 @@ def add_expenses(request):
 @login_required(login_url='/authentication/login')
 def expense_edit(request, id):
     expense=Expense.objects.get(pk=id)
+    print(expense)
     categories=Category.objects.all()
     usercategories = UserCategory.objects.filter(owner=request.user)
     context = {

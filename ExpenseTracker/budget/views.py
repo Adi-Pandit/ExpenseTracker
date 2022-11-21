@@ -33,14 +33,22 @@ def index(request):
     currentDate = date.today()
     month = currentDate.strftime("%B")
     year = currentDate.strftime("%Y")
-    budgets = Budget.objects.get(owner=request.user,month=month,year=year)
-    budget_amount = Budget_amount.objects.filter(budget_id=budgets.id)
-    context={
-        'budgets': budgets,
-        'month': month,
-        'budget_amount': budget_amount,
-    }
-    return render(request, 'budget/index.html', context)
+    budgetset = "set"
+    try:
+        budgets = Budget.objects.get(owner=request.user,month=month,year=year)
+        budget_amount = Budget_amount.objects.filter(budget_id=budgets.id)
+        context={
+            'budgets': budgets,
+            'month': month,
+            'budget_amount': budget_amount,
+            'budgetset': budgetset
+        }
+        return render(request, 'budget/index.html', context)
+    except:
+        context={
+            'budgetset': 'notset'
+        }
+        return render(request, 'budget/index.html', context)
 
 @login_required(login_url='/authentication/login')
 def add_budget(request):
@@ -74,39 +82,30 @@ def add_budget(request):
 
 @login_required(login_url='/authentication/login')
 def budget_edit(request, id):
-    budget=Budget.objects.get(pk=id)
-    categories=Category.objects.all()
-    usercategories = UserCategory.objects.filter(owner=request.user)
+    budget_amount=Budget_amount.objects.get(pk=id)
     context = {
-        'budget': budget,
-        'values': budget,
-        'categories':categories,
-        'usercategories':usercategories
+        'budget_amount': budget_amount,
     }
     if request.method=='GET':
         return render(request, 'budget/edit_budget.html',context)
     if request.method=='POST':
-        amountCategory = request.POST.getlist('category')
-        categoryList = list(categories)
-        for category in usercategories:
-            categoryList.append(category)
-        final = dict(zip(categoryList, amountCategory))
-        for k,v in final.items():
-            Budget_amount.category=k
-            Budget_amount.amount=v 
-        budget.save()
+        newamount = request.POST['category']
+        budget_amount.amount=newamount
+        budget_amount.save()
         messages.success(request,'Budget Updated successfully')
         return redirect('budget')
         #messages.info(request,'Handling post form')
-        #return render(request, 'budget/edit_budget.html',context)
-"""
+        #return render(request, 'budget/edit_budget.html',context)"""
+
 @login_required(login_url='/authentication/login')
 def delete_budget(request,id):
     budget=Budget.objects.get(pk=id)
     budget.delete()
-    messages.success(request,'record removed')
+    Budget_amount.objects.filter(budget_id=id).delete()
+    messages.success(request,'Budget deleted successfully')
     return redirect('budget')
 
+"""
 def budget_source_summary(request):
     todays_date = datetime.date.today()
     six_months_ago = todays_date-datetime.timedelta(days=30*6)

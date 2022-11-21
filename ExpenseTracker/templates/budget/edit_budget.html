@@ -1,53 +1,33 @@
 {% extends 'base.html' %}
 
-
+{% load static %}
 
 {% block content %}
 
-<div class="container mt-4"> 
-
+<div class="container mt-3"> 
     <div class="row">
-       <div class="col-md-10">
+        <div class="mx-3">
             <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{% url 'budget' %}">Budget</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Edit Budget</li>
+                <ol class="breadcrumb shadow p-2 mb-3 bg-white rounded">
+                <li class="breadcrumb-item"><a href="{% url 'budget' %}"><small><b>Budget</b></small></a></li>
+                <li class="breadcrumb-item active" aria-current="page"><small><b>Edit Budget Amount</b></small></li>
                 </ol>
             </nav>
         </div> 
     
-        <div class="card w-50" style="margin:0 auto;">
-        <div class="card-body">
-            <form action="{% url 'budget-edit' budget.id %}" method="post">
-            {% csrf_token %}
-            <div class="form-group mb-3">
-                <label for="">Amount</label>
-                <input class="form-control form-control-sm" type="text" name="amount" value="{{values.amount}}"/>
-            </div>    
-            <div class="form-group mb-3">
-                <label for="">Description</label>
-                <textarea class="form-control form-control-sm" rows="3" name="description" value="{{values.description}}">{{values.description}}</textarea>
+        <div class="form-body">
+            <div id="container">
+                <div class="form-wrap">
+                    <h2>Edit {{budget_amount.category}} Budget Amount</h2>
+                    <form action="{% url 'budget-edit' budget_amount.id %}" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">  
+                        <label for="">{{budget_amount.category}}</label>
+                        <input step=any type="number" name="category" value="{{budget_amount.amount}}"/>
+                    </div>
+                    <button type="submit">Submit</button>
+                </form>
             </div>
-            <div class="form-group mb-3">
-                <label for="">Source</label>
-                <select class="form-control form-control-sm" name="source">
-                    <option selected name="source" value="{{values.source}}">{{values.source}}</option>
-                    {% for source in sources %}
-                    {% if values.source != source.name %}
-                        <option name="source" value="{{source.name}}">{{source.name}}</option>
-                    {% endif %}
-                    {% endfor %}
-                    {% for usersource in usersources %}
-                    <option name="source" value="{{usersource.usersource}}">{{usersource.usersource}}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="form-group mb-3">
-                <label for="">Date of Budget</label>
-                <input class="form-control form-control-sm" type="date" name="budget_date" value="{{values.date | date:'Y-m-d'}}"/>
-            </div>
-            <input type="submit" value="Save" class="btn btn-primary btn-primary-sm"/>
-        </form>
         </div>
     </div>
     
