@@ -40,7 +40,9 @@
                             {% endif %}
                             {% endfor %}
                             {% for usercategory in usercategories %}
-                            <option name="category" value="{{usercategory.usercategory}}">{{usercategory.usercategory}}</option>
+                            {% if values.category != usercategory.name %}
+                                <option name="category" value="{{usercategory.name}}">{{usercategory.name}}</option>
+                            {% endif %}
                             {% endfor %}
                         </select>
                     </div>

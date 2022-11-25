@@ -7,7 +7,6 @@ from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 import json
 from django.http import JsonResponse,HttpResponse
-from usercategory.models import UserCategory
 from datetime import datetime, date
 import datetime
 import calendar
@@ -52,11 +51,11 @@ def index(request):
 
 @login_required(login_url='/authentication/login')
 def add_expenses(request):
-    categories = Category.objects.all()
-    usercategories = UserCategory.objects.filter(owner=request.user)
+    categories = Category.objects.filter(type='global')
+    usercategories = Category.objects.filter(type='local',owner=request.user)
     context={
             'categories': categories,
-            'usercategories' : usercategories,
+            'usercategories': usercategories,
             'values': request.POST
     }
     if request.method == 'GET':
@@ -84,14 +83,13 @@ def add_expenses(request):
 @login_required(login_url='/authentication/login')
 def expense_edit(request, id):
     expense=Expense.objects.get(pk=id)
-    print(expense)
-    categories=Category.objects.all()
-    usercategories = UserCategory.objects.filter(owner=request.user)
+    categories=Category.objects.filter(type='global')
+    usercategories = Category.objects.filter(type='local',owner=request.user)
     context = {
         'expense': expense,
         'values': expense,
         'categories':categories,
-        'usercategories' : usercategories,
+        'usercategories':usercategories,
     }
     if request.method=='GET':
         return render(request, 'expenses/edit-expense.html',context)

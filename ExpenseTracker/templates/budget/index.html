@@ -18,26 +18,12 @@
         </div>
         {% if budgetset == 'set' %}
         <div class="col-md-1">
-            <a href="{% url 'budget-delete' budgets.id %}"><button class="add">Delete</button></a>
+            <a href="{% url 'budget-delete' budgets.id %}"><button onclick="checker()" class="add">Delete</button></a>
         </div>
     </div>
-    <div class="container mt-1">
-        <div class="row">
-            <div class="col-md-8">
-                <a href=""><button class="pdf">Export PDF</button></a>
-                <a href=""><button class="excel">Export Excel</button></a>
-                <a href=""><button class="csv">Export CSV</button></a>
-            </div>
-
-            <div class="col-md-4">    
-                <div>
-                    <input type="text" class="search-bar" id="searchField" placeholder="Search">
-                </div>
-            </div>
-        </div>
-
+    <div class="container">
         <div class="app-table">
-            <br><h4>{{month}} Budgets</h4>
+            <br><h2>{{month}} Budgets</h2>
             <table class="content-table">
                 <thead>
                     <tr>
@@ -68,66 +54,13 @@
 </div>
 
 
-<!--script type="text/javascript">
-    const searchField = document.querySelector("#searchField");
-    const tableOutput = document.querySelector(".table-output");
-    const appTable = document.querySelector(".app-table");
-    const paginationContainer = document.querySelector(".pagination-container");
-    tableOutput.style.display = 'none';
-    const noResults = document.querySelector(".no-results");
-    const tbody = document.querySelector(".table-body");
-    
-    searchField.addEventListener('keyup', (e) => {
-        const searchValue = e.target.value;
-    
-        if (searchValue.trim().length > 0) {
-            paginationContainer.style.display = "none";
-            tbody.innerHTML = "";
-            fetch("http://127.0.0.1:8000/budget/search-budget", {
-                body: JSON.stringify({ searchText: searchValue }),
-                method: "POST",
-            })
-                .then((res) => res.json())
-                .then((data) => {
-                    console.log("data", data);
-                    appTable.style.display = "none";
-                    tableOutput.style.display = "block";
-                    console.log("data.length", data.length);
-                    if (data.length === 0) {
-                        noResults.style.display = "block";
-                        tableOutput.style.display = "none";
-                    }
-                    else {
-                        noResults.style.display = "none";
-                        data.forEach((item) => {
-                            tbody.innerHTML += `
-                                <tr>
-                                    <td>${item.amount}</td>
-                                    <td>${item.source}</td>
-                                    <td>${item.description}</td>
-                                    <td>${item.date}</td>
-                                    <td><a href="edit-budget/${item.id}"><button class="edit">Edit</button></a><a onclick="checker()" href="budget-delete/${item.id}"><img src="{% static 'img/delete.png' %}" width="30" height="30"/></a></td>
-                                </tr>`;
-    
-                        });
-                    }
-                });
-        }
-        else {
-            noResults.style.display = "none";
-            tableOutput.style.display = "none";
-            appTable.style.display = "block";
-            paginationContainer.style.display = "block";
-        }
-    });
-
+<script type="text/javascript">
     function checker() {
         var result = confirm("Are you sure you want to delete?");
         if(result==false) {
             event.preventDefault();
         }
     }
-
-</script-->
+</script>
 
 {% endblock content %}

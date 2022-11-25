@@ -32,29 +32,32 @@
                     <tr>
                         <td>{{forloop.counter}}</td>
                         <td>{{key}}</td>
+                        {% if value <= budgetTable|get_item:key %}
                         <td>{{value}}/{{budgetTable|get_item:key}}</td>
+                        {% else %}
+                        <td><span style="background-color:red; color:white;">{{value}}/{{budgetTable|get_item:key}}</span></td>
+                        {% endif %}
                     </tr>
                 </tbody>
                 {% endfor %}
             </table>
         </div>
         <div class="col-md-6">
-            <div id="form-body">
+            <div class="form-body">
                 <div id="container">
-                    <div class="chartBox form-wrap mt-2">
-                        <form method="post" action="{% url 'bstats' %}">
-                            {% csrf_token %}
-                            <div class="form-group">
-                                <label for="Category">Category</label>
-                                <select style="height:17%;" name="cateory" onchange="this.form.submit()">
-                                    <option>Food</option>
-                                    <option>Family</option>
-                                </select>
-                            </div>
-                        </form>
-                        <div>
-                            <canvas id="bmyChart"></canvas>
+                    <div class="form-wrap mt-2 my-1">
+                        {% csrf_token %}
+                        <div class="form-group-sm w-100">
+                            <h3 class="mx-auto">Category wise summary</h3><br>
+                            <label for="Category">Category</label>
+                            <select name="category" id="categoryName">
+                                {% for key,value in categoryTable.items %} 
+                                <option value="{{value}},{{budgetTable|get_item:key}},{{remainingAmt|get_item:key}},{{key}}">{{key}}</option>
+                                {% endfor %}
+                            </select>
                         </div>
+                        <br>
+                        <canvas id="bmyChart"></canvas>
                     </div>
                 </div>
             </div>
@@ -62,46 +65,62 @@
     </div>
 </div>
 
-
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    const renderChart = (data, labels) => {
-        const ctx = document.getElementById('bmyChart').getContext('2d');
-        const bmyChart = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Last 6 months budget',
-                    data: data,
-                    backgroundColor: [
-                        'rgba(255, 99, 132)',
-                        'rgba(54, 162, 235)',
-                        'rgba(255, 206, 86)',
-                        'rgba(75, 192, 192)',
-                        'rgba(153, 102, 255)',
-                        'rgba(255, 159, 64)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 159, 64, 1)'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
+    const categoryName = document.getElementById('categoryName');
+    const data = categoryName.value.split(',');
+    const ctx = document.getElementById('bmyChart').getContext('2d');
+    const bmyChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Budget amount','Spend amount','Balance'],
+            datasets: [{
+                label: '',
+                data: data,
+                backgroundColor: [
+                    'rgba(255, 99, 132)',
+                    'rgba(54, 162, 235)',
+                    'rgba(255, 206, 86)',
+                    'rgba(75, 192, 192)',
+                    'rgba(153, 102, 255)',
+                    'rgba(255, 159, 64)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 1,
+                barThickness: 40
+
+            }]
+        },
+        options: {
+            plugins: {
                 title: {
                     display: true,
-                    text: "Food budget Summary",
+                    text: data[3]+" Category Summary"
+                },
+                legend: {
+                    display: false
                 }
             }
-        });
+        }
+    });
+
+    categoryName.addEventListener('change',categoryAmt)
+    function categoryAmt() {
+        console.log(categoryName.value.split(','));
+        categoryName.value.split(',');
+        bmyChart.data.datasets[0].data=categoryName.value.split(',');
+        bmyChart.options.plugins.title.text = bmyChart.data.datasets[0].data[3]+" Category Summary"
+        console.log(bmyChart.options.plugins.title.text)
+        bmyChart.update();
     }
-    
-    const getChartData = () => {
+    /*const getChartData = () => {
         fetch('http://127.0.0.1:8000/budget/budget_source_summary')
             .then((res) => res.json())
             .then((results) => {
@@ -112,7 +131,7 @@
             });
     };
     
-    document.onload = getChartData();
+    document.onload = getChartData();*/
 
 </script>
 

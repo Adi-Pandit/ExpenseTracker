@@ -28,12 +28,12 @@
                     {% for category in categories %}
                         {% if not forloop.counter|divisibleby:2 %}
                         <div class="form-group col-md-6">
-                            <label for="">{{category}}</label>
+                            <label for="">{{category.name}}</label>
                             <input style="height:3%;" step=any type="number" name="category"/>
                         </div>
                         {% else %}
                         <div class="form-group col-md-6">
-                            <label for="">{{category}}</label>
+                            <label for="">{{category.name}}</label>
                             <input style="height:3%;" step=any type="number" name="category"/>
                         </div>
                         {% endif %}
@@ -41,12 +41,12 @@
                     {% for usercategory in usercategories %}
                         {% if not forloop.counter|divisibleby:2 %}
                         <div class="form-group col-md-6">
-                            <label for="">{{usercategory}}</label>
+                            <label for="">{{usercategory.name}}</label>
                             <input style="height:3%;" step=any type="number" name="category"/>
                         </div>
                         {% else %}
                         <div class="form-group col-md-6">
-                            <label for="">{{usercategory}}</label>
+                            <label for="">{{usercategory.name}}</label>
                             <input style="height:3%;" step=any type="number" name="category"/>
                         </div>
                         {% endif %}
