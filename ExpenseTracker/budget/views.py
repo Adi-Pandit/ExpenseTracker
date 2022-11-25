@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from .models import Budget, Budget_amount
 from django.core.paginator import Paginator
 from usercategory.models import UserCategory
-from expenses.models import Category,Expense
+from expense.models import Category,Expense
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 import json
@@ -110,14 +110,12 @@ def delete_budget(request,id):
     messages.success(request,'Budget deleted successfully')
     return redirect('budget')
 
-"""def budget_source_summary(request):
+def budget_source_summary(request):
     todays_date = datetime.date.today()
     six_months_ago = todays_date-datetime.timedelta(days=30*6)
     budgets = Budget.objects.filter(owner=request.user)
-    finalrep={}
-
-    category = request.POST[]
-    return JsonResponse({'budget_source_data': finalrep},safe=False)"""
+    finalrep={'Budget amount':1000,'Spend amount':200,'Remaining amount':800}
+    return JsonResponse({'budget_source_data': finalrep},safe=False)
 
 @login_required(login_url='/authentication/login')
 def bstats_view(request):

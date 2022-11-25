@@ -36,7 +36,6 @@ def search_expenses(request):
 
 @login_required(login_url='/authentication/login')
 def index(request):
-    categories = Category.objects.all()
     expenses = Expense.objects.filter(owner=request.user)
     paginator = Paginator(expenses, 8)
     page_list = []
@@ -316,15 +315,6 @@ def export_pdf(request):
         response.write(output.read())
     return response
 
-@login_required(login_url='/authentication/login')
-def expense_summary_today(request):
-    todays_date = datetime.date.today()
-    today = todays_date-datetime.timedelta(days=1)
-    expenses = Expense.objects.filter(owner=request.user,date__gte=today,date__lte=todays_date)
-    sumToday=expenses.aggregate(Sum('amount'))
-    context={
-        'sumToday':sumToday,
-    }
-    return render(request, 'expenses/stats.html', context)
+
 
 

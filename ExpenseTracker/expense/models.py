@@ -18,11 +18,12 @@ class Expense(models.Model):
         ordering= ["-date"]
 
 class Category(models.Model):
-    name = models.CharField(max_length=255)
+        name = models.CharField(max_length=255)
+        type = models.CharField(max_length=255)
+        owner = models.ForeignKey(to=User, on_delete=models.CASCADE)
 
-    class Meta:
-        verbose_name_plural='Categories'
+        class Meta:
+            verbose_name_plural='Categories'
 
-
-    def __str__(self):
-        return self.name
+        def __str__(self):
+            return self.name

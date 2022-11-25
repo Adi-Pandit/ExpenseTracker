@@ -27,7 +27,7 @@ class EmailThread(threading.Thread):
 
 class RegistrationView(View):
     def get(self, request):
-        return render(request, 'authentication/login.html')
+        return render(request, 'authentication/register.html')
     
     def post(self, request):
        #GET USER DATA
@@ -46,7 +46,7 @@ class RegistrationView(View):
             if not User.objects.filter(email=email).exists():
                 if len(password)<6:
                     messages.error(request, 'Password too short')
-                    return render(request, 'authentication/login.html',context)
+                    return render(request, 'authentication/register.html',context)
                 else:
                     user= User.objects.create_user(username=username,email=email)
                     user.set_password(password)
@@ -74,13 +74,13 @@ class RegistrationView(View):
                         )
                     EmailThread(email).start()
                     messages.success(request, 'Account successfully created')
-                    return render(request, 'authentication/login.html')
+                    return render(request, 'authentication/register.html')
             else:
                 messages.error(request, 'Sorry email in use, choose another email')
-                return render(request, 'authentication/login.html')
+                return render(request, 'authentication/register.html')
        else:
             messages.error(request, 'Sorry username in use, choose another ')
-            return render(request, 'authentication/login.html')
+            return render(request, 'authentication/register.html')
 
 
 class UsernameValidationView(View):

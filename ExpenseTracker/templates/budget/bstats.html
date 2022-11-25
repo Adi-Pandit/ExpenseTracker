@@ -41,18 +41,20 @@
         <div class="col-md-6">
             <div id="form-body">
                 <div id="container">
-                    <div class="form-wrap mt-2">
+                    <div class="chartBox form-wrap mt-2">
                         <form method="post" action="{% url 'bstats' %}">
                             {% csrf_token %}
                             <div class="form-group">
                                 <label for="Category">Category</label>
-                                <select style="height:15%;" name="cateory" onchange="this.form.submit()">
+                                <select style="height:17%;" name="cateory" onchange="this.form.submit()">
                                     <option>Food</option>
                                     <option>Family</option>
                                 </select>
                             </div>
                         </form>
-                        <canvas id="bmyChart"></canvas>
+                        <div>
+                            <canvas id="bmyChart"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -65,7 +67,7 @@
     const renderChart = (data, labels) => {
         const ctx = document.getElementById('bmyChart').getContext('2d');
         const bmyChart = new Chart(ctx, {
-            type: 'pie',
+            type: 'doughnut',
             data: {
                 labels: labels,
                 datasets: [{
@@ -93,7 +95,7 @@
             options: {
                 title: {
                     display: true,
-                    text: "Source wise budget",
+                    text: "Food budget Summary",
                 }
             }
         });
