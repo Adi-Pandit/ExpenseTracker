@@ -34,8 +34,8 @@
                     
                     {% for usercategory in usercategories %}
                     <tr>
-                        <td>{{usercategory.usercategory}}</td>
-                        <td><a href="{% url 'category-delete' usercategory.usercategory %}"><img src="{% static 'img/delete.png' %}" width="30" height="30"/></a></td>
+                        <td>{{usercategory.name}}</td>
+                        <td><a href="{% url 'edit-category' usercategory.id %}"><button class="edit">Edit</button></a><a onclick="checker()" href="{% url 'category-delete' usercategory.id %}"><img src="{% static 'img/delete.png' %}" width="30" height="30"/></a></td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -47,5 +47,12 @@
     </div>
 </div>
 
-
+<script>
+    function checker() {
+        var result = confirm("Are you sure you want to delete?");
+        if(result==false) {
+            event.preventDefault();
+        }
+    }
+</script>
 {% endblock content %}

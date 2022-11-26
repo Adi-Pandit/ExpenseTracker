@@ -14,6 +14,7 @@
             </nav>
         </div>
     <div>
+    {% if msg == 'set' %}
     <div>
         <h2 class="mx-2">{{monthname}} Budget Summary</h2> 
     </div>
@@ -52,7 +53,7 @@
                             <label for="Category">Category</label>
                             <select name="category" id="categoryName">
                                 {% for key,value in categoryTable.items %} 
-                                <option value="{{value}},{{budgetTable|get_item:key}},{{remainingAmt|get_item:key}},{{key}}">{{key}}</option>
+                                <option value="{{budgetTable|get_item:key}},{{value}},{{remainingAmt|get_item:key}},{{key}}">{{key}}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -63,6 +64,9 @@
             </div>
         </div>
     </div>
+    {% else %}
+        <h2>Budget is not set</h2>
+    {% endif %}
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

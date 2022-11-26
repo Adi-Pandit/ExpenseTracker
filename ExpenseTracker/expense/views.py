@@ -165,36 +165,7 @@ def expense_category_summary(request):
         for y in category_list:
             finalrep[y]=get_expense_category_amount(y)
     return JsonResponse({'expense_category_data': finalrep},safe=False)
-    """if start_date==None:
-            messages.success(request,'Expense Updated successfully')
-            redirect('stats')
-        EndDate = datetime.strptime(end_date,'%d-%m-%Y')
-        StartDate = datetime.strptime(start_date,'%d-%m-%Y')
-        expenses = Expense.objects.filter(owner=request.user,date__gte=StartDate,date__lte=EndDate)
-        finalrep={}
-        TotalExpense = Expense.objects.filter(owner=request.user)
-        sumExpense = TotalExpense.aggregate(Sum('amount'))
-        for value in sumExpense.values():
-            sumExpense=value
-
-        def get_category(expense):
-            return expense.category
-
-        def get_expense_category_amount(category):
-            global TotalAmount
-            amount = 0
-            filtered_by_category = expenses.filter(category=category)
-            for item in filtered_by_category:
-                amount += item.amount
-            return round((amount/sumExpense)*100,2)
-
-        category_list = list(set(map(get_category, expenses)))
-        for x in expenses:
-            for y in category_list:
-                finalrep[y]=get_expense_category_amount(y)
-        return JsonResponse({'expense_category_data': finalrep},safe=False)"""
-
-
+    
 @login_required(login_url='/authentication/login')
 def stats_view(request):
     todays_date = datetime.date.today()

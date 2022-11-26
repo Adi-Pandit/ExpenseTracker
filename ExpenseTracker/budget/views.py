@@ -132,11 +132,18 @@ def bstats_view(request):
     categoryTable = {}
     budgetTable = {}
     remainingAmt = {}
+    msg = 'set'
     if day in range(first,last+1):
         categoryList = list(Category.objects.all())
         for category in categoryList:
             amount = 0
-            Budget_id = Budget.objects.get(owner=request.user,month=monthName,year=year)
+            try:
+                Budget_id = Budget.objects.get(owner=request.user,month=monthName,year=year)
+            except:
+                context = {
+                    'msg' : 'unset'
+                }
+                return render(request, 'budget/bstats.html', context)
             budget_amount = Budget_amount.objects.get(category=category,budget_id=Budget_id.id)
             expenses = Expense.objects.filter(category=category)
             for expense in expenses:
@@ -151,5 +158,6 @@ def bstats_view(request):
         'monthname': monthName,
         'budgetTable': budgetTable, 
         'remainingAmt': remainingAmt,
+        'msg' : msg,
     }
     return render(request, 'budget/bstats.html', context)

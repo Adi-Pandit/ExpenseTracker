@@ -10,7 +10,7 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb shadow p-2 mb-3 bg-white rounded">
                 <li class="breadcrumb-item"><a href="{% url 'usercategory' %}"><small><b>Category</b></small></a></li>
-                <li class="breadcrumb-item active" aria-current="page"><small><b>Add Category</b></small></li>
+                <li class="breadcrumb-item active" aria-current="page"><small><b>Edit Category</b></small></li>
                 </ol>
             </nav>
         </div>
@@ -19,11 +19,11 @@
         <div id="container">
             <div class="form-wrap">
                 <h2>Add Category</h2>
-                <form action="{% url 'add-category' %}" method="post">
+                <form action="{% url 'edit-category' usercategories.id %}" method="post">
                     {% csrf_token %}
                     <div class="form-group">
                         <label for="Category">Category</label>
-                        <input type="text" name="category"/>
+                        <input type="text" name="category" value="{{usercategories.name}}"/>
                     </div>    
                     <button style="height:9%;" type="submit">Submit</button>
                 </form>
