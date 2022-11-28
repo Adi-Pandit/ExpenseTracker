@@ -1,6 +1,6 @@
 from django.shortcuts import render
 import datetime
-from expense.models import Expense
+from expense.models import Expense, Category
 from budget.models import Budget, Budget_amount
 from django.db.models import Sum
 from django.http import JsonResponse
@@ -37,6 +37,36 @@ def index(request):
     for value in sumTodayExpense.values():
         sumTodayExpense=value
 
+    '''categories = Category.objects.filter(type='global')
+    usercategories = Category.objects.filter(type='local',owner=request.user)
+    categoryList = ""
+    for category in categories:
+        categoryList += str(category)+","
+    for category in usercategories:
+        categoryList += str(category)+","'''
+    
+    today = datetime.date.today()
+    first = today.replace(day=1)
+    last_month_last_date = first - datetime.timedelta(days=1)
+    lastMonth = last_month_last_date.strftime("%B")
+    last_month_first_date = last_month_last_date.replace(day=1)
+    seclast_month_last_date = last_month_first_date - datetime.timedelta(days=1)
+    secLastMonth = seclast_month_last_date.strftime("%B")
+    seclast_month_first_date = seclast_month_last_date.replace(day=1)
+    print(last_month_first_date)
+    print(last_month_last_date)
+    print(seclast_month_first_date)
+    print(seclast_month_last_date)
+
+    categoryList = ""
+    expenseMonthList = ""
+    for expense in expenseMonth:
+        expenseMonthList += str(expense.amount)+","
+        categoryList += expense.category+","
+
+    expenseLastMonth = Expense.objects.filter(owner=request.user,date__gte=last_month_first_date,date__lte=last_month_last_date)
+
+
     context = {
         'sumMonthExpense': sumMonthExpense,
         'expenseCount': expenseToday.count,
@@ -44,7 +74,11 @@ def index(request):
         'Total_budget': Total_budget,
         'percentage': percentage,
         'rem_percentage': rem_percentage,
-        'monthName': monthName
+        'monthName': monthName,
+        'categoryList': categoryList,
+        'lastMonth': lastMonth,
+        'secLastMonth': secLastMonth,
+        'expenseMonthList': expenseMonthList
     }
     return render(request, 'overview/index.html', context)
 

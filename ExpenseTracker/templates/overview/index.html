@@ -3,6 +3,44 @@
 
 {% block content %} 
 
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+    .chartMenu {
+      width: 100vw;
+      height: 40px;
+      background: #1A1A1A;
+      color: rgba(255, 26, 104, 1);
+    }
+    .chartMenu p {
+      padding: 10px;
+      font-size: 20px;
+    }
+    .chartCard {
+      width: 100vw;
+      height: calc(100vh - 40px);
+      background: rgba(255, 26, 104, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .chartBox1 {
+      width: 500px;
+      heigth: 600px;
+      padding: 20px;
+      border-radius: 20px;
+      box-shadow: 0 0 20px 9px rgba(0, 0, 0, 0.3);
+      background: white;
+    }
+  </style>
+</head>
+<body>
 <div class="container mt-3">
   <div class="row">
       <div class="mx-0">
@@ -54,11 +92,25 @@
       </div>
       </div>
     </div>
-    <div class="chartBox mt-3"> 
-      <canvas style="display:block; width:360px; height:270px;" id="budgetExpenseChart"></canvas>
+    <div class="row">
+      <div class="col-md-5">
+        <div class="chartBox mt-3"> 
+          <canvas class="mx-auto"style="display:block; width:360px; height:250px;" id="budgetExpenseChart"></canvas>
+        </div>
+      </div>
+      <div class="col-md-7"> 
+        <div class="chartBox1 mt-3">
+          <canvas id="myChart"></canvas>
+          <input id="selectallcheckbox" type="checkbox" onclick="updateAll(this)" checked=""><small>Select All</small>
+          <input class="datacheckbox" type="checkbox" onclick="updateChart(this)" checked="" value="0"><small>{{secLastMonth}}</small>
+          <input class="datacheckbox" type="checkbox" onclick="updateChart(this)" checked="" value="1"><small>{{lastMonth}}</small>
+          <input class="datacheckbox" type="checkbox" onclick="updateChart(this)" checked="" value="2"><small>{{monthName}}</small>
+        </div>
+      </div>
     </div>
 </div>
 
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
   const renderChart = (data, labels) => {
     const ctx = document.getElementById('budgetExpenseChart').getContext('2d');
@@ -86,7 +138,6 @@
                     'rgba(255, 159, 64, 1)'
                 ],
                 borderWidth: 1,
-                cutout: '90%'
             }]
         },
         options: {
@@ -96,20 +147,117 @@
             }
         }
     });
-}
+  }
 
-const getChartData = () => {
-    fetch('http://127.0.0.1:8000/overview/budget_expense_summary')
-        .then((res) => res.json())
-        .then((results) => {
-            console.log("results", results);
-            const budget_expense_data = results.expense_budget_data;
-            const [labels, data] = [Object.keys(budget_expense_data), Object.values(budget_expense_data),];
-            renderChart(data, labels);
-        });
-};
+  const getChartData = () => {
+      fetch('http://127.0.0.1:8000/overview/budget_expense_summary')
+          .then((res) => res.json())
+          .then((results) => {
+              console.log("results", results);
+              const budget_expense_data = results.expense_budget_data;
+              const [labels, data] = [Object.keys(budget_expense_data), Object.values(budget_expense_data),];
+              renderChart(data, labels);
+          });
+  };
+  document.onload = getChartData();
 
-document.onload = getChartData();
+
+  //Chart2
+  const data = {
+    labels: "{{categoryList}}".split(","),
+    datasets: [{
+      label: 'September',
+      data: [18, 12, 6, 9, 12, 3, 9, 6, 9, 10],
+      backgroundColor: 'rgba(54, 162, 235, 0.2)',
+      borderColor: 'rgba(54, 162, 235, 1)',
+      borderWidth: 1
+    },{
+      label: 'October',
+      data: [10, 2, 6, 9, 8, 4, 7, 15, 4, 8],
+      backgroundColor: 'rgba(255, 26, 104, 0.2)',
+      borderColor: 'rgba(255, 26, 104, 1)',
+      borderWidth: 1
+    },{
+      label: 'November',
+      data: "{{expenseMonthList}}".split(","),
+      backgroundColor: 'rgba(75, 192, 192, 0.2)',
+      borderColor: 'rgba(75, 192, 192, 1)',
+      borderWidth: 1
+    }]
+  };
+
+  // config 
+  const config = {
+    type: 'bar',
+    data,
+    options: {
+      plugins: {
+        legend: {
+          display: false
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  };
+
+  // render init block
+  const myChart = new Chart(
+    document.getElementById('myChart'),
+    config
+  );
+
+  function updateAll(selectall) {
+    let selectallcheckbox = document.getElementById('selectallcheckbox');
+    let checkboxes = document.querySelectorAll('.datacheckbox');
+    console.log(checkboxes);
+    if(selectall.checked === false) {
+      for (let i=0; i < checkboxes.length; i++) {
+        checkboxes[i].checked = false;
+        myChart.hide(i);
+      }
+    };
+    if(selectall.checked === true) {
+      for (let i=0; i < checkboxes.length; i++) {
+        checkboxes[i].checked = true;
+        myChart.show(i);
+      }
+    };
+  }
+
+  function checkboxSelectAllChecker() {
+    let selectallcheckbox = document.getElementById('selectallcheckbox');
+    let checkboxes = document.querySelectorAll('.datacheckbox');
+    let x = 0;
+    for (let i=0; i<= checkboxes.length-1; i++) {
+      if (checkboxes[i].checked === true) {
+        x++;
+      }
+    };
+
+    if(x == checkboxes.length) {
+      selectallcheckbox.checked = true;
+    } else {
+      selectallcheckbox.checked = false;
+    }
+  }
+
+  function updateChart(dataset) {
+    console.log(dataset.value);
+    const isDataShown = myChart.isDatasetVisible(dataset.value);
+    console.log(isDataShown);
+    if(isDataShown === false) {
+      myChart.show(dataset.value);
+    }
+    if(isDataShown === true) {
+      myChart.hide(dataset.value);
+    }
+    checkboxSelectAllChecker();
+  };
 
 </script>
+</body>
 {% endblock content %}
