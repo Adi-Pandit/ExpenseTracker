@@ -6,6 +6,7 @@ from django.db.models import Sum
 from django.http import JsonResponse
 from datetime import date
 import calendar
+from collections import OrderedDict
 
 # Create your views here.
 def index(request):
@@ -37,14 +38,24 @@ def index(request):
     for value in sumTodayExpense.values():
         sumTodayExpense=value
 
-    '''categories = Category.objects.filter(type='global')
+    categories = Category.objects.filter(type='global')
     usercategories = Category.objects.filter(type='local',owner=request.user)
-    categoryList = ""
+    categoryList = []
+    categoryDict = {}
     for category in categories:
-        categoryList += str(category)+","
+        categoryList.append(category.name)
+        categoryDict[category.name] = 0
     for category in usercategories:
-        categoryList += str(category)+","'''
-    
+        categoryList.append(category.name)
+        categoryDict[category.name] = 0
+    categoryList.sort()
+    categoryString = ""
+    for category in categoryList:
+        categoryString += category+"," 
+
+    CategoryDict = dict(sorted(categoryDict.items()))
+    print(CategoryDict)
+
     today = datetime.date.today()
     first = today.replace(day=1)
     last_month_last_date = first - datetime.timedelta(days=1)
@@ -53,19 +64,33 @@ def index(request):
     seclast_month_last_date = last_month_first_date - datetime.timedelta(days=1)
     secLastMonth = seclast_month_last_date.strftime("%B")
     seclast_month_first_date = seclast_month_last_date.replace(day=1)
-    print(last_month_first_date)
-    print(last_month_last_date)
-    print(seclast_month_first_date)
-    print(seclast_month_last_date)
-
-    categoryList = ""
-    expenseMonthList = ""
-    for expense in expenseMonth:
-        expenseMonthList += str(expense.amount)+","
-        categoryList += expense.category+","
-
+    
     expenseLastMonth = Expense.objects.filter(owner=request.user,date__gte=last_month_first_date,date__lte=last_month_last_date)
+    expenseSecLastMonth = Expense.objects.filter(owner=request.user,date__gte=seclast_month_first_date,date__lte=seclast_month_last_date)
 
+    CurrentCategoryDict = CategoryDict.copy()
+    for expense in expenseMonth:
+        CurrentCategoryDict[expense.category] += expense.amount 
+    CurrentCategoryList = list(CurrentCategoryDict.values())
+    CurrentCategoryString = ""
+    for amount in CurrentCategoryList:
+        CurrentCategoryString += str(amount)+"," 
+
+    LastCategoryDict = CategoryDict.copy()
+    for expense in expenseLastMonth:
+        LastCategoryDict[expense.category] += expense.amount
+    LastCategoryList = list(LastCategoryDict.values())
+    LastCategoryString = ""
+    for amount in LastCategoryList:
+        LastCategoryString += str(amount)+","
+
+    SecLastCategoryDict = CategoryDict.copy()
+    for expense in expenseSecLastMonth:
+        SecLastCategoryDict[expense.category] += expense.amount
+    SecLastCategoryList = list(SecLastCategoryDict.values())
+    SecLastCategoryString = ""
+    for amount in SecLastCategoryList:
+        SecLastCategoryString += str(amount)+","
 
     context = {
         'sumMonthExpense': sumMonthExpense,
@@ -75,15 +100,23 @@ def index(request):
         'percentage': percentage,
         'rem_percentage': rem_percentage,
         'monthName': monthName,
-        'categoryList': categoryList,
+        'categoryString': categoryString,
         'lastMonth': lastMonth,
         'secLastMonth': secLastMonth,
-        'expenseMonthList': expenseMonthList
+        'CurrentCategoryString': CurrentCategoryString,
+        'LastCategoryString': LastCategoryString,
+        'SecLastCategoryString': SecLastCategoryString
     }
     return render(request, 'overview/index.html', context)
 
 def budget_expense_summary(request):
-    TotalExpense = Expense.objects.filter(owner=request.user)
+    currentDate = date.today()
+    month = int(currentDate.strftime("%m"))
+    year = int(currentDate.strftime("%Y"))
+    first, last = calendar.monthrange(year, month)
+    start_date = datetime.datetime(year, month, first)
+    last_date = datetime.datetime(year, month, last)
+    TotalExpense = Expense.objects.filter(owner=request.user,date__gte=start_date,date__lte=last_date)
     sumExpense = TotalExpense.aggregate(Sum('amount'))
     for value in sumExpense.values():
         sumExpense=value

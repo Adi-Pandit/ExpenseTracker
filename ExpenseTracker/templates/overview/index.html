@@ -7,38 +7,6 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-    }
-    .chartMenu {
-      width: 100vw;
-      height: 40px;
-      background: #1A1A1A;
-      color: rgba(255, 26, 104, 1);
-    }
-    .chartMenu p {
-      padding: 10px;
-      font-size: 20px;
-    }
-    .chartCard {
-      width: 100vw;
-      height: calc(100vh - 40px);
-      background: rgba(255, 26, 104, 0.2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .chartBox1 {
-      width: 500px;
-      heigth: 600px;
-      padding: 20px;
-      border-radius: 20px;
-      box-shadow: 0 0 20px 9px rgba(0, 0, 0, 0.3);
-      background: white;
-    }
-  </style>
 </head>
 <body>
 <div class="container mt-3">
@@ -119,7 +87,6 @@
         data: {
             labels: labels,
             datasets: [{
-                label: 'Total budget-expense',
                 data: data,
                 backgroundColor: [
                     'rgba(255, 99, 132)',
@@ -141,10 +108,12 @@
             }]
         },
         options: {
+          plugins: {
             title: {
                 display: true,
                 text: "{{monthName}} budget-expense summary",
             }
+          }
         }
     });
   }
@@ -164,22 +133,22 @@
 
   //Chart2
   const data = {
-    labels: "{{categoryList}}".split(","),
+    labels: "{{categoryString}}".split(","),
     datasets: [{
       label: 'September',
-      data: [18, 12, 6, 9, 12, 3, 9, 6, 9, 10],
+      data: "{{SecLastCategoryString}}".split(","),
       backgroundColor: 'rgba(54, 162, 235, 0.2)',
       borderColor: 'rgba(54, 162, 235, 1)',
       borderWidth: 1
     },{
       label: 'October',
-      data: [10, 2, 6, 9, 8, 4, 7, 15, 4, 8],
+      data: "{{LastCategoryString}}".split(","),
       backgroundColor: 'rgba(255, 26, 104, 0.2)',
       borderColor: 'rgba(255, 26, 104, 1)',
       borderWidth: 1
     },{
       label: 'November',
-      data: "{{expenseMonthList}}".split(","),
+      data: "{{CurrentCategoryString}}".split(","),
       backgroundColor: 'rgba(75, 192, 192, 0.2)',
       borderColor: 'rgba(75, 192, 192, 1)',
       borderWidth: 1
@@ -194,6 +163,10 @@
       plugins: {
         legend: {
           display: false
+        },
+        title: {
+          display: true,
+          text: "Last 3 months expense summary",
         }
       },
       scales: {
