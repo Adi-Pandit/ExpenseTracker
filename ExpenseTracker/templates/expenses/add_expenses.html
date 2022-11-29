@@ -22,7 +22,7 @@
                 {% csrf_token %}
                     <div class="form-group">
                         <label for="Amount">Amount</label>
-                        <input type="text" name="amount" value="{{values.amount}}"/>
+                        <input type="number" name="amount" step=any value="{{values.amount}}"/>
                     </div>    
                     <div class="form-group">
                         <label for="Description">Description</label>

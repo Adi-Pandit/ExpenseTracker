@@ -22,15 +22,6 @@ def index(request):
     for value in sumMonthExpense.values():
         sumMonthExpense=value
 
-    budget = Budget.objects.get(owner=request.user, month=monthName, year=year)
-    budget_amount = Budget_amount.objects.filter(budget_id=budget.id)
-    Total_budget = 0
-    for amt in budget_amount:
-        Total_budget += amt.amount
-    
-    percentage = (sumMonthExpense/Total_budget)*100
-    rem_percentage = 100-percentage
-
     todays_date = datetime.date.today()
     today = todays_date-datetime.timedelta(days=0)
     expenseToday = Expense.objects.filter(owner=request.user,date__gte=today,date__lte=todays_date)
@@ -92,6 +83,32 @@ def index(request):
     for amount in SecLastCategoryList:
         SecLastCategoryString += str(amount)+","
 
+
+    try:
+        budget = Budget.objects.get(owner=request.user, month=monthName, year=year)
+    except:
+        context = {
+            'sumMonthExpense': sumMonthExpense,
+            'expenseCount': expenseToday.count,
+            'sumTodayExpense': sumTodayExpense,
+            'msg' : 'unset',
+            'monthName': monthName,
+            'categoryString': categoryString,
+            'lastMonth': lastMonth,
+            'secLastMonth': secLastMonth,
+            'CurrentCategoryString': CurrentCategoryString,
+            'LastCategoryString': LastCategoryString,
+            'SecLastCategoryString': SecLastCategoryString
+        }
+        return render(request, 'overview/index.html', context)
+    budget_amount = Budget_amount.objects.filter(budget_id=budget.id)
+    Total_budget = 0
+    for amt in budget_amount:
+        Total_budget += amt.amount
+    
+    percentage = (sumMonthExpense/Total_budget)*100
+    rem_percentage = 100-percentage
+    
     context = {
         'sumMonthExpense': sumMonthExpense,
         'expenseCount': expenseToday.count,

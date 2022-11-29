@@ -13,9 +13,11 @@
                 </ol>
             </nav>
         </div>
+        {% if budgetset == 'notset' %}
         <div class="col-md-1">
             <a href="{% url 'add-budget' %}"><button class="add">Add</button></a>
         </div>
+        {% endif %}
         {% if budgetset == 'set' %}
         <div class="col-md-1">
             <a href="{% url 'budget-delete' budgets.id %}"><button onclick="checker()" class="add">Delete</button></a>
@@ -23,7 +25,7 @@
     </div>
     <div class="container">
         <div class="app-table">
-            <br><h2>{{month}} Budgets</h2>
+            <h2>{{month}} Budgets</h2>
             <table class="content-table">
                 <thead>
                     <tr>
@@ -48,6 +50,7 @@
             </table>
         </div>
         {% else %}
+            <h6 class="mx-3" style="color:red">* You can set only one budget per month</h6>
             <h2 class="mx-3">Budget is not set</h2>
         {% endif %}
     </div>

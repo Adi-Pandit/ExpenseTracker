@@ -129,6 +129,8 @@ def bstats_view(request):
     year = int(currentDate.strftime("%Y"))
     day = int(currentDate.strftime("%d"))
     first, last = calendar.monthrange(year, month)
+    start_date = datetime.datetime(year, month, first)
+    last_date = datetime.datetime(year, month, last)
     categoryTable = {}
     budgetTable = {}
     remainingAmt = {}
@@ -145,7 +147,7 @@ def bstats_view(request):
                 }
                 return render(request, 'budget/bstats.html', context)
             budget_amount = Budget_amount.objects.get(category=category,budget_id=Budget_id.id)
-            expenses = Expense.objects.filter(category=category)
+            expenses = Expense.objects.filter(owner=request.user,category=category,date__gte=start_date,date__lte=last_date)
             for expense in expenses:
                 amount += expense.amount
             categoryTable[category] = amount
