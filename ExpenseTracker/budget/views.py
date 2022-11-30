@@ -129,18 +129,23 @@ def bstats_view(request):
     year = int(currentDate.strftime("%Y"))
     day = int(currentDate.strftime("%d"))
     first, last = calendar.monthrange(year, month)
-    start_date = datetime.datetime(year, month, first)
+    start_date = datetime.datetime(year, month, 1)
+    print(start_date)
     last_date = datetime.datetime(year, month, last)
+    print(last_date)
     categoryTable = {}
     budgetTable = {}
-    remainingAmt = {}
+    remainingAmt = {} 
+    categoryList = []
     msg = 'set'
-    if day in range(first,last+1):
+    if day in range(1,last+1):
         categoryList = list(Category.objects.all())
         for category in categoryList:
             amount = 0
-            try:
+            try :
                 Budget_id = Budget.objects.get(owner=request.user,month=monthName,year=year)
+                print(Budget_id)
+                
             except:
                 context = {
                     'msg' : 'unset'
@@ -152,8 +157,7 @@ def bstats_view(request):
                 amount += expense.amount
             categoryTable[category] = amount
             budgetTable[category] = budget_amount.amount
-            remainingAmt[category] = budget_amount.amount-amount
-
+            remainingAmt[category] = budget_amount.amount-amount       
     context = {
         'categoryList': categoryList,
         'categoryTable': categoryTable,
@@ -163,3 +167,20 @@ def bstats_view(request):
         'msg' : msg,
     }
     return render(request, 'budget/bstats.html', context)
+
+def budget_history(request):
+    budgets = Budget.objects.filter(owner=request.user)
+    budget_months = []
+    budget_years = []
+    for budget in budgets:
+        budget_months.append(budget.month)
+        budget_years.append(budget.year)
+    context = {
+        'budget_months': budget_months,
+        'budget_years': budget_years
+    }
+    if request.method == 'GET':
+        return render(request, 'budget/budget_history.html',context)
+
+    if request.method == 'POST':
+        return render(request, 'budget/budget_history.html')

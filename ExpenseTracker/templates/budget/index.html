@@ -22,7 +22,12 @@
         <div class="col-md-1">
             <a href="{% url 'budget-delete' budgets.id %}"><button onclick="checker()" class="add">Delete</button></a>
         </div>
+        {% endif %}
+        <div class="col-md-1">
+            <a href="{% url 'budget-history' %}"><button class="add">History</button></a
+        </div>
     </div>
+    {% if budgetset == 'set' %}
     <div class="container">
         <div class="app-table">
             <h2>{{month}} Budgets</h2>

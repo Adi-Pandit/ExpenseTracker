@@ -28,7 +28,7 @@
           {% if msg != 'unset' %}
           <div><b>Looks great {{request.user.username}}, You have used {{percentage|floatformat:2}}% of expected monthly budget. You have {{rem_percentage|floatformat:2}}% to go<br><a style="color:white;" href="{% url 'budget' %}">Adjust Budget</a></b></div>
           {% else %}
-          <div><b>Budget Not set</b></div>
+          <div><b>{{monthName}} Budget Not set</b></div>
           {% endif %}
         </div>
       </div>
@@ -40,7 +40,7 @@
           {% if msg != 'unset' %}
           <div><b>Looks bad {{request.user.username}}, You have used {{percentage|floatformat:2}}% of expected monthly budget. You have 0% to go<br><a style="color:white;" href="{% url 'budget' %}">Adjust Budget</a></b></div>
           {% else %}
-          <div><b>Budget Not set</b></div>
+          <div><b>{{monthName}} Budget Not set</b></div>
           {% endif %}
         </div>
       </div>
@@ -52,7 +52,11 @@
             <h5 class="card-title">Monthly status</h5>
             <hr>
             <div><b>Total Expense  :  {{sumMonthExpense}}</b></div><br>
+            {% if msg != 'unset' %}
             <div><b>Total Budget  :  {{Total_budget}}</b></div>
+            {% else %}
+            <div><b>Total Budget  :  None</b></div>
+            {% endif %}
           </div>
         </div> 
         <div class="card text-white bg-dark mx-2" style="width:260px; height:160px; border-radius:10px; box-shadow: 0 0 20px 9px grey; border:none">
@@ -72,7 +76,7 @@
           {% if msg != 'unset' %} 
           <canvas class="mx-auto"style="display:block; width:360px; height:250px;" id="budgetExpenseChart"></canvas>
           {% else %}
-          <div><b>Budget Not set</b></div>
+          <div><b>{{monthName}} Budget Not set</b></div>
           {% endif %}
         </div>
       </div>

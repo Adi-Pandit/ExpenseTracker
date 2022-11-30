@@ -140,7 +140,7 @@ def expense_category_summary(request):
     month = int(currentDate.strftime("%m"))
     year = int(currentDate.strftime("%Y"))
     first, last = calendar.monthrange(year, month)
-    start_date = datetime.datetime(year,month,first)
+    start_date = datetime.datetime(year,month,1)
     end_date = datetime.datetime(year,month,last)
     expenses = Expense.objects.filter(owner=request.user,date__gte=start_date,date__lte=end_date)
     finalrep={}
@@ -198,9 +198,19 @@ def stats_view(request):
     month = int(currentDate.strftime("%m"))
     year = int(currentDate.strftime("%Y"))
     first, last = calendar.monthrange(year, month)
-    start_date = datetime.datetime(year,month,first)
+    start_date = datetime.datetime(year,month,1)
     end_date = datetime.datetime(year,month,last)
     expenses = Expense.objects.filter(owner=request.user,date__gte=start_date,date__lte=end_date)
+    if expenses.count() == 0:
+        context = {
+            'msg': 'unset',
+            'sumToday':sumToday,
+            'sumWeek':sumWeek,
+            'sumMonth':sumMonth, 
+            'sumYear':sumYear,
+            'monthName':monthName
+        }
+        return render(request, 'expenses/stats.html', context)
     finalrep = {}
     def get_category(expense):
         return expense.category
