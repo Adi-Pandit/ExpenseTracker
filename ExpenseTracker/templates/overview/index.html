@@ -7,6 +7,23 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    .chartBox1 {
+      width: 600px;
+      padding: 20px;
+      border-radius: 20px;
+      box-shadow: 0 0 20px 9px rgba(0, 0, 0, 0.3);
+      background: white;
+    }
+    .ContainerGraph {
+      width: 560px;
+      max-width: 560px;
+      overflow-x: scroll;
+    }
+    .ContainerBody {
+      height: 200px;
+    }
+  </style>
 </head>
 <body>
 <div class="container mt-3">
@@ -78,11 +95,16 @@
       </div>
       <div class="col-md-7"> 
         <div class="chartBox1 mt-3">
-          <canvas id="myChart"></canvas>
-          <input id="selectallcheckbox" type="checkbox" onclick="updateAll(this)" checked=""><small>Select All</small>
-          <input class="datacheckbox" type="checkbox" onclick="updateChart(this)" checked="" value="0"><small>{{secLastMonth}}</small>
-          <input class="datacheckbox" type="checkbox" onclick="updateChart(this)" checked="" value="1"><small>{{lastMonth}}</small>
-          <input class="datacheckbox" type="checkbox" onclick="updateChart(this)" checked="" value="2"><small>{{monthName}}</small>
+          <h6 style="text-align:center;"><small><b>Last 3 months expense summary</b></small></h6>
+          <div class="ContainerGraph">
+            <div class="ContainerBody">
+              <canvas id="myChart"></canvas>
+            </div>
+          </div>
+          <input class="mx-auto" id="selectallcheckbox" type="checkbox" onclick="updateAll(this)" checked=""><small>Select All</small>
+          <input class="datacheckbox mx-auto" type="checkbox" onclick="updateChart(this)" checked="" value="0"><small>{{secLastMonth}}</small>
+          <input class="datacheckbox mx-auto" type="checkbox" onclick="updateChart(this)" checked="" value="1"><small>{{lastMonth}}</small>
+          <input class="datacheckbox mx-auto" type="checkbox" onclick="updateChart(this)" checked="" value="2"><small>{{monthName}}</small>
         </div>
       </div>
     </div>
@@ -170,13 +192,10 @@
     type: 'bar',
     data,
     options: {
+      maintainAspectRatio: false,
       plugins: {
         legend: {
           display: false
-        },
-        title: {
-          display: true,
-          text: "Last 3 months expense summary",
         }
       },
       scales: {
@@ -192,6 +211,13 @@
     document.getElementById('myChart'),
     config
   );
+
+  const ContainerBody = document.querySelector('.ContainerBody')
+  const totalLabels = myChart.data.labels.length;
+  if(totalLabels > 6) {
+    const newWidth = 700 + ((totalLabels-6)*30);
+    ContainerBody.style.width = `${newWidth}px`;
+  }
 
   function updateAll(selectall) {
     let selectallcheckbox = document.getElementById('selectallcheckbox');

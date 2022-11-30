@@ -29,7 +29,7 @@ def index(request):
     for value in sumTodayExpense.values():
         sumTodayExpense=value
 
-    categories = Category.objects.filter(type='global')
+    '''categories = Category.objects.filter(type='global')
     usercategories = Category.objects.filter(type='local',owner=request.user)
     categoryList = []
     categoryDict = {}
@@ -45,7 +45,7 @@ def index(request):
         categoryString += category+"," 
 
     CategoryDict = dict(sorted(categoryDict.items()))
-    print(CategoryDict)
+    print(CategoryDict)'''
 
     today = datetime.date.today()
     first = today.replace(day=1)
@@ -56,9 +56,27 @@ def index(request):
     secLastMonth = seclast_month_last_date.strftime("%B")
     seclast_month_first_date = seclast_month_last_date.replace(day=1)
     
+    expenseThreeMonths = Expense.objects.filter(owner=request.user,date__gte= seclast_month_first_date,date__lte=last_date)
+    categoryList = []
+    categoryDict = {}
+    for expense in expenseThreeMonths:
+        if expense.category in categoryDict:
+            pass
+        else:
+            categoryList.append(expense.category)
+            categoryDict[expense.category] = 0
+    categoryList.sort()
+    categoryString = ""
+    for category in categoryList:
+        categoryString += category+"," 
+
+    CategoryDict = dict(sorted(categoryDict.items()))
+    print(CategoryDict)
+
     expenseLastMonth = Expense.objects.filter(owner=request.user,date__gte=last_month_first_date,date__lte=last_month_last_date)
     expenseSecLastMonth = Expense.objects.filter(owner=request.user,date__gte=seclast_month_first_date,date__lte=seclast_month_last_date)
 
+    #Current Month
     CurrentCategoryDict = CategoryDict.copy()
     for expense in expenseMonth:
         CurrentCategoryDict[expense.category] += expense.amount 
@@ -67,6 +85,7 @@ def index(request):
     for amount in CurrentCategoryList:
         CurrentCategoryString += str(amount)+"," 
 
+    #Last Month
     LastCategoryDict = CategoryDict.copy()
     for expense in expenseLastMonth:
         LastCategoryDict[expense.category] += expense.amount
@@ -75,6 +94,7 @@ def index(request):
     for amount in LastCategoryList:
         LastCategoryString += str(amount)+","
 
+    #Second Last Month
     SecLastCategoryDict = CategoryDict.copy()
     for expense in expenseSecLastMonth:
         SecLastCategoryDict[expense.category] += expense.amount

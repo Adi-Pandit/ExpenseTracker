@@ -289,11 +289,3 @@
     border: #ddd 1px solid;
     border-radius: 5px;
 }
-
-.chartBox1 {
-    width: 500px;
-    padding: 20px;
-    border-radius: 20px;
-    box-shadow: 0 0 20px 9px rgba(0, 0, 0, 0.3);
-    background: white;
-}
