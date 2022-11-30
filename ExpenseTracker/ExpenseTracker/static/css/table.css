@@ -289,3 +289,21 @@
     border: #ddd 1px solid;
     border-radius: 5px;
 }
+
+.chartBox1 {
+    width: 600px;
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0 0 20px 9px rgba(0, 0, 0, 0.3);
+    background: white;
+}
+
+.ContainerGraph {
+    width: 560px;
+    max-width: 560px;
+    overflow-x: scroll;
+}
+
+.ContainerBody {
+    height: 200px;
+}
