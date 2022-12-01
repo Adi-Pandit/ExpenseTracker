@@ -124,7 +124,10 @@ def index(request):
     Total_budget = 0
     for amt in budget_amount:
         Total_budget += amt.amount
-    
+    print(sumMonthExpense)
+    print(Total_budget)
+    if sumMonthExpense == None:
+        sumMonthExpense = 0
     percentage = (sumMonthExpense/Total_budget)*100
     rem_percentage = 100-percentage
     
@@ -150,13 +153,13 @@ def budget_expense_summary(request):
     month = int(currentDate.strftime("%m"))
     year = int(currentDate.strftime("%Y"))
     first, last = calendar.monthrange(year, month)
-    start_date = datetime.datetime(year, month, first)
+    start_date = datetime.datetime(year, month, 1)
     last_date = datetime.datetime(year, month, last)
     TotalExpense = Expense.objects.filter(owner=request.user,date__gte=start_date,date__lte=last_date)
     sumExpense = TotalExpense.aggregate(Sum('amount'))
     for value in sumExpense.values():
         sumExpense=value
-
+    print(sumExpense)
     currentDate = date.today()
     monthName = currentDate.strftime("%B")
     year = int(currentDate.strftime("%Y"))

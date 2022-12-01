@@ -15,6 +15,7 @@
             </nav>
         </div>
     </div>
+    <div style="text-align:center; color:red;">* If you don't want to consider a category for budget amount, please put 0</div>  
     <div class="form-body" style="">
         <div id="container">
             <div class="form-wrap">
@@ -29,12 +30,12 @@
                         {% if not forloop.counter|divisibleby:2 %}
                         <div class="form-group col-md-6">
                             <label for="">{{category.name}}</label>
-                            <input style="height:3%;" step=any type="number" name="category"/>
+                            <input style="height:3%;" step=any type="number" min="0" name="category"/>
                         </div>
                         {% else %}
                         <div class="form-group col-md-6">
                             <label for="">{{category.name}}</label>
-                            <input style="height:3%;" step=any type="number" name="category"/>
+                            <input style="height:3%;" step=any type="number" min="0" name="category"/>
                         </div>
                         {% endif %}
                     {% endfor %}
@@ -42,12 +43,12 @@
                         {% if not forloop.counter|divisibleby:2 %}
                         <div class="form-group col-md-6">
                             <label for="">{{usercategory.name}}</label>
-                            <input style="height:3%;" step=any type="number" name="category"/>
+                            <input style="height:3%;" step=any type="number" min="0" name="category"/>
                         </div>
                         {% else %}
                         <div class="form-group col-md-6">
                             <label for="">{{usercategory.name}}</label>
-                            <input style="height:3%;" step=any type="number" name="category"/>
+                            <input style="height:3%;" step=any type="number" min="0" name="category"/>
                         </div>
                         {% endif %}
                     {% endfor %}

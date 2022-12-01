@@ -72,6 +72,7 @@ def add_budget(request):
 
     if request.method == 'POST':
         amountCategory = request.POST.getlist('category')
+        print(amountCategory)
         categoryList = list(categories)
         for category in usercategories:
             categoryList.append(category)
@@ -134,7 +135,7 @@ def bstats_view(request):
     last_date = datetime.datetime(year, month, last)
     print(last_date)
     categoryTable = {}
-    budgetTable = {}
+    BudgetTable = {}
     remainingAmt = {} 
     categoryList = []
     msg = 'set'
@@ -156,8 +157,22 @@ def bstats_view(request):
             for expense in expenses:
                 amount += expense.amount
             categoryTable[category] = amount
-            budgetTable[category] = budget_amount.amount
-            remainingAmt[category] = budget_amount.amount-amount       
+            BudgetTable[category] = budget_amount.amount
+            remainingAmt[category] = budget_amount.amount-amount  
+    
+    budgetTable = {}
+    for k,v in BudgetTable.items():
+        if v==0:
+            del categoryTable[k]
+            del remainingAmt[k]
+            categoryList.remove(k)
+        else:
+            budgetTable[k] = v
+
+    print(categoryTable)
+    print(budgetTable)
+    print(remainingAmt)  
+
     context = {
         'categoryList': categoryList,
         'categoryTable': categoryTable,
@@ -174,13 +189,28 @@ def budget_history(request):
     budget_years = []
     for budget in budgets:
         budget_months.append(budget.month)
-        budget_years.append(budget.year)
+        if budget.year not in budget_years:
+            budget_years.append(budget.year)
     context = {
         'budget_months': budget_months,
-        'budget_years': budget_years
+        'budget_years': budget_years,
+        'value': 'unset',
     }
     if request.method == 'GET':
         return render(request, 'budget/budget_history.html',context)
 
     if request.method == 'POST':
-        return render(request, 'budget/budget_history.html')
+        return render(request, 'budget/display_budget.html')
+
+def display_budget(request):
+    month = request.POST['Month']
+    year = request.POST['Year']
+    budget = Budget.objects.get(owner=request.user,month=month,year=year)
+    budget_amount = Budget_amount.objects.filter(budget_id=budget.id)
+    context = {
+        'budget_amount': budget_amount,
+        'value': 'set',
+        'month': month,
+        'year': year
+    }
+    return render(request, 'budget/display_budget.html',context)

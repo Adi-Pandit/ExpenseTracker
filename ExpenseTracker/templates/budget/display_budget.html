@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<div class="container mt-3"> 
+    <div class="row">
+        <div class="mx-3"> 
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb shadow p-2 mb-3 bg-white rounded">
+                <li class="breadcrumb-item"><a href="{% url 'budget-history' %}"><small><b>Budget History</b></small></a></li>
+                <li class="breadcrumb-item active" aria-current="page"><small><b>Monthly History</b></small></li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+    <div>
+        <h2 style="text-align:center;">{{month}}, {{year}} budget history</h2>
+        <table class="content-table mx-auto">
+            <thead>
+                <tr>
+                    <th>Sr.No.</th>
+                    <th>Category</th>
+                    <th>Budget Amount</th>
+                </tr>
+            </thead>      
+            <tbody>
+            {% for amount in budget_amount %}
+                <tr>
+                    <td>{{forloop.counter}}</td>
+                    <td>{{amount.category}}</td>
+                    <td>{{amount.amount}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

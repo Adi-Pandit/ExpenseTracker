@@ -9,9 +9,7 @@
         <div class="mx-3"> 
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb shadow p-2 mb-3 bg-white rounded">
-                <li class="breadcrumb-item"><a href="{% url 'budget' %}"><small><b>Budget</b></small></a></li>
-                <li class="breadcrumb-item active" aria-current="page"><small><b>Budget History</b></small></li>
-                </ol>
+                <li class="breadcrumb-item"><a href="{% url 'budget-history' %}"><small><b>Budget History</b></small></a></li>
             </nav>
         </div>
     </div>
@@ -19,27 +17,31 @@
         <div id="container">
             <div class="form-wrap">
                 <h2>Budget History</h2>
-                <form action="{% url 'budget-history' %}" method="post">
+                <form action="{% url 'display-history' %}" method="post">
                     {% csrf_token %}
                     <div class="row">
-                        <div class="col-md-6 form-group">
-                            <label for="Month">Select Month</label>
-                            <select name="Month">
-                                {% for months in budget_months %}
-                                <option>{{months}}</option>
-                                {% endfor %}
-                            </select>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="Month">Select Month</label>
+                                <select name="Month" style="height:60%;">
+                                    {% for months in budget_months %}
+                                    <option value="{{months}}">{{months}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
                         </div>
-                        <div class="col-md-6 form-group">
-                            <label for="Year">Select Year</label>
-                            <select name="Year">
-                                {% for years in budget_years %}
-                                <option>{{years}}</option>
-                                {% endfor %}
-                            </select>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="Year">Select Year</label>
+                                <select name="Year" style="height:60%;">
+                                    {% for years in budget_years %}
+                                    <option>{{years}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
                         </div>
                     </div>
-                    <button style="padding:3px; margin-top:0px;" type="submit">Submit</button>
+                    <button style="padding:3px; margin-top:10px; height:9%" type="submit">Submit</button>
                 </form>
             </div>
         </div>

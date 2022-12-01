@@ -73,7 +73,9 @@
     <div class="row">
       <div class="col-md-5">
         <div class="chartBox mt-3">
-          {% if msg != 'unset' %} 
+          {% if sumMonthExpense == 0 %}
+          <div><b>{{monthName}} Expense Not added</b></div>
+          {% elif msg != 'unset' %} 
           <canvas class="mx-auto"style="display:block; width:360px; height:250px;" id="budgetExpenseChart"></canvas>
           {% else %}
           <div><b>{{monthName}} Budget Not set</b></div>
