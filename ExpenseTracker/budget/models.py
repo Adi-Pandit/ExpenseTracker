@@ -12,7 +12,7 @@ class Budget(models.Model):
 class Budget_amount(models.Model):
     category = models.CharField(max_length=255)
     amount = models.FloatField()
-    budget_id = models.IntegerField()
+    budget = models.ForeignKey("Budget", on_delete=models.CASCADE)
 
     def __str__(self):
         return self.category

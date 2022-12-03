@@ -97,7 +97,7 @@ def budget_edit(request, id):
         newamount = request.POST['category']
         budget_amount.amount=newamount
         budget_amount.save()
-        messages.success(request,'Budget Updated successfully')
+        messages.success(request,'Budget Amount Updated successfully')
         return redirect('budget')
         #messages.info(request,'Handling post form')
         #return render(request, 'budget/edit_budget.html',context)"""
