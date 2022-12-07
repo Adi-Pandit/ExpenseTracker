@@ -140,18 +140,21 @@ def bstats_view(request):
     categoryList = []
     msg = 'set'
     if day in range(1,last+1):
-        categoryList = list(Category.objects.all())
+        try :
+            Budget_id = Budget.objects.get(owner=request.user, month=monthName, year=year)
+        except:
+            context = {
+                'msg' : 'unset'
+            }
+            return render(request, 'budget/bstats.html', context)
+        BudgetCategory = Budget_amount.objects.filter(budget_id=Budget_id.id)
+        categoryList = []
+        for category in BudgetCategory:
+            if category.category not in categoryList:
+                categoryList.append(category.category)
+        print(categoryList)
         for category in categoryList:
             amount = 0
-            try :
-                Budget_id = Budget.objects.get(owner=request.user,month=monthName,year=year)
-                print(Budget_id)
-                
-            except:
-                context = {
-                    'msg' : 'unset'
-                }
-                return render(request, 'budget/bstats.html', context)
             budget_amount = Budget_amount.objects.get(category=category,budget_id=Budget_id.id)
             expenses = Expense.objects.filter(owner=request.user,category=category,date__gte=start_date,date__lte=last_date)
             for expense in expenses:

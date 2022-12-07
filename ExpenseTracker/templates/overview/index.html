@@ -101,10 +101,10 @@
 
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-  const renderChart = (data, labels) => {
+  const renderChart = (data, labels, type) => {
     const ctx = document.getElementById('budgetExpenseChart').getContext('2d');
     const budgetExpenseChart = new Chart(ctx, {
-        type: 'doughnut',
+        type: type,
         data: {
             labels: labels,
             datasets: [{
@@ -145,8 +145,18 @@
           .then((results) => {
               console.log("results", results);
               const budget_expense_data = results.expense_budget_data;
-              const [labels, data] = [Object.keys(budget_expense_data), Object.values(budget_expense_data),];
-              renderChart(data, labels);
+              console.log(budget_expense_data.Balance);
+              if(budget_expense_data.Balance>=0) {
+                const [labels, data] = [Object.keys(budget_expense_data), Object.values(budget_expense_data),];
+                const type = 'doughnut';
+                renderChart(data, labels, type);
+              }
+              if(budget_expense_data.Balance<0) {
+                const [labels, data] = [Object.keys(budget_expense_data), Object.values(budget_expense_data),];
+                const type = 'bar';
+                renderChart(data, labels, type);
+              }
+              
           });
   };
   document.onload = getChartData();
