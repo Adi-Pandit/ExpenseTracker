@@ -101,7 +101,7 @@
 
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-  const renderChart = (data, labels, type) => {
+  const renderChart = (data, labels, type, legend) => {
     const ctx = document.getElementById('budgetExpenseChart').getContext('2d');
     const budgetExpenseChart = new Chart(ctx, {
         type: type,
@@ -130,6 +130,7 @@
         },
         options: {
           plugins: {
+            legend: legend,
             title: {
                 display: true,
                 text: "{{monthName}} budget-expense summary",
@@ -149,12 +150,14 @@
               if(budget_expense_data.Balance>=0) {
                 const [labels, data] = [Object.keys(budget_expense_data), Object.values(budget_expense_data),];
                 const type = 'doughnut';
-                renderChart(data, labels, type);
+                const legend = { display:true };
+                renderChart(data, labels, type, legend);
               }
               if(budget_expense_data.Balance<0) {
                 const [labels, data] = [Object.keys(budget_expense_data), Object.values(budget_expense_data),];
                 const type = 'bar';
-                renderChart(data, labels, type);
+                const legend = { display:false };
+                renderChart(data, labels, type, legend);
               }
               
           });
