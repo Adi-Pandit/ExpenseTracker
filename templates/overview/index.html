@@ -1,0 +1,393 @@
+{% extends 'base.html' %} {% load static %} {% block content %}
+
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+    </head>
+    <body>
+        <div class="container mt-3">
+            <div class="row">
+                <div class="mx-0">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb shadow p-2 mb-3 bg-white rounded">
+                            <li class="breadcrumb-item">
+                                <a href=""
+                                    ><small><b>Dashboard</b></small></a
+                                >
+                            </li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+            <div class="row">
+                {% if percentage <= 100 %}
+                <div
+                    class="col-md-6 card text-white bg-success mx-auto"
+                    style="
+                        width: 520px;
+                        height: 160px;
+                        border-radius: 10px;
+                        box-shadow: 0 0 20px 9px lightgreen;
+                        border: none;
+                    "
+                >
+                    <div class="card-body" style="width: 520px; height: 150px">
+                        <h5 class="card-title">Budget status</h5>
+                        <hr />
+                        {% if msg != 'unset' %}
+                        <div>
+                            <b
+                                >Looks great {{request.user.username}}, You have
+                                used {{percentage|floatformat:2}}% of expected
+                                monthly budget. You have
+                                {{rem_percentage|floatformat:2}}% to go<br /><a
+                                    style="color: white"
+                                    href="{% url 'budget:budget' %}"
+                                    >Adjust Budget</a
+                                ></b
+                            >
+                        </div>
+                        {% else %}
+                        <div><b>{{monthName}} Budget Not set</b></div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% else %}
+                <div
+                    class="col-md-6 card text-white bg-danger mx-auto"
+                    style="
+                        width: 520px;
+                        height: 160px;
+                        border-radius: 10px;
+                        box-shadow: 0 0 20px 9px coral;
+                        border: none;
+                    "
+                >
+                    <div class="card-body" style="width: 520px; height: 150px">
+                        <h5 class="card-title">Budget status</h5>
+                        <hr />
+                        {% if msg != 'unset' %}
+                        <div>
+                            <b
+                                >Looks bad {{request.user.username}}, You have
+                                used {{percentage|floatformat:2}}% of expected
+                                monthly budget. You have 0% to go<br /><a
+                                    style="color: white"
+                                    href="{% url 'budget:budget' %}"
+                                    >Adjust Budget</a
+                                ></b
+                            >
+                        </div>
+                        {% else %}
+                        <div><b>{{monthName}} Budget Not set</b></div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+                <div class="col-md-6">
+                    <div class="row">
+                        <div
+                            class="card text-white bg-primary"
+                            style="
+                                width: 260px;
+                                height: 160px;
+                                border-radius: 10px;
+                                box-shadow: 0 0 20px 9px lightblue;
+                                border: none;
+                            "
+                        >
+                            <div
+                                class="card-body"
+                                style="width: 250px; height: 150px"
+                            >
+                                <h5 class="card-title">Monthly status</h5>
+                                <hr />
+                                <div>
+                                    <b>Total Expense : {{sumMonthExpense}}</b>
+                                </div>
+                                <br />
+                                {% if msg != 'unset' %}
+                                <div>
+                                    <b>Total Budget : {{Total_budget}}</b>
+                                </div>
+                                {% else %}
+                                <div><b>Total Budget : None</b></div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div
+                            class="card text-white bg-dark mx-2"
+                            style="
+                                width: 260px;
+                                height: 160px;
+                                border-radius: 10px;
+                                box-shadow: 0 0 20px 9px grey;
+                                border: none;
+                            "
+                        >
+                            <div
+                                class="card-body"
+                                style="width: 250px; height: 150px"
+                            >
+                                <h5 class="card-title">Todays Transaction</h5>
+                                <hr />
+                                <div><b>Expense : {{sumTodayExpense}}</b></div>
+                                <br />
+                                <div>
+                                    <b>Transactions : {{expenseCount}}</b>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="chartBox mt-3">
+                        {% if sumMonthExpense == 0 %}
+                        <div><b>{{monthName}} Expense Not added</b></div>
+                        {% elif msg != 'unset' %}
+                        <canvas
+                            class="mx-auto"
+                            style="display: block; width: 360px; height: 250px"
+                            id="budgetExpenseChart"
+                        ></canvas>
+                        {% else %}
+                        <div><b>{{monthName}} Budget Not set</b></div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="chartBox1 mt-3">
+                        <h6 style="text-align: center">
+                            <small><b>Last 3 months expense summary</b></small>
+                        </h6>
+                        <div class="ContainerGraph">
+                            <div class="ContainerBody">
+                                <canvas id="myChart"></canvas>
+                            </div>
+                        </div>
+                        <input
+                            class="mx-auto"
+                            id="selectallcheckbox"
+                            type="checkbox"
+                            onclick="updateAll(this)"
+                            checked=""
+                        /><small>Select All</small>
+                        <input
+                            class="datacheckbox mx-auto"
+                            type="checkbox"
+                            onclick="updateChart(this)"
+                            checked=""
+                            value="0"
+                        /><small>{{secLastMonth}}</small>
+                        <input
+                            class="datacheckbox mx-auto"
+                            type="checkbox"
+                            onclick="updateChart(this)"
+                            checked=""
+                            value="1"
+                        /><small>{{lastMonth}}</small>
+                        <input
+                            class="datacheckbox mx-auto"
+                            type="checkbox"
+                            onclick="updateChart(this)"
+                            checked=""
+                            value="2"
+                        /><small>{{monthName}}</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script
+            type="text/javascript"
+            src="https://cdn.jsdelivr.net/npm/chart.js"
+        ></script>
+        <script>
+            const renderChart = (data, labels, type, legend) => {
+                const ctx = document
+                    .getElementById("budgetExpenseChart")
+                    .getContext("2d");
+                const budgetExpenseChart = new Chart(ctx, {
+                    type: type,
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                data: data,
+                                backgroundColor: [
+                                    "rgba(255, 99, 132)",
+                                    "rgba(54, 162, 235)",
+                                    "rgba(255, 206, 86)",
+                                    "rgba(75, 192, 192)",
+                                    "rgba(153, 102, 255)",
+                                    "rgba(255, 159, 64)",
+                                ],
+                                borderColor: [
+                                    "rgba(255, 99, 132, 1)",
+                                    "rgba(54, 162, 235, 1)",
+                                    "rgba(255, 206, 86, 1)",
+                                    "rgba(75, 192, 192, 1)",
+                                    "rgba(153, 102, 255, 1)",
+                                    "rgba(255, 159, 64, 1)",
+                                ],
+                                borderWidth: 1,
+                            },
+                        ],
+                    },
+                    options: {
+                        plugins: {
+                            legend: legend,
+                            title: {
+                                display: true,
+                                text: "{{monthName}} budget-expense summary",
+                            },
+                        },
+                    },
+                });
+            };
+
+            const getChartData = () => {
+                fetch("/overview/budget_expense_summary")
+                    .then((res) => res.json())
+                    .then((results) => {
+                        console.log("results", results);
+                        const budget_expense_data = results.expense_budget_data;
+                        console.log(budget_expense_data.Balance);
+                        if (budget_expense_data.Balance >= 0) {
+                            const [labels, data] = [
+                                Object.keys(budget_expense_data),
+                                Object.values(budget_expense_data),
+                            ];
+                            const type = "doughnut";
+                            const legend = { display: true };
+                            renderChart(data, labels, type, legend);
+                        }
+                        if (budget_expense_data.Balance < 0) {
+                            const [labels, data] = [
+                                Object.keys(budget_expense_data),
+                                Object.values(budget_expense_data),
+                            ];
+                            const type = "bar";
+                            const legend = { display: false };
+                            renderChart(data, labels, type, legend);
+                        }
+                    });
+            };
+            document.onload = getChartData();
+
+            //Chart2
+            const data = {
+                labels: "{{categoryString}}".split(","),
+                datasets: [
+                    {
+                        label: "September",
+                        data: "{{SecLastCategoryString}}".split(","),
+                        backgroundColor: "rgba(54, 162, 235, 0.2)",
+                        borderColor: "rgba(54, 162, 235, 1)",
+                        borderWidth: 1,
+                    },
+                    {
+                        label: "October",
+                        data: "{{LastCategoryString}}".split(","),
+                        backgroundColor: "rgba(255, 26, 104, 0.2)",
+                        borderColor: "rgba(255, 26, 104, 1)",
+                        borderWidth: 1,
+                    },
+                    {
+                        label: "November",
+                        data: "{{CurrentCategoryString}}".split(","),
+                        backgroundColor: "rgba(75, 192, 192, 0.2)",
+                        borderColor: "rgba(75, 192, 192, 1)",
+                        borderWidth: 1,
+                    },
+                ],
+            };
+
+            // config
+            const config = {
+                type: "bar",
+                data,
+                options: {
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false,
+                        },
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                        },
+                    },
+                },
+            };
+
+            // render init block
+            const myChart = new Chart(
+                document.getElementById("myChart"),
+                config,
+            );
+
+            const ContainerBody = document.querySelector(".ContainerBody");
+            const totalLabels = myChart.data.labels.length;
+            if (totalLabels > 6) {
+                const newWidth = 700 + (totalLabels - 6) * 30;
+                ContainerBody.style.width = `${newWidth}px`;
+            }
+
+            function updateAll(selectall) {
+                let selectallcheckbox =
+                    document.getElementById("selectallcheckbox");
+                let checkboxes = document.querySelectorAll(".datacheckbox");
+                console.log(checkboxes);
+                if (selectall.checked === false) {
+                    for (let i = 0; i < checkboxes.length; i++) {
+                        checkboxes[i].checked = false;
+                        myChart.hide(i);
+                    }
+                }
+                if (selectall.checked === true) {
+                    for (let i = 0; i < checkboxes.length; i++) {
+                        checkboxes[i].checked = true;
+                        myChart.show(i);
+                    }
+                }
+            }
+
+            function checkboxSelectAllChecker() {
+                let selectallcheckbox =
+                    document.getElementById("selectallcheckbox");
+                let checkboxes = document.querySelectorAll(".datacheckbox");
+                let x = 0;
+                for (let i = 0; i <= checkboxes.length - 1; i++) {
+                    if (checkboxes[i].checked === true) {
+                        x++;
+                    }
+                }
+
+                if (x == checkboxes.length) {
+                    selectallcheckbox.checked = true;
+                } else {
+                    selectallcheckbox.checked = false;
+                }
+            }
+
+            function updateChart(dataset) {
+                console.log(dataset.value);
+                const isDataShown = myChart.isDatasetVisible(dataset.value);
+                console.log(isDataShown);
+                if (isDataShown === false) {
+                    myChart.show(dataset.value);
+                }
+                if (isDataShown === true) {
+                    myChart.hide(dataset.value);
+                }
+                checkboxSelectAllChecker();
+            }
+        </script>
+    </body>
+    {% endblock content %}
+</html>
