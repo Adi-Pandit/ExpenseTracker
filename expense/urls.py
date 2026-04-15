@@ -1,21 +1,25 @@
 from django.urls import path
 from . import views
-from django.views.decorators.csrf import csrf_exempt
 
-app_name = 'expense'
+app_name = "expense"
 
 urlpatterns = [
-    path('', views.home, name="home"),
-    path('expenses', views.index, name='expenses'),
-    path('add-expenses', views.add_expenses, name='add-expenses'),
-    path('edit-expense/<int:id>', views.expense_edit, name='expense-edit'),
-    path('expense-delete/<int:id>', views.delete_expense, name='expense-delete'),
-    path('search-expenses', csrf_exempt(views.search_expenses),
-         name='search_expenses'),
-    path('expense_category_summary', views.expense_category_summary,
-         name="expense_category_summary"),
-    path('stats', views.stats_view, name="stats"),
-    path('export_csv', views.export_csv, name="export-csv"),
-    path('export_excel', views.export_excel, name="export-excel"),
-    path('export_pdf', views.export_pdf, name="export-pdf"),
+    path("expenses/", views.ExpenseListCreateView.as_view(), name="api-expenses"),
+    path(
+        "expenses/<uuid:pk>/",
+        views.ExpenseDetailView.as_view(),
+        name="api-expense-detail",
+    ),
+    path("categories/", views.CategoryListCreateView.as_view(), name="api-categories"),
+    path(
+        "categories/<uuid:pk>/",
+        views.CategoryDetailView.as_view(),
+        name="api-category-detail",
+    ),
+    path("stats/", views.ExpenseStatsView.as_view(), name="api-stats"),
+    path(
+        "export/<str:format_type>/",
+        views.ExpenseExportView.as_view(),
+        name="api-export",
+    ),
 ]

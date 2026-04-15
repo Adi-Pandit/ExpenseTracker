@@ -1,359 +1,135 @@
-from unicodedata import category
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
+from django.db.models import Q
+from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
+from rest_framework import generics, status
+from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
 from .models import Category, Expense
-from django.contrib import messages
-from django.contrib.auth.models import User
-from django.core.paginator import Paginator
-import json
-from django.http import JsonResponse, HttpResponse
-from datetime import datetime, date
-import datetime
-import calendar
-import csv
-import xlwt
-from django.template.loader import render_to_string
-import os
-# os.add_dll_directory(rb"C:\Program Files\GTK3-Runtime Win64\bin")
-from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import letter
-from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
-from reportlab.lib import colors
-import tempfile
-from django.db.models import Sum
-import pdb
-# Create your views here.
+from .serializers import CategorySerializer, ExpenseSerializer
+from .services import (
+    export_expenses_to_csv,
+    export_expenses_to_excel,
+    export_expenses_to_pdf,
+    get_user_expense_stats,
+)
 
 
-def home(request):
-    return render(request, 'expenses/home.html')
+class ExpenseListCreateView(generics.ListCreateAPIView):
+    serializer_class = ExpenseSerializer
+    permission_classes = [IsAuthenticated]
+    parser_classes = [JSONParser, MultiPartParser, FormParser]
+
+    @extend_schema(
+        summary="List expenses or create a new expense",
+        parameters=[
+            OpenApiParameter(name="category", type=str, location=OpenApiParameter.QUERY, description="Filter by category UUID"),
+            OpenApiParameter(name="account", type=str, location=OpenApiParameter.QUERY, description="Filter by account name"),
+            OpenApiParameter(name="date_from", type=str, location=OpenApiParameter.QUERY, description="Filter expenses from this date (YYYY-MM-DD)"),
+            OpenApiParameter(name="date_to", type=str, location=OpenApiParameter.QUERY, description="Filter expenses up to this date (YYYY-MM-DD)"),
+            OpenApiParameter(name="min_amount", type=float, location=OpenApiParameter.QUERY, description="Minimum amount"),
+            OpenApiParameter(name="max_amount", type=float, location=OpenApiParameter.QUERY, description="Maximum amount"),
+        ],
+    )
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+    def get_queryset(self):
+        queryset = Expense.objects.filter(owner=self.request.user).select_related("category")
+        params = self.request.query_params
+
+        category = params.get("category")
+        account = params.get("account")
+        date_from = params.get("date_from")
+        date_to = params.get("date_to")
+        min_amount = params.get("min_amount")
+        max_amount = params.get("max_amount")
+
+        if category:
+            queryset = queryset.filter(category_id=category)
+        if account:
+            queryset = queryset.filter(account__icontains=account.strip())
+        if date_from:
+            queryset = queryset.filter(date__gte=date_from)
+        if date_to:
+            queryset = queryset.filter(date__lte=date_to)
+        if min_amount:
+            queryset = queryset.filter(amount__gte=min_amount)
+        if max_amount:
+            queryset = queryset.filter(amount__lte=max_amount)
+
+        return queryset
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
 
 
-@login_required(login_url='/authentication/login')
-def search_expenses(request):
-    if request.method == 'POST':
-        search_str = json.loads(request.body).get('searchText')
-        expenses = Expense.objects.filter(amount__istartswith=search_str, owner=request.user) | Expense.objects.filter(date__istartswith=search_str, owner=request.user) | Expense.objects.filter(
-            description__icontains=search_str, owner=request.user) | Expense.objects.filter(category__istartswith=search_str, owner=request.user)
-        data = expenses.values()
-        return JsonResponse(list(data), safe=False)
+class ExpenseDetailView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = ExpenseSerializer
+    permission_classes = [IsAuthenticated]
+    parser_classes = [JSONParser, MultiPartParser, FormParser]
+
+    def get_queryset(self):
+        return Expense.objects.filter(owner=self.request.user).select_related("category")
 
 
-@login_required(login_url='/authentication/login')
-def index(request):
-    expenses = Expense.objects.filter(owner=request.user)
-    paginator = Paginator(expenses, 8)
-    page_list = []
-    for i in range(1, paginator.num_pages+1):
-        page_list.append(i)
-    page_number = request.GET.get('page')
-    page_obj = Paginator.get_page(paginator, page_number)
-    context = {
-        'expenses': expenses,
-        'page_obj': page_obj,
-        'page_list': page_list
-    }
-    return render(request, 'expenses/index.html', context)
+class CategoryListCreateView(generics.ListCreateAPIView):
+    serializer_class = CategorySerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Category.objects.filter(Q(owner=None) | Q(owner=self.request.user))
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
 
 
-@login_required(login_url='/authentication/login')
-def add_expenses(request):
-    categories = Category.objects.filter(type='global')
-    usercategories = Category.objects.filter(type='local', owner=request.user)
-    context = {
-        'categories': categories,
-        'usercategories': usercategories,
-        'values': request.POST
-    }
-    if request.method == 'GET':
-        return render(request, 'expenses/add_expenses.html', context)
+class CategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = CategorySerializer
+    permission_classes = [IsAuthenticated]
 
-    if request.method == 'POST':
-        amount = request.POST['amount']
-
-        if not amount:
-            messages.error(request, 'Amount is required')
-            return render(request, 'expenses/add_expenses.html', context)
-
-        description = request.POST['description']
-        date = request.POST['expense_date']
-        category = request.POST['category']
-
-        if not description:
-            messages.error(request, 'Description is required')
-            return render(request, 'expenses/add_expenses.html', context)
-
-        if not date:
-            messages.error(request, 'Date is required')
-            return render(request, 'expenses/add_expenses.html', context)
-
-        Expense.objects.create(owner=request.user, amount=amount,
-                               date=date, category=category, description=description)
-        messages.success(request, 'Expense saved successfully')
-        return redirect('expenses')
+    def get_queryset(self):
+        return Category.objects.filter(owner=self.request.user)
 
 
-@login_required(login_url='/authentication/login')
-def expense_edit(request, id):
-    expense = Expense.objects.get(pk=id)
-    categories = Category.objects.filter(type='global')
-    usercategories = Category.objects.filter(type='local', owner=request.user)
-    context = {
-        'expense': expense,
-        'values': expense,
-        'categories': categories,
-        'usercategories': usercategories,
-    }
-    if request.method == 'GET':
-        return render(request, 'expenses/edit-expense.html', context)
-    if request.method == 'POST':
-        amount = request.POST['amount']
+class ExpenseStatsView(APIView):
+    permission_classes = [IsAuthenticated]
 
-        if not amount:
-            messages.error(request, 'Amount is required')
-            return render(request, 'expenses/edit-expense.html', context)
-
-        description = request.POST['description']
-        date = request.POST['expense_date']
-        category = request.POST['category']
-
-        if not description:
-            messages.error(request, 'Description is required')
-            return render(request, 'expenses/edit-expense.html', context)
-
-        if not date:
-            messages.error(request, 'Date is required')
-            return render(request, 'expenses/edit-expense.html', context)
-
-        expense.owner = request.user
-        expense.amount = amount
-        expense.date = date
-        expense.category = category
-        expense.description = description
-
-        expense.save()
-        messages.success(request, 'Expense Updated successfully')
-        return redirect('expenses')
-
-        # messages.info(request,'Handling post form')
-        # return render(request, 'expenses/edit-expense.html',context)
+    @extend_schema(
+        summary="Get expense statistics",
+        responses={200: OpenApiResponse(description="Aggregated expense statistics")},
+    )
+    def get(self, request):
+        return Response(get_user_expense_stats(request.user))
 
 
-@login_required(login_url='/authentication/login')
-def delete_expense(request, id):
-    expense = Expense.objects.get(pk=id)
-    expense.delete()
-    messages.success(request, 'Expense removed')
-    return redirect('expenses')
+class ExpenseExportView(APIView):
+    permission_classes = [IsAuthenticated]
 
+    @extend_schema(
+        summary="Export expenses",
+        parameters=[
+            OpenApiParameter(
+                name="format_type",
+                type=str,
+                location=OpenApiParameter.PATH,
+                enum=["csv", "excel", "pdf"],
+                description="Export format",
+            )
+        ],
+        responses={
+            200: OpenApiResponse(description="Exported expense file"),
+            400: OpenApiResponse(description="Invalid export format"),
+        },
+    )
+    def get(self, request, format_type):
+        expenses = Expense.objects.filter(owner=request.user).select_related("category")
 
-@login_required(login_url='/authentication/login')
-def expense_category_summary(request):
-    currentDate = date.today()
-    monthName = currentDate.strftime("%B")
-    month = int(currentDate.strftime("%m"))
-    year = int(currentDate.strftime("%Y"))
-    first, last = calendar.monthrange(year, month)
-    start_date = datetime.datetime(year, month, 1)
-    end_date = datetime.datetime(year, month, last)
-    expenses = Expense.objects.filter(
-        owner=request.user, date__gte=start_date, date__lte=end_date)
-    finalrep = {}
-
-    sumExpense = expenses.aggregate(Sum('amount'))
-    for value in sumExpense.values():
-        sumExpense = value
-
-    def get_category(expense):
-        return expense.category
-
-    def get_expense_category_amount(category):
-        global TotalAmount
-        amount = 0
-        filtered_by_category = expenses.filter(category=category)
-        for item in filtered_by_category:
-            amount += item.amount
-        return round((amount/sumExpense)*100, 2)
-
-    category_list = list(set(map(get_category, expenses)))
-    for x in expenses:
-        for y in category_list:
-            finalrep[y] = get_expense_category_amount(y)
-    return JsonResponse({'expense_category_data': finalrep}, safe=False)
-
-
-@login_required(login_url='/authentication/login')
-def stats_view(request):
-    todays_date = datetime.date.today()
-    today = todays_date-datetime.timedelta(days=0)
-    expenseToday = Expense.objects.filter(
-        owner=request.user, date__gte=today, date__lte=todays_date)
-    sumToday = expenseToday.aggregate(Sum('amount'))
-    for value in sumToday.values():
-        sumToday = value
-
-    week = todays_date-datetime.timedelta(days=7)
-    expenseWeek = Expense.objects.filter(
-        owner=request.user, date__gte=week, date__lte=todays_date)
-    sumWeek = expenseWeek.aggregate(Sum('amount'))
-    for value in sumWeek.values():
-        sumWeek = value
-
-    month = todays_date-datetime.timedelta(days=30)
-    expenseMonth = Expense.objects.filter(
-        owner=request.user, date__gte=month, date__lte=todays_date)
-    sumMonth = expenseMonth.aggregate(Sum('amount'))
-    for value in sumMonth.values():
-        sumMonth = value
-
-    year = todays_date-datetime.timedelta(days=365)
-    expenseYear = Expense.objects.filter(
-        owner=request.user, date__gte=year, date__lte=todays_date)
-    sumYear = expenseYear.aggregate(Sum('amount'))
-    for value in sumYear.values():
-        sumYear = value
-
-    currentDate = date.today()
-    monthName = currentDate.strftime("%B")
-    month = int(currentDate.strftime("%m"))
-    year = int(currentDate.strftime("%Y"))
-    first, last = calendar.monthrange(year, month)
-    start_date = datetime.datetime(year, month, 1)
-    end_date = datetime.datetime(year, month, last)
-    expenses = Expense.objects.filter(
-        owner=request.user, date__gte=start_date, date__lte=end_date)
-    if expenses.count() == 0:
-        context = {
-            'msg': 'unset',
-            'sumToday': sumToday,
-            'sumWeek': sumWeek,
-            'sumMonth': sumMonth,
-            'sumYear': sumYear,
-            'monthName': monthName
-        }
-        return render(request, 'expenses/stats.html', context)
-    finalrep = {}
-
-    def get_category(expense):
-        return expense.category
-
-    def get_expense_category_amount(category):
-        global TotalAmount
-        amount = 0
-        filtered_by_category = expenses.filter(category=category)
-        for item in filtered_by_category:
-            amount += item.amount
-        return amount
-
-    category_list = list(set(map(get_category, expenses)))
-    for x in expenses:
-        for y in category_list:
-            finalrep[y] = get_expense_category_amount(y)
-    # categories = list(Expense.category)
-    context = {
-        'sumToday': sumToday,
-        'sumWeek': sumWeek,
-        'sumMonth': sumMonth,
-        'sumYear': sumYear,
-        'finalrep': finalrep,
-        'monthName': monthName
-    }
-    return render(request, 'expenses/stats.html', context)
-
-
-@login_required(login_url='/authentication/login')
-def export_csv(request):
-    response = HttpResponse(content_type="text/csv")
-    response['Content-Disposition'] = 'attachment; filename=Expenses/' + \
-        str(datetime.datetime.now())+'.csv'
-    writer = csv.writer(response)
-    writer.writerow(['Amount', 'Description', 'Category', 'Date'])
-    expenses = Expense.objects.filter(owner=request.user)
-    for expense in expenses:
-        writer.writerow([expense.amount, expense.description,
-                        expense.category, expense.date])
-    return response
-
-
-@login_required(login_url='/authentication/login')
-def export_excel(request):
-    response = HttpResponse(content_type="application/ms-excel")
-    response['Content-Disposition'] = 'attachment; filename=Expenses/' + \
-        str(datetime.datetime.now())+'.xls'
-    wb = xlwt.Workbook(encoding='utf-8')
-    ws = wb.add_sheet('Expenses')
-    row_num = 0
-    font_style = xlwt.XFStyle()
-    font_style.font.bold = True
-    columns = ['Amount', 'Description', 'Category', 'Date']
-
-    for col_num in range(len(columns)):
-        ws.write(row_num, col_num, columns[col_num], font_style)
-
-    font_style = xlwt.XFStyle()
-    rows = Expense.objects.filter(owner=request.user).values_list(
-        'amount', 'description', 'category', 'date')
-    for row in rows:
-        row_num += 1
-        for col_num in range(len(row)):
-            ws.write(row_num, col_num, str(row[col_num]), font_style)
-    wb.save(response)
-    return response
-
-
-@login_required(login_url='/authentication/login')
-def export_pdf(request):
-    expenses = Expense.objects.filter(owner=request.user)
-    total = expenses.aggregate(Sum('amount'))['amount__sum'] or 0
-
-    # Create PDF response
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="expenses.pdf"'
-
-    # Create PDF document
-    doc = SimpleDocTemplate(response, pagesize=letter)
-    elements = []
-
-    # Styles
-    styles = getSampleStyleSheet()
-    title_style = styles['Heading1']
-
-    # Title
-    title = Paragraph("Expense Report", title_style)
-    elements.append(title)
-    elements.append(Paragraph("<br/>", styles['Normal']))
-
-    # Table data
-    data = [['No', 'Amount', 'Category', 'Description', 'Date']]
-    for idx, expense in enumerate(expenses, 1):
-        data.append([
-            str(idx),
-            f"₹{expense.amount}",
-            expense.category,
-            expense.description,
-            expense.date.strftime('%Y-%m-%d')
-        ])
-
-    # Add total row
-    data.append(['', f"Total: ₹{total}", '', '', ''])
-
-    # Create table
-    table = Table(data)
-    table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
-        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 0), (-1, 0), 14),
-        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-        ('BACKGROUND', (0, 1), (-1, -2), colors.beige),
-        ('GRID', (0, 0), (-1, -1), 1, colors.black),
-        ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
-        ('BACKGROUND', (0, -1), (-1, -1), colors.lightgrey),
-    ]))
-
-    elements.append(table)
-    doc.build(elements)
-
-    return response
+        if format_type == "csv":
+            return export_expenses_to_csv(expenses)
+        if format_type == "excel":
+            return export_expenses_to_excel(expenses)
+        if format_type == "pdf":
+            return export_expenses_to_pdf(expenses)
+        return Response({"error": "Invalid format"}, status=status.HTTP_400_BAD_REQUEST)
