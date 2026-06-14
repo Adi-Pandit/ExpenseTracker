@@ -8,8 +8,8 @@ from .models import Account, Expense, Category, Notification, RecurringExpense
 
 
 class RangeFilterSerializer(serializers.Serializer):
-    min_amount = serializers.FloatField(required=False, min_value=0)
-    max_amount = serializers.FloatField(required=False, min_value=0)
+    min_amount = serializers.DecimalField(required=False, min_value=0, max_digits=14, decimal_places=2)
+    max_amount = serializers.DecimalField(required=False, min_value=0, max_digits=14, decimal_places=2)
 
     def validate(self, attrs):
         min_amount = attrs.get("min_amount")
@@ -75,8 +75,8 @@ class AccountFilterSerializer(serializers.Serializer):
     account_type = serializers.ChoiceField(
         choices=Account.AccountType.choices, required=False
     )
-    min_balance = serializers.FloatField(required=False)
-    max_balance = serializers.FloatField(required=False)
+    min_balance = serializers.DecimalField(required=False, max_digits=14, decimal_places=2)
+    max_balance = serializers.DecimalField(required=False, max_digits=14, decimal_places=2)
     search = serializers.CharField(required=False, allow_blank=True)
 
     def validate(self, attrs):
@@ -108,7 +108,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class AccountSerializer(serializers.ModelSerializer):
-    current_balance = serializers.FloatField(read_only=True)
+    current_balance = serializers.DecimalField(max_digits=14, decimal_places=2, read_only=True)
 
     class Meta:
         model = Account

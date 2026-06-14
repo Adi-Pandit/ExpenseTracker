@@ -1,4 +1,5 @@
 from datetime import timedelta
+from decimal import Decimal
 
 from django.db.models import Sum, Value
 from django.db.models.functions import Coalesce, TruncDate
@@ -72,7 +73,7 @@ def _get_summary_payload(user):
     ]
 
     accounts = Account.objects.filter(owner=user).annotate(
-        spent=Coalesce(Sum("expenses__converted_amount"), Value(0.0))
+        spent=Coalesce(Sum("expenses__converted_amount"), Value(Decimal("0")))
     )
     account_balances = [
         {

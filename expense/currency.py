@@ -1,5 +1,6 @@
 import json
 import os
+from decimal import ROUND_HALF_UP, Decimal
 from functools import lru_cache
 from urllib.error import HTTPError, URLError
 from urllib.request import urlopen
@@ -40,7 +41,7 @@ def get_exchange_rate(from_currency, to_currency):
     from_currency = normalize_currency_code(from_currency)
     to_currency = normalize_currency_code(to_currency)
     if from_currency == to_currency:
-        return 1.0
+        return Decimal("1")
 
     try:
         rates = fetch_exchange_rates(from_currency)
@@ -54,10 +55,12 @@ def get_exchange_rate(from_currency, to_currency):
     rate = rates.get(to_currency)
     if rate is None:
         raise ValueError(f"Unsupported currency conversion: {from_currency} to {to_currency}.")
-    return float(rate)
+    return Decimal(str(rate))
 
 
 def convert_amount(amount, from_currency, to_currency):
     rate = get_exchange_rate(from_currency, to_currency)
-    converted_amount = round(float(amount) * rate, 2)
-    return rate, converted_amount
+    converted = (Decimal(str(amount)) * rate).quantize(
+        Decimal("0.01"), rounding=ROUND_HALF_UP
+    )
+    return rate, converted

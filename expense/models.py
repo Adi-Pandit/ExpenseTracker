@@ -44,7 +44,7 @@ class Account(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid7, editable=False)
     name = models.CharField(max_length=100)
     account_type = models.CharField(max_length=20, choices=AccountType.choices)
-    opening_balance = models.FloatField(default=0)
+    opening_balance = models.DecimalField(max_digits=14, decimal_places=2, default=0)
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -71,10 +71,10 @@ class Account(models.Model):
 
 class Expense(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid7, editable=False)
-    amount = models.FloatField()
+    amount = models.DecimalField(max_digits=14, decimal_places=2)
     currency = models.CharField(max_length=3, default="INR")
-    exchange_rate = models.FloatField(default=1)
-    converted_amount = models.FloatField(default=0)
+    exchange_rate = models.DecimalField(max_digits=18, decimal_places=8, default=1)
+    converted_amount = models.DecimalField(max_digits=14, decimal_places=2, default=0)
     date = models.DateField(default=now)
     notes = models.TextField(blank=True)
     receipt = models.FileField(upload_to="receipts/", null=True, blank=True)
@@ -121,7 +121,7 @@ class RecurringExpense(models.Model):
         MONTHLY = "monthly", "Monthly"
 
     id = models.UUIDField(primary_key=True, default=uuid7, editable=False)
-    amount = models.FloatField()
+    amount = models.DecimalField(max_digits=14, decimal_places=2)
     currency = models.CharField(max_length=3, default="INR")
     notes = models.TextField(blank=True)
     frequency = models.CharField(max_length=10, choices=Frequency.choices)

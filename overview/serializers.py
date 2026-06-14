@@ -3,19 +3,19 @@ from rest_framework import serializers
 
 class DashboardTopCategorySerializer(serializers.Serializer):
     name = serializers.CharField(allow_null=True)
-    amount = serializers.FloatField()
+    amount = serializers.DecimalField(max_digits=14, decimal_places=2)
 
 
 class DashboardMonthSpendSerializer(serializers.Serializer):
     label = serializers.CharField()
-    total_spend = serializers.FloatField()
+    total_spend = serializers.DecimalField(max_digits=14, decimal_places=2)
 
 
 class DashboardExpenseItemSerializer(serializers.Serializer):
     id = serializers.UUIDField()
-    amount = serializers.FloatField()
+    amount = serializers.DecimalField(max_digits=14, decimal_places=2)
     currency = serializers.CharField()
-    converted_amount = serializers.FloatField()
+    converted_amount = serializers.DecimalField(max_digits=14, decimal_places=2)
     base_currency = serializers.CharField()
     date = serializers.DateField()
     notes = serializers.CharField()
@@ -27,8 +27,8 @@ class DashboardAccountBalanceSerializer(serializers.Serializer):
     id = serializers.UUIDField()
     name = serializers.CharField()
     type = serializers.CharField()
-    opening_balance = serializers.FloatField()
-    current_balance = serializers.FloatField()
+    opening_balance = serializers.DecimalField(max_digits=14, decimal_places=2)
+    current_balance = serializers.DecimalField(max_digits=14, decimal_places=2)
 
 
 class DashboardSummarySerializer(serializers.Serializer):
@@ -42,7 +42,7 @@ class DashboardSummarySerializer(serializers.Serializer):
 
 class DashboardTrendPointSerializer(serializers.Serializer):
     date = serializers.DateField()
-    amount = serializers.FloatField()
+    amount = serializers.DecimalField(max_digits=14, decimal_places=2)
 
 
 class DashboardTrendsSerializer(serializers.Serializer):
@@ -52,13 +52,13 @@ class DashboardTrendsSerializer(serializers.Serializer):
 
 class DashboardCategoryItemSerializer(serializers.Serializer):
     category = serializers.CharField()
-    amount = serializers.FloatField()
+    amount = serializers.DecimalField(max_digits=14, decimal_places=2)
     percentage = serializers.FloatField()
 
 
 class DashboardCategoriesSerializer(serializers.Serializer):
     period = serializers.CharField()
-    total_spend = serializers.FloatField()
+    total_spend = serializers.DecimalField(max_digits=14, decimal_places=2)
     breakdown = DashboardCategoryItemSerializer(many=True)
 
 

@@ -1,5 +1,6 @@
 import calendar
 from datetime import timedelta
+from decimal import Decimal
 
 from django.db.models import Sum
 from django.utils.timezone import localdate
@@ -137,12 +138,12 @@ def add_weekend_weekday_rule(insights, current_month_expenses):
     weekend_average = weekend_total / len(weekend_days) if weekend_days else 0
     weekday_average = weekday_total / len(weekday_days) if weekday_days else 0
 
-    if weekend_average > weekday_average * 1.25 and weekend_days:
+    if weekend_average > weekday_average * Decimal("1.25") and weekend_days:
         message = (
             f"You spend more on weekends: average {round(weekend_average, 2)} "
             f"per active weekend day versus {round(weekday_average, 2)} on weekdays."
         )
-    elif weekday_average > weekend_average * 1.25 and weekday_days:
+    elif weekday_average > weekend_average * Decimal("1.25") and weekday_days:
         message = (
             f"You spend more on weekdays: average {round(weekday_average, 2)} "
             f"per active weekday versus {round(weekend_average, 2)} on weekends."

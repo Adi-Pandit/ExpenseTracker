@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.db.models import F, Q, Sum, Value
 from django.db.models.functions import Coalesce
 from drf_spectacular.utils import (
@@ -138,9 +140,9 @@ class AccountListCreateView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         queryset = Account.objects.filter(owner=self.request.user).annotate(
-            spent=Coalesce(Sum("expenses__converted_amount"), Value(0.0)),
+            spent=Coalesce(Sum("expenses__converted_amount"), Value(Decimal("0"))),
             current_balance=F("opening_balance")
-            - Coalesce(Sum("expenses__converted_amount"), Value(0.0)),
+            - Coalesce(Sum("expenses__converted_amount"), Value(Decimal("0"))),
         )
         filters = AccountFilterSerializer(data=self.request.query_params)
         filters.is_valid(raise_exception=True)
