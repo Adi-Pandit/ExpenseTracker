@@ -1,6 +1,7 @@
 from decimal import Decimal
 
 from django.db.models import F, Q, Sum, Value
+from django.db.models.deletion import ProtectedError
 from django.db.models.functions import Coalesce
 from drf_spectacular.utils import (
     OpenApiParameter,
@@ -175,6 +176,15 @@ class AccountDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         return Account.objects.filter(owner=self.request.user)
+
+    def destroy(self, request, *args, **kwargs):
+        try:
+            return super().destroy(request, *args, **kwargs)
+        except ProtectedError:
+            return Response(
+                {"error": "This account cannot be deleted because it has existing expenses linked to it."},
+                status=status.HTTP_409_CONFLICT,
+            )
 
 
 @extend_schema_view(
