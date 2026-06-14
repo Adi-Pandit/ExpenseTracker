@@ -1,0 +1,2004 @@
+openapi: 3.0.3
+info:
+  title: Expense Tracker API
+  version: 1.0.0
+  description: Interactive API documentation for authentication and expense tracking
+    endpoints.
+paths:
+  /api/accounts/:
+    get:
+      operationId: api_accounts_list
+      summary: List accounts or create an account
+      parameters:
+      - in: query
+        name: account_type
+        schema:
+          type: string
+        description: Filter by account type
+      - in: query
+        name: max_balance
+        schema:
+          type: number
+          format: double
+        description: Maximum current balance
+      - in: query
+        name: min_balance
+        schema:
+          type: number
+          format: double
+        description: Minimum current balance
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: query
+        name: search
+        schema:
+          type: string
+        description: Search account name
+      tags:
+      - Accounts
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAccountList'
+          description: ''
+    post:
+      operationId: api_accounts_create
+      tags:
+      - Accounts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AccountRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AccountRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+          description: ''
+  /api/accounts/{id}/:
+    get:
+      operationId: api_accounts_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Accounts
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+          description: ''
+    put:
+      operationId: api_accounts_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Accounts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AccountRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AccountRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+          description: ''
+    patch:
+      operationId: api_accounts_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Accounts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedAccountRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedAccountRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedAccountRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+          description: ''
+    delete:
+      operationId: api_accounts_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Accounts
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/categories/:
+    get:
+      operationId: api_categories_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - Categories
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCategoryList'
+          description: ''
+    post:
+      operationId: api_categories_create
+      tags:
+      - Categories
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CategoryRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CategoryRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+          description: ''
+  /api/categories/{id}/:
+    get:
+      operationId: api_categories_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Categories
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+          description: ''
+    put:
+      operationId: api_categories_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Categories
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CategoryRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CategoryRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+          description: ''
+    patch:
+      operationId: api_categories_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Categories
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCategoryRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCategoryRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCategoryRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+          description: ''
+    delete:
+      operationId: api_categories_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Categories
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/expenses/:
+    get:
+      operationId: api_expenses_list
+      summary: List expenses or create a new expense
+      parameters:
+      - in: query
+        name: account
+        schema:
+          type: string
+        description: Filter by account UUID
+      - in: query
+        name: category
+        schema:
+          type: string
+        description: Filter by category UUID
+      - in: query
+        name: end_date
+        schema:
+          type: string
+        description: Filter expenses up to this date (YYYY-MM-DD)
+      - in: query
+        name: max_amount
+        schema:
+          type: number
+          format: double
+        description: Maximum amount
+      - in: query
+        name: min_amount
+        schema:
+          type: number
+          format: double
+        description: Minimum amount
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: query
+        name: search
+        schema:
+          type: string
+        description: Search notes, category, or account
+      - in: query
+        name: start_date
+        schema:
+          type: string
+        description: Filter expenses from this date (YYYY-MM-DD)
+      tags:
+      - Expenses
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedExpenseList'
+          description: ''
+    post:
+      operationId: api_expenses_create
+      tags:
+      - Expenses
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExpenseRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ExpenseRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ExpenseRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Expense'
+          description: ''
+  /api/expenses/{id}/:
+    get:
+      operationId: api_expenses_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Expenses
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Expense'
+          description: ''
+    put:
+      operationId: api_expenses_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Expenses
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExpenseRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ExpenseRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ExpenseRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Expense'
+          description: ''
+    patch:
+      operationId: api_expenses_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Expenses
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedExpenseRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedExpenseRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedExpenseRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Expense'
+          description: ''
+    delete:
+      operationId: api_expenses_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Expenses
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/export/:
+    get:
+      operationId: export_expenses
+      summary: Export expenses
+      parameters:
+      - in: query
+        name: account
+        schema:
+          type: string
+        description: Filter by account UUID or name
+      - in: query
+        name: category
+        schema:
+          type: string
+        description: Filter by category UUID or name
+      - in: query
+        name: end_date
+        schema:
+          type: string
+        description: Filter expenses up to this date (YYYY-MM-DD)
+      - in: query
+        name: max_amount
+        schema:
+          type: number
+          format: double
+        description: Maximum amount
+      - in: query
+        name: min_amount
+        schema:
+          type: number
+          format: double
+        description: Minimum amount
+      - in: query
+        name: search
+        schema:
+          type: string
+        description: Search notes, category, or account
+      - in: query
+        name: start_date
+        schema:
+          type: string
+        description: Filter expenses from this date (YYYY-MM-DD)
+      - in: query
+        name: type
+        schema:
+          type: string
+          enum:
+          - csv
+          - excel
+          - pdf
+        description: Export format
+      tags:
+      - Expenses
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: Exported expense file
+        '400':
+          description: Invalid export format
+  /api/notifications/:
+    get:
+      operationId: api_notifications_list
+      summary: List notifications
+      parameters:
+      - in: query
+        name: is_read
+        schema:
+          type: boolean
+        description: Filter by read status
+      - in: query
+        name: notification_type
+        schema:
+          type: string
+        description: Filter by notification type
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - Notifications
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedNotificationList'
+          description: ''
+  /api/notifications/{id}/read/:
+    put:
+      operationId: api_notifications_read_update
+      summary: Mark a notification as read
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Notifications
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+          description: ''
+  /api/recurring/:
+    get:
+      operationId: api_recurring_list
+      summary: List recurring expenses or create a recurring expense
+      parameters:
+      - in: query
+        name: account
+        schema:
+          type: string
+        description: Filter by account UUID
+      - in: query
+        name: category
+        schema:
+          type: string
+        description: Filter by category UUID
+      - in: query
+        name: end_date
+        schema:
+          type: string
+        description: Filter recurring expenses up to this date
+      - in: query
+        name: frequency
+        schema:
+          type: string
+        description: Filter by frequency
+      - in: query
+        name: is_active
+        schema:
+          type: boolean
+        description: Filter by active status
+      - in: query
+        name: max_amount
+        schema:
+          type: number
+          format: double
+        description: Maximum amount
+      - in: query
+        name: min_amount
+        schema:
+          type: number
+          format: double
+        description: Minimum amount
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: query
+        name: search
+        schema:
+          type: string
+        description: Search notes or category
+      - in: query
+        name: start_date
+        schema:
+          type: string
+        description: Filter recurring expenses starting from this date
+      tags:
+      - Recurring
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedRecurringExpenseList'
+          description: ''
+    post:
+      operationId: api_recurring_create
+      tags:
+      - Recurring
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecurringExpenseRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RecurringExpenseRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RecurringExpenseRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecurringExpense'
+          description: ''
+  /api/recurring/{id}/:
+    get:
+      operationId: api_recurring_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Recurring
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecurringExpense'
+          description: ''
+    put:
+      operationId: api_recurring_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Recurring
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecurringExpenseRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RecurringExpenseRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RecurringExpenseRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecurringExpense'
+          description: ''
+    patch:
+      operationId: api_recurring_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Recurring
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedRecurringExpenseRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedRecurringExpenseRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedRecurringExpenseRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecurringExpense'
+          description: ''
+    delete:
+      operationId: api_recurring_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Recurring
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/stats/:
+    get:
+      operationId: api_stats_retrieve
+      summary: Get expense statistics
+      tags:
+      - Expenses
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: Aggregated expense statistics
+  /auth/login/:
+    post:
+      operationId: auth_login_create
+      summary: Log in and receive JWT tokens
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+          description: ''
+  /auth/logout/:
+    post:
+      operationId: auth_logout_create
+      summary: Log out and blacklist the refresh token
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LogoutRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LogoutRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LogoutRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+          description: ''
+        '400':
+          description: Missing or invalid refresh token
+  /auth/profile/:
+    get:
+      operationId: auth_profile_retrieve
+      tags:
+      - auth
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    put:
+      operationId: auth_profile_update
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    patch:
+      operationId: auth_profile_partial_update
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /auth/refresh/:
+    post:
+      operationId: auth_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      summary: Refresh an access token
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+        required: true
+      responses:
+        '200':
+          description: Refreshed token response
+  /auth/register/:
+    post:
+      operationId: auth_register_create
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Register'
+          description: ''
+  /dashboard/categories:
+    get:
+      operationId: dashboard_categories_retrieve
+      summary: Get category breakdown
+      tags:
+      - Dashboard
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardCategories'
+          description: ''
+  /dashboard/insights:
+    get:
+      operationId: dashboard_insights_retrieve
+      summary: Get smart insights
+      tags:
+      - Dashboard
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardInsights'
+          description: ''
+  /dashboard/recent:
+    get:
+      operationId: dashboard_recent_retrieve
+      summary: Get recent transactions
+      tags:
+      - Dashboard
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardRecent'
+          description: ''
+  /dashboard/summary:
+    get:
+      operationId: dashboard_summary_retrieve
+      summary: Get dashboard summary
+      tags:
+      - Dashboard
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardSummary'
+          description: ''
+  /dashboard/trends:
+    get:
+      operationId: dashboard_trends_retrieve
+      summary: Get spending trends
+      tags:
+      - Dashboard
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardTrends'
+          description: ''
+components:
+  schemas:
+    Account:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        account_type:
+          $ref: '#/components/schemas/AccountTypeEnum'
+        opening_balance:
+          type: number
+          format: double
+        current_balance:
+          type: number
+          format: double
+          readOnly: true
+        owner:
+          type: string
+          format: uuid
+          readOnly: true
+      required:
+      - account_type
+      - current_balance
+      - id
+      - name
+      - owner
+    AccountRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        account_type:
+          $ref: '#/components/schemas/AccountTypeEnum'
+        opening_balance:
+          type: number
+          format: double
+      required:
+      - account_type
+      - name
+    AccountTypeEnum:
+      enum:
+      - cash
+      - bank
+      - credit_card
+      type: string
+      description: |-
+        * `cash` - Cash
+        * `bank` - Bank
+        * `credit_card` - Credit Card
+    Category:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        owner:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: true
+      required:
+      - id
+      - name
+      - owner
+    CategoryRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+      required:
+      - name
+    DashboardAccountBalance:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        type:
+          type: string
+        opening_balance:
+          type: number
+          format: double
+        current_balance:
+          type: number
+          format: double
+      required:
+      - current_balance
+      - id
+      - name
+      - opening_balance
+      - type
+    DashboardCategories:
+      type: object
+      properties:
+        period:
+          type: string
+        total_spend:
+          type: number
+          format: double
+        breakdown:
+          type: array
+          items:
+            $ref: '#/components/schemas/DashboardCategoryItem'
+      required:
+      - breakdown
+      - period
+      - total_spend
+    DashboardCategoryItem:
+      type: object
+      properties:
+        category:
+          type: string
+        amount:
+          type: number
+          format: double
+        percentage:
+          type: number
+          format: double
+      required:
+      - amount
+      - category
+      - percentage
+    DashboardExpenseItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        amount:
+          type: number
+          format: double
+        currency:
+          type: string
+        converted_amount:
+          type: number
+          format: double
+        base_currency:
+          type: string
+        date:
+          type: string
+          format: date
+        notes:
+          type: string
+        category:
+          type: string
+          nullable: true
+        account:
+          type: string
+          nullable: true
+      required:
+      - account
+      - amount
+      - base_currency
+      - category
+      - converted_amount
+      - currency
+      - date
+      - id
+      - notes
+    DashboardInsightItem:
+      type: object
+      properties:
+        rule:
+          type: string
+        message:
+          type: string
+        severity:
+          type: string
+      required:
+      - message
+      - rule
+      - severity
+    DashboardInsights:
+      type: object
+      properties:
+        period:
+          type: string
+        insights:
+          type: array
+          items:
+            $ref: '#/components/schemas/DashboardInsightItem'
+      required:
+      - insights
+      - period
+    DashboardMonthSpend:
+      type: object
+      properties:
+        label:
+          type: string
+        total_spend:
+          type: number
+          format: double
+      required:
+      - label
+      - total_spend
+    DashboardRecent:
+      type: object
+      properties:
+        recent_transactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/DashboardExpenseItem'
+      required:
+      - recent_transactions
+    DashboardSummary:
+      type: object
+      properties:
+        current_month:
+          $ref: '#/components/schemas/DashboardMonthSpend'
+        last_month:
+          $ref: '#/components/schemas/DashboardMonthSpend'
+        percent_change:
+          type: number
+          format: double
+        top_category:
+          $ref: '#/components/schemas/DashboardTopCategory'
+        top_expenses:
+          type: array
+          items:
+            $ref: '#/components/schemas/DashboardExpenseItem'
+        account_balances:
+          type: array
+          items:
+            $ref: '#/components/schemas/DashboardAccountBalance'
+      required:
+      - account_balances
+      - current_month
+      - last_month
+      - percent_change
+      - top_category
+      - top_expenses
+    DashboardTopCategory:
+      type: object
+      properties:
+        name:
+          type: string
+          nullable: true
+        amount:
+          type: number
+          format: double
+      required:
+      - amount
+      - name
+    DashboardTrendPoint:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        amount:
+          type: number
+          format: double
+      required:
+      - amount
+      - date
+    DashboardTrends:
+      type: object
+      properties:
+        period:
+          type: string
+        daily_expenses:
+          type: array
+          items:
+            $ref: '#/components/schemas/DashboardTrendPoint'
+      required:
+      - daily_expenses
+      - period
+    Expense:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        amount:
+          type: number
+          format: double
+        currency:
+          type: string
+          maxLength: 3
+        exchange_rate:
+          type: number
+          format: double
+          readOnly: true
+        converted_amount:
+          type: number
+          format: double
+          readOnly: true
+        owner_base_currency:
+          type: string
+          readOnly: true
+        account:
+          type: string
+          format: uuid
+        account_name:
+          type: string
+          readOnly: true
+        date:
+          type: string
+          format: date
+        notes:
+          type: string
+        receipt:
+          type: string
+          format: uri
+          nullable: true
+        receipt_path:
+          type: string
+          readOnly: true
+        receipt_url:
+          type: string
+          format: uri
+          nullable: true
+          readOnly: true
+        category:
+          type: string
+          format: uuid
+          nullable: true
+        category_name:
+          type: string
+          readOnly: true
+        owner:
+          type: string
+          format: uuid
+          readOnly: true
+      required:
+      - account
+      - account_name
+      - amount
+      - category_name
+      - converted_amount
+      - exchange_rate
+      - id
+      - owner
+      - owner_base_currency
+      - receipt_path
+      - receipt_url
+    ExpenseRequest:
+      type: object
+      properties:
+        amount:
+          type: number
+          format: double
+        currency:
+          type: string
+          minLength: 1
+          maxLength: 3
+        account:
+          type: string
+          format: uuid
+        date:
+          type: string
+          format: date
+        notes:
+          type: string
+        receipt:
+          type: string
+          format: binary
+          nullable: true
+        category:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - account
+      - amount
+    FrequencyEnum:
+      enum:
+      - daily
+      - weekly
+      - monthly
+      type: string
+      description: |-
+        * `daily` - Daily
+        * `weekly` - Weekly
+        * `monthly` - Monthly
+    LoginRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 1
+        password:
+          type: string
+          minLength: 1
+      required:
+      - password
+      - username
+    LogoutRequest:
+      type: object
+      properties:
+        refresh:
+          type: string
+          minLength: 1
+      required:
+      - refresh
+    Message:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+      - message
+    Notification:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        notification_type:
+          allOf:
+          - $ref: '#/components/schemas/NotificationTypeEnum'
+          readOnly: true
+        title:
+          type: string
+          readOnly: true
+        message:
+          type: string
+          readOnly: true
+        is_read:
+          type: boolean
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        read_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        expense_id:
+          type: string
+          format: uuid
+          readOnly: true
+        recurring_expense_id:
+          type: string
+          format: uuid
+          readOnly: true
+      required:
+      - created_at
+      - expense_id
+      - id
+      - is_read
+      - message
+      - notification_type
+      - read_at
+      - recurring_expense_id
+      - title
+    NotificationTypeEnum:
+      enum:
+      - overspending
+      - large_expense
+      - recurring_reminder
+      - inactivity
+      type: string
+      description: |-
+        * `overspending` - Overspending Alert
+        * `large_expense` - Large Expense Alert
+        * `recurring_reminder` - Recurring Reminder
+        * `inactivity` - Inactivity Alert
+    PaginatedAccountList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Account'
+    PaginatedCategoryList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
+    PaginatedExpenseList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Expense'
+    PaginatedNotificationList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Notification'
+    PaginatedRecurringExpenseList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/RecurringExpense'
+    PatchedAccountRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        account_type:
+          $ref: '#/components/schemas/AccountTypeEnum'
+        opening_balance:
+          type: number
+          format: double
+    PatchedCategoryRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+    PatchedExpenseRequest:
+      type: object
+      properties:
+        amount:
+          type: number
+          format: double
+        currency:
+          type: string
+          minLength: 1
+          maxLength: 3
+        account:
+          type: string
+          format: uuid
+        date:
+          type: string
+          format: date
+        notes:
+          type: string
+        receipt:
+          type: string
+          format: binary
+          nullable: true
+        category:
+          type: string
+          format: uuid
+          nullable: true
+    PatchedRecurringExpenseRequest:
+      type: object
+      properties:
+        amount:
+          type: number
+          format: double
+        currency:
+          type: string
+          minLength: 1
+          maxLength: 3
+        account:
+          type: string
+          format: uuid
+        category:
+          type: string
+          format: uuid
+          nullable: true
+        notes:
+          type: string
+        frequency:
+          $ref: '#/components/schemas/FrequencyEnum'
+        start_date:
+          type: string
+          format: date
+        next_run_date:
+          type: string
+          format: date
+        is_active:
+          type: boolean
+    PatchedUserRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 1
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        base_currency:
+          type: string
+          minLength: 1
+          maxLength: 3
+    RecurringExpense:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        amount:
+          type: number
+          format: double
+        currency:
+          type: string
+          maxLength: 3
+        owner_base_currency:
+          type: string
+          readOnly: true
+        account:
+          type: string
+          format: uuid
+        account_name:
+          type: string
+          readOnly: true
+        category:
+          type: string
+          format: uuid
+          nullable: true
+        category_name:
+          type: string
+          readOnly: true
+        notes:
+          type: string
+        frequency:
+          $ref: '#/components/schemas/FrequencyEnum'
+        start_date:
+          type: string
+          format: date
+        next_run_date:
+          type: string
+          format: date
+        last_generated_date:
+          type: string
+          format: date
+          readOnly: true
+          nullable: true
+        is_active:
+          type: boolean
+        owner:
+          type: string
+          format: uuid
+          readOnly: true
+      required:
+      - account
+      - account_name
+      - amount
+      - category_name
+      - frequency
+      - id
+      - last_generated_date
+      - next_run_date
+      - owner
+      - owner_base_currency
+    RecurringExpenseRequest:
+      type: object
+      properties:
+        amount:
+          type: number
+          format: double
+        currency:
+          type: string
+          minLength: 1
+          maxLength: 3
+        account:
+          type: string
+          format: uuid
+        category:
+          type: string
+          format: uuid
+          nullable: true
+        notes:
+          type: string
+        frequency:
+          $ref: '#/components/schemas/FrequencyEnum'
+        start_date:
+          type: string
+          format: date
+        next_run_date:
+          type: string
+          format: date
+        is_active:
+          type: boolean
+      required:
+      - account
+      - amount
+      - frequency
+      - next_run_date
+    Register:
+      type: object
+      properties:
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        base_currency:
+          type: string
+          maxLength: 3
+      required:
+      - email
+      - username
+    RegisterRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 1
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+        password:
+          type: string
+          writeOnly: true
+          minLength: 8
+        password_confirm:
+          type: string
+          writeOnly: true
+          minLength: 1
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        base_currency:
+          type: string
+          minLength: 1
+          maxLength: 3
+      required:
+      - email
+      - password
+      - password_confirm
+      - username
+    Token:
+      type: object
+      properties:
+        refresh:
+          type: string
+        access:
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - access
+      - refresh
+      - user
+    TokenRefreshRequest:
+      type: object
+      properties:
+        refresh:
+          type: string
+          minLength: 1
+      required:
+      - refresh
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        base_currency:
+          type: string
+          maxLength: 3
+      required:
+      - email
+      - id
+      - username
+    UserRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 1
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        base_currency:
+          type: string
+          minLength: 1
+          maxLength: 3
+      required:
+      - email
+      - username
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
