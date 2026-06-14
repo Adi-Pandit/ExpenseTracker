@@ -4,6 +4,7 @@ import datetime
 import xlwt
 from dateutil.relativedelta import relativedelta
 from django.contrib.auth import get_user_model
+from django.db import transaction
 from django.db.models import Sum
 from django.http import HttpResponse
 from django.utils import timezone
@@ -207,42 +208,52 @@ def generate_due_recurring_expenses(run_date=None):
     run_date = run_date or datetime.date.today()
     created_count = 0
 
-    recurring_expenses = (
+    due_ids = list(
         RecurringExpense.objects.filter(is_active=True, next_run_date__lte=run_date)
-        .select_related("account", "category", "owner")
         .order_by("next_run_date", "id")
+        .values_list("id", flat=True)
     )
 
-    for recurring_expense in recurring_expenses:
-        generation_date = recurring_expense.next_run_date
+    for pk in due_ids:
+        with transaction.atomic():
+            try:
+                recurring_expense = (
+                    RecurringExpense.objects.select_for_update()
+                    .select_related("account", "category", "owner")
+                    .get(pk=pk, is_active=True, next_run_date__lte=run_date)
+                )
+            except RecurringExpense.DoesNotExist:
+                continue
 
-        while generation_date <= run_date:
-            exchange_rate, converted_amount = convert_amount(
-                recurring_expense.amount,
-                recurring_expense.currency,
-                recurring_expense.owner.base_currency,
-            )
-            expense = Expense.objects.create(
-                amount=recurring_expense.amount,
-                currency=recurring_expense.currency,
-                exchange_rate=exchange_rate,
-                converted_amount=converted_amount,
-                date=generation_date,
-                notes=recurring_expense.notes,
-                owner=recurring_expense.owner,
-                category=recurring_expense.category,
-                account=recurring_expense.account,
-            )
-            process_expense_notifications(expense)
-            created_count += 1
+            generation_date = recurring_expense.next_run_date
 
-            recurring_expense.last_generated_date = generation_date
-            generation_date = get_next_recurring_date(
-                generation_date, recurring_expense.frequency
-            )
+            while generation_date <= run_date:
+                exchange_rate, converted_amount = convert_amount(
+                    recurring_expense.amount,
+                    recurring_expense.currency,
+                    recurring_expense.owner.base_currency,
+                )
+                expense = Expense.objects.create(
+                    amount=recurring_expense.amount,
+                    currency=recurring_expense.currency,
+                    exchange_rate=exchange_rate,
+                    converted_amount=converted_amount,
+                    date=generation_date,
+                    notes=recurring_expense.notes,
+                    owner=recurring_expense.owner,
+                    category=recurring_expense.category,
+                    account=recurring_expense.account,
+                )
+                process_expense_notifications(expense)
+                created_count += 1
 
-        recurring_expense.next_run_date = generation_date
-        recurring_expense.save(update_fields=["last_generated_date", "next_run_date"])
+                recurring_expense.last_generated_date = generation_date
+                generation_date = get_next_recurring_date(
+                    generation_date, recurring_expense.frequency
+                )
+
+            recurring_expense.next_run_date = generation_date
+            recurring_expense.save(update_fields=["last_generated_date", "next_run_date"])
 
     return created_count
 
