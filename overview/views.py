@@ -1,176 +1,250 @@
-from django.shortcuts import render
-import datetime
-from expense.models import Expense, Category
-from budget.models import Budget, Budget_amount
-from django.db.models import Sum
-from django.http import JsonResponse
-from datetime import date
-import calendar
-from collections import OrderedDict
+from datetime import timedelta
 
-# Create your views here.
-def index(request):
-    currentDate = date.today()
-    monthName = currentDate.strftime("%B")
-    month = int(currentDate.strftime("%m"))
-    year = int(currentDate.strftime("%Y"))
-    first, last = calendar.monthrange(year, month)
-    start_date = datetime.datetime(year, month, 1)
-    last_date = datetime.datetime(year, month, last)
-    expenseMonth = Expense.objects.filter(owner=request.user,date__gte=start_date,date__lte=last_date)
-    sumMonthExpense = expenseMonth.aggregate(Sum('amount'))
-    for value in sumMonthExpense.values():
-        sumMonthExpense=value
+from django.db.models import Sum, Value
+from django.db.models.functions import Coalesce, TruncDate
+from django.utils.timezone import localdate
+from drf_spectacular.utils import extend_schema, extend_schema_view
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-    todays_date = datetime.date.today()
-    today = todays_date-datetime.timedelta(days=0)
-    expenseToday = Expense.objects.filter(owner=request.user,date__gte=today,date__lte=todays_date)
-    sumTodayExpense= expenseToday.aggregate(Sum('amount'))
-    for value in sumTodayExpense.values():
-        sumTodayExpense=value
+from expense.models import Account, Expense
+from .serializers import (
+    DashboardCategoriesSerializer,
+    DashboardInsightsSerializer,
+    DashboardRecentSerializer,
+    DashboardSummarySerializer,
+    DashboardTrendsSerializer,
+)
+from .services import build_smart_insights, current_month_range, last_month_range
 
-    '''categories = Category.objects.filter(type='global')
-    usercategories = Category.objects.filter(type='local',owner=request.user)
-    categoryList = []
-    categoryDict = {}
-    for category in categories:
-        categoryList.append(category.name)
-        categoryDict[category.name] = 0
-    for category in usercategories:
-        categoryList.append(category.name)
-        categoryDict[category.name] = 0
-    categoryList.sort()
-    categoryString = ""
-    for category in categoryList:
-        categoryString += category+"," 
-
-    CategoryDict = dict(sorted(categoryDict.items()))
-    print(CategoryDict)'''
-
-    today = datetime.date.today()
-    first = today.replace(day=1)
-    last_month_last_date = first - datetime.timedelta(days=1)
-    lastMonth = last_month_last_date.strftime("%B")
-    last_month_first_date = last_month_last_date.replace(day=1)
-    seclast_month_last_date = last_month_first_date - datetime.timedelta(days=1)
-    secLastMonth = seclast_month_last_date.strftime("%B")
-    seclast_month_first_date = seclast_month_last_date.replace(day=1)
-    
-    expenseThreeMonths = Expense.objects.filter(owner=request.user,date__gte= seclast_month_first_date,date__lte=last_date)
-    categoryList = []
-    categoryDict = {}
-    for expense in expenseThreeMonths:
-        if expense.category in categoryDict:
-            pass
-        else:
-            categoryList.append(expense.category)
-            categoryDict[expense.category] = 0
-    categoryList.sort()
-    categoryString = ""
-    for category in categoryList:
-        categoryString += category+"," 
-
-    CategoryDict = dict(sorted(categoryDict.items()))
-   
-    expenseLastMonth = Expense.objects.filter(owner=request.user,date__gte=last_month_first_date,date__lte=last_month_last_date)
-    expenseSecLastMonth = Expense.objects.filter(owner=request.user,date__gte=seclast_month_first_date,date__lte=seclast_month_last_date)
-
-    #Current Month
-    CurrentCategoryDict = CategoryDict.copy()
-    for expense in expenseMonth:
-        CurrentCategoryDict[expense.category] += expense.amount 
-    CurrentCategoryList = list(CurrentCategoryDict.values())
-    CurrentCategoryString = ""
-    for amount in CurrentCategoryList:
-        CurrentCategoryString += str(amount)+"," 
-
-    #Last Month
-    LastCategoryDict = CategoryDict.copy()
-    for expense in expenseLastMonth:
-        LastCategoryDict[expense.category] += expense.amount
-    LastCategoryList = list(LastCategoryDict.values())
-    LastCategoryString = ""
-    for amount in LastCategoryList:
-        LastCategoryString += str(amount)+","
-
-    #Second Last Month
-    SecLastCategoryDict = CategoryDict.copy()
-    for expense in expenseSecLastMonth:
-        SecLastCategoryDict[expense.category] += expense.amount
-    SecLastCategoryList = list(SecLastCategoryDict.values())
-    SecLastCategoryString = ""
-    for amount in SecLastCategoryList:
-        SecLastCategoryString += str(amount)+","
-
-
-    try:
-        budget = Budget.objects.get(owner=request.user, month=monthName, year=year)
-    except:
-        context = {
-            'sumMonthExpense': sumMonthExpense,
-            'expenseCount': expenseToday.count,
-            'sumTodayExpense': sumTodayExpense,
-            'msg' : 'unset',
-            'monthName': monthName,
-            'categoryString': categoryString,
-            'lastMonth': lastMonth,
-            'secLastMonth': secLastMonth,
-            'CurrentCategoryString': CurrentCategoryString,
-            'LastCategoryString': LastCategoryString,
-            'SecLastCategoryString': SecLastCategoryString
-        }
-        return render(request, 'overview/index.html', context)
-    budget_amount = Budget_amount.objects.filter(budget_id=budget.id)
-    Total_budget = 0
-    for amt in budget_amount:
-        Total_budget += amt.amount
-    print(sumMonthExpense)
-    print(Total_budget)
-    if sumMonthExpense == None:
-        sumMonthExpense = 0
-    percentage = (sumMonthExpense/Total_budget)*100
-    rem_percentage = 100-percentage
-    
-    context = {
-        'sumMonthExpense': sumMonthExpense,
-        'expenseCount': expenseToday.count,
-        'sumTodayExpense': sumTodayExpense,
-        'Total_budget': Total_budget,
-        'percentage': percentage,
-        'rem_percentage': rem_percentage,
-        'monthName': monthName,
-        'categoryString': categoryString,
-        'lastMonth': lastMonth,
-        'secLastMonth': secLastMonth,
-        'CurrentCategoryString': CurrentCategoryString,
-        'LastCategoryString': LastCategoryString,
-        'SecLastCategoryString': SecLastCategoryString
+def _serialize_expense(expense):
+    return {
+        "id": str(expense.id),
+        "amount": expense.amount,
+        "currency": expense.currency,
+        "converted_amount": expense.converted_amount,
+        "base_currency": expense.owner.base_currency,
+        "date": expense.date,
+        "notes": expense.notes,
+        "category": expense.category.name if expense.category else None,
+        "account": expense.account.name if expense.account else None,
     }
-    return render(request, 'overview/index.html', context)
 
-def budget_expense_summary(request):
-    currentDate = date.today()
-    month = int(currentDate.strftime("%m"))
-    year = int(currentDate.strftime("%Y"))
-    first, last = calendar.monthrange(year, month)
-    start_date = datetime.datetime(year, month, 1)
-    last_date = datetime.datetime(year, month, last)
-    TotalExpense = Expense.objects.filter(owner=request.user,date__gte=start_date,date__lte=last_date)
-    sumExpense = TotalExpense.aggregate(Sum('amount'))
-    for value in sumExpense.values():
-        sumExpense=value
-    print(sumExpense)
-    currentDate = date.today()
-    monthName = currentDate.strftime("%B")
-    year = int(currentDate.strftime("%Y"))
-    try:
-        budget = Budget.objects.get(owner=request.user, month=monthName, year=year)
-    except:
-         return JsonResponse({'expense_budget_data': {}},safe=False)
-    budget_amount = Budget_amount.objects.filter(budget_id=budget.id)
-    Total_budget = 0
-    for amt in budget_amount:
-        Total_budget += amt.amount
 
-    finalrep={'Expense':sumExpense,'Budget':Total_budget,'Balance':Total_budget-sumExpense}
-    return JsonResponse({'expense_budget_data': finalrep},safe=False)
+def _get_summary_payload(user):
+    today = localdate()
+    current_start, current_end = current_month_range(today)
+    last_start, last_end = last_month_range(today)
+
+    current_month_expenses = Expense.objects.filter(
+        owner=user, date__gte=current_start, date__lte=current_end
+    ).select_related("category", "account")
+    last_month_expenses = Expense.objects.filter(
+        owner=user, date__gte=last_start, date__lte=last_end
+    )
+
+    total_spend = (
+        current_month_expenses.aggregate(total=Sum("converted_amount"))["total"] or 0
+    )
+    last_month_spend = (
+        last_month_expenses.aggregate(total=Sum("converted_amount"))["total"] or 0
+    )
+    if last_month_spend:
+        percent_change = round(
+            ((total_spend - last_month_spend) / last_month_spend) * 100, 2
+        )
+    elif total_spend:
+        percent_change = 100.0
+    else:
+        percent_change = 0.0
+
+    top_category_row = (
+        current_month_expenses.values("category__name")
+        .annotate(total=Sum("converted_amount"))
+        .order_by("-total")
+        .first()
+    )
+
+    top_expenses = [
+        _serialize_expense(expense)
+        for expense in current_month_expenses.order_by("-converted_amount", "-date")[:5]
+    ]
+
+    accounts = Account.objects.filter(owner=user).annotate(
+        spent=Coalesce(Sum("expenses__converted_amount"), Value(0.0))
+    )
+    account_balances = [
+        {
+            "id": str(account.id),
+            "name": account.name,
+            "type": account.account_type,
+            "opening_balance": account.opening_balance,
+            "current_balance": round(account.opening_balance - account.spent, 2),
+        }
+        for account in accounts
+    ]
+
+    return {
+        "current_month": {
+            "label": current_start.strftime("%B %Y"),
+            "total_spend": round(total_spend, 2),
+        },
+        "last_month": {
+            "label": last_start.strftime("%B %Y"),
+            "total_spend": round(last_month_spend, 2),
+        },
+        "percent_change": percent_change,
+        "top_category": {
+            "name": top_category_row["category__name"] if top_category_row else None,
+            "amount": round(top_category_row["total"], 2) if top_category_row else 0,
+        },
+        "top_expenses": top_expenses,
+        "account_balances": account_balances,
+    }
+
+
+def _get_trends_payload(user):
+    today = localdate()
+    current_start, current_end = current_month_range(today)
+
+    expenses_by_day = {
+        row["day"]: round(row["total"], 2)
+        for row in (
+            Expense.objects.filter(owner=user, date__gte=current_start, date__lte=current_end)
+            .annotate(day=TruncDate("date"))
+            .values("day")
+            .annotate(total=Sum("converted_amount"))
+            .order_by("day")
+        )
+    }
+
+    trend = []
+    current_day = current_start
+    while current_day <= current_end:
+        trend.append(
+            {
+                "date": current_day,
+                "amount": expenses_by_day.get(current_day, 0),
+            }
+        )
+        current_day += timedelta(days=1)
+
+    return {
+        "period": current_start.strftime("%B %Y"),
+        "daily_expenses": trend,
+    }
+
+
+def _get_categories_payload(user):
+    today = localdate()
+    current_start, current_end = current_month_range(today)
+
+    category_rows = list(
+        Expense.objects.filter(owner=user, date__gte=current_start, date__lte=current_end)
+        .values("category__name")
+        .annotate(total=Sum("converted_amount"))
+        .order_by("-total")
+    )
+    total_spend = sum(row["total"] for row in category_rows)
+
+    breakdown = []
+    for row in category_rows:
+        amount = row["total"] or 0
+        breakdown.append(
+            {
+                "category": row["category__name"] or "Uncategorized",
+                "amount": round(amount, 2),
+                "percentage": round((amount / total_spend) * 100, 2) if total_spend else 0,
+            }
+        )
+
+    return {
+        "period": current_start.strftime("%B %Y"),
+        "total_spend": round(total_spend, 2),
+        "breakdown": breakdown,
+    }
+
+
+def _get_recent_payload(user):
+    recent_expenses = Expense.objects.filter(owner=user).select_related(
+        "category", "account"
+    ).order_by("-date", "-id")[:10]
+
+    return {
+        "recent_transactions": [_serialize_expense(expense) for expense in recent_expenses]
+    }
+
+
+def _get_insights_payload(user):
+    return build_smart_insights(user)
+
+
+@extend_schema_view(
+    get=extend_schema(
+        tags=["Dashboard"],
+        summary="Get dashboard summary",
+        responses=DashboardSummarySerializer,
+    )
+)
+class DashboardSummaryAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        return Response(_get_summary_payload(request.user))
+
+
+@extend_schema_view(
+    get=extend_schema(
+        tags=["Dashboard"],
+        summary="Get spending trends",
+        responses=DashboardTrendsSerializer,
+    )
+)
+class DashboardTrendsAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        return Response(_get_trends_payload(request.user))
+
+
+@extend_schema_view(
+    get=extend_schema(
+        tags=["Dashboard"],
+        summary="Get category breakdown",
+        responses=DashboardCategoriesSerializer,
+    )
+)
+class DashboardCategoriesAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        return Response(_get_categories_payload(request.user))
+
+
+@extend_schema_view(
+    get=extend_schema(
+        tags=["Dashboard"],
+        summary="Get recent transactions",
+        responses=DashboardRecentSerializer,
+    )
+)
+class DashboardRecentAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        return Response(_get_recent_payload(request.user))
+
+
+@extend_schema_view(
+    get=extend_schema(
+        tags=["Dashboard"],
+        summary="Get smart insights",
+        responses=DashboardInsightsSerializer,
+    )
+)
+class DashboardInsightsAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        return Response(_get_insights_payload(request.user))
