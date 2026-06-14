@@ -1,6 +1,8 @@
 from django.contrib.auth import authenticate, get_user_model
 from rest_framework import serializers
 
+from expense.currency import normalize_currency_code
+from expense.services import recalculate_user_expenses_to_base_currency
 
 User = get_user_model()
 
@@ -8,8 +10,18 @@ User = get_user_model()
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["id", "username", "email", "first_name", "last_name"]
+        fields = ["id", "username", "email", "first_name", "last_name", "base_currency"]
         read_only_fields = ["id"]
+
+    def validate_base_currency(self, value):
+        return normalize_currency_code(value)
+
+    def update(self, instance, validated_data):
+        previous_base_currency = instance.base_currency
+        instance = super().update(instance, validated_data)
+        if instance.base_currency != previous_base_currency:
+            recalculate_user_expenses_to_base_currency(instance)
+        return instance
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -25,7 +37,11 @@ class RegisterSerializer(serializers.ModelSerializer):
             "password_confirm",
             "first_name",
             "last_name",
+            "base_currency",
         ]
+
+    def validate_base_currency(self, value):
+        return normalize_currency_code(value)
 
     def validate(self, data):
         if data["password"] != data["password_confirm"]:

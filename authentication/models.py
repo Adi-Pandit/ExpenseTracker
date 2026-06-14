@@ -6,6 +6,7 @@ from uuid_extensions import uuid7
 class User(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid7, editable=False)
     email = models.EmailField(unique=True)
+    base_currency = models.CharField(max_length=3, default="INR")
 
     def __str__(self):
         return self.username
