@@ -1,6 +1,7 @@
 from django.utils.timezone import localdate
 from drf_spectacular.utils import extend_schema_field
 from django.db.models import Q
+from PIL import Image, UnidentifiedImageError
 from rest_framework import serializers
 
 from .currency import convert_amount, normalize_currency_code
@@ -224,6 +225,23 @@ class ExpenseSerializer(serializers.ModelSerializer):
         max_size = 5 * 1024 * 1024
         if value.size > max_size:
             raise serializers.ValidationError("Receipt file size must not exceed 5 MB.")
+
+        allowed_formats = {"JPEG", "PNG", "GIF", "WEBP"}
+        try:
+            img = Image.open(value)
+            fmt = img.format
+        except UnidentifiedImageError:
+            raise serializers.ValidationError(
+                "Receipt must be a valid image file (JPEG, PNG, GIF, or WEBP)."
+            )
+        finally:
+            value.seek(0)
+
+        if fmt not in allowed_formats:
+            raise serializers.ValidationError(
+                f"Unsupported image type '{fmt}'. Receipt must be JPEG, PNG, GIF, or WEBP."
+            )
+
         return value
 
     @extend_schema_field(serializers.URLField(allow_null=True))
