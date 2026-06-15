@@ -1,6 +1,5 @@
 from django.conf import settings
 from django.db import models
-from django.db.models import Sum
 from django.utils.timezone import now
 from uuid_extensions import uuid7
 
@@ -62,11 +61,6 @@ class Account(models.Model):
 
     def __str__(self):
         return self.name
-
-    @property
-    def current_balance(self):
-        spent = self.expenses.aggregate(total=Sum("converted_amount"))["total"] or 0
-        return self.opening_balance - spent
 
 
 class Expense(models.Model):
