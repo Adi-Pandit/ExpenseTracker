@@ -6,7 +6,7 @@ from datetime import timedelta
 import os
 from pathlib import Path
 
-import django_heroku
+import dj_database_url
 from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -41,6 +41,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -146,7 +147,20 @@ MEDIA_ROOT = BASE_DIR / "media"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "authentication.User"
 
-django_heroku.settings(locals())
+# ── Production overrides (active when DATABASE_URL is set) ─────────────────────
+
+_database_url = os.getenv("DATABASE_URL")
+if _database_url:
+    # Supabase free tier has limited connections — close after each request.
+    DATABASES = {"default": dj_database_url.parse(_database_url, conn_max_age=0)}
+
+if not DEBUG:
+    ALLOWED_HOSTS = ["*"]
+
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
+}
 
 EMAIL_HOST = os.environ.get("EMAIL_HOST")
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
