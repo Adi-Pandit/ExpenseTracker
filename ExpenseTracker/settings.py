@@ -151,8 +151,15 @@ AUTH_USER_MODEL = "authentication.User"
 
 _database_url = os.getenv("DATABASE_URL")
 if _database_url:
-    # Supabase free tier has limited connections — close after each request.
-    DATABASES = {"default": dj_database_url.parse(_database_url, conn_max_age=0)}
+    try:
+        # Supabase free tier has limited connections — close after each request.
+        DATABASES = {"default": dj_database_url.parse(_database_url, conn_max_age=0)}
+    except Exception as exc:
+        raise RuntimeError(
+            "DATABASE_URL is set but could not be parsed. "
+            "Ensure it is a valid postgresql:// URI and that any special characters "
+            "in the password are percent-encoded (e.g. @ → %40)."
+        ) from exc
 
 if not DEBUG:
     ALLOWED_HOSTS = ["*"]
