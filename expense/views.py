@@ -221,7 +221,7 @@ class RecurringExpenseListCreateView(generics.ListCreateAPIView):
         filters.is_valid(raise_exception=True)
         values = filters.validated_data
 
-        if (is_active := values.get("is_active")) is not None:
+        if "is_active" in self.request.query_params and (is_active := values.get("is_active")) is not None:
             queryset = queryset.filter(is_active=is_active)
         if frequency := values.get("frequency"):
             queryset = queryset.filter(frequency=frequency)
@@ -317,7 +317,7 @@ class NotificationListView(generics.ListAPIView):
         filters.is_valid(raise_exception=True)
         values = filters.validated_data
 
-        if (is_read := values.get("is_read")) is not None:
+        if "is_read" in self.request.query_params and (is_read := values.get("is_read")) is not None:
             queryset = queryset.filter(is_read=is_read)
         if notification_type := values.get("notification_type"):
             queryset = queryset.filter(notification_type=notification_type)
