@@ -218,7 +218,7 @@ def generate_due_recurring_expenses(run_date=None):
         with transaction.atomic():
             try:
                 recurring_expense = (
-                    RecurringExpense.objects.select_for_update()
+                    RecurringExpense.objects.select_for_update(of=("self",))
                     .select_related("account", "category", "owner")
                     .get(pk=pk, is_active=True, next_run_date__lte=run_date)
                 )
