@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.utils.timezone import localdate
@@ -72,3 +74,92 @@ class DashboardEndpointTests(APITestCase):
             response.data["top_expenses"][0]["id"],
             str(highest_converted.id),
         )
+
+
+class DashboardRecentTests(APITestCase):
+    def setUp(self):
+        self.user = get_user_model().objects.create_user(
+            username="recent-user",
+            email="recent@example.com",
+            password="test-password",
+        )
+        self.account = Account.objects.create(
+            owner=self.user,
+            name="Cash",
+            account_type=Account.AccountType.CASH,
+        )
+        self.client.force_authenticate(self.user)
+
+    def _create_expense(self, notes="Test"):
+        return Expense.objects.create(
+            owner=self.user, account=self.account,
+            amount=Decimal("100"), currency="INR",
+            exchange_rate=Decimal("1"), converted_amount=Decimal("100"),
+            date=localdate(), notes=notes,
+        )
+
+    def test_recent_endpoint_returns_empty_list_with_no_expenses(self):
+        response = self.client.get(reverse("dashboard:recent"))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["recent_transactions"], [])
+
+    def test_recent_endpoint_returns_transactions(self):
+        self._create_expense(notes="My purchase")
+        response = self.client.get(reverse("dashboard:recent"))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data["recent_transactions"]), 1)
+        self.assertEqual(response.data["recent_transactions"][0]["notes"], "My purchase")
+
+    def test_recent_endpoint_includes_expected_fields(self):
+        self._create_expense()
+        response = self.client.get(reverse("dashboard:recent"))
+        transaction = response.data["recent_transactions"][0]
+        for field in ("id", "amount", "currency", "converted_amount", "date", "notes"):
+            self.assertIn(field, transaction)
+
+    def test_recent_endpoint_returns_at_most_10_transactions(self):
+        for i in range(15):
+            self._create_expense(notes=f"Expense {i}")
+        response = self.client.get(reverse("dashboard:recent"))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertLessEqual(len(response.data["recent_transactions"]), 10)
+
+    def test_recent_endpoint_requires_authentication(self):
+        self.client.force_authenticate(user=None)
+        response = self.client.get(reverse("dashboard:recent"))
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+class DashboardInsightsTests(APITestCase):
+    def setUp(self):
+        self.user = get_user_model().objects.create_user(
+            username="insights-user",
+            email="insights@example.com",
+            password="test-password",
+        )
+        self.client.force_authenticate(self.user)
+
+    def test_insights_endpoint_returns_200(self):
+        response = self.client.get(reverse("dashboard:insights"))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_insights_response_has_period_and_insights_keys(self):
+        response = self.client.get(reverse("dashboard:insights"))
+        self.assertIn("period", response.data)
+        self.assertIn("insights", response.data)
+
+    def test_insights_contains_at_least_one_insight(self):
+        response = self.client.get(reverse("dashboard:insights"))
+        self.assertGreater(len(response.data["insights"]), 0)
+
+    def test_each_insight_has_required_fields(self):
+        response = self.client.get(reverse("dashboard:insights"))
+        for insight in response.data["insights"]:
+            self.assertIn("rule", insight)
+            self.assertIn("message", insight)
+            self.assertIn("severity", insight)
+
+    def test_insights_endpoint_requires_authentication(self):
+        self.client.force_authenticate(user=None)
+        response = self.client.get(reverse("dashboard:insights"))
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
