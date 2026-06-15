@@ -24,7 +24,6 @@ services:
   - type: cron
     name: generate-recurring-expenses
     runtime: python
-    plan: free
     schedule: "0 0 * * *"
     buildCommand: pip install -r requirements.txt
     startCommand: python manage.py generate_recurring_expenses
@@ -36,7 +35,6 @@ services:
   - type: cron
     name: generate-notifications
     runtime: python
-    plan: free
     schedule: "0 1 * * *"
     buildCommand: pip install -r requirements.txt
     startCommand: python manage.py generate_notifications
