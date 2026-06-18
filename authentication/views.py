@@ -7,6 +7,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework.views import APIView
 from .serializers import (
+    ChangePasswordSerializer,
     LogoutSerializer,
     RegisterSerializer,
     LoginSerializer,
@@ -95,6 +96,22 @@ class UserProfileAPIView(generics.RetrieveUpdateAPIView):
 
     def get_object(self):
         return self.request.user
+
+
+class ChangePasswordAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(
+        summary="Change the authenticated user's password",
+        request=ChangePasswordSerializer,
+        responses={200: MessageSerializer},
+    )
+    def post(self, request):
+        serializer = ChangePasswordSerializer(data=request.data, context={"request": request})
+        serializer.is_valid(raise_exception=True)
+        request.user.set_password(serializer.validated_data["new_password"])
+        request.user.save()
+        return Response({"message": "Password changed successfully."})
 
 
 class TokenRefreshAPIView(TokenRefreshView):
