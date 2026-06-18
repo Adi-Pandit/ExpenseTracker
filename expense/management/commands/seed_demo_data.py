@@ -18,26 +18,30 @@ LAST_NAME = "Pandit"
 
 GLOBAL_CATEGORIES = [
     "Food & Dining",
-    "Transport",
-    "Utilities",
-    "Entertainment",
+    "Transportation",
     "Shopping",
+    "Entertainment",
+    "Bills & Utilities",
     "Healthcare",
     "Education",
     "Travel",
+    "Personal Care",
+    "Gifts & Donations",
+    "Business",
+    "Other",
 ]
 
 EXPENSES_TEMPLATE = [
-    ("Food & Dining",  Decimal("120"),  Decimal("450"),  "Groceries"),
-    ("Food & Dining",  Decimal("80"),   Decimal("300"),  "Restaurant"),
-    ("Food & Dining",  Decimal("40"),   Decimal("150"),  "Coffee"),
-    ("Transport",      Decimal("50"),   Decimal("500"),  "Fuel"),
-    ("Transport",      Decimal("20"),   Decimal("200"),  "Auto rickshaw"),
-    ("Utilities",      Decimal("800"),  Decimal("1200"), "Electricity bill"),
-    ("Utilities",      Decimal("300"),  Decimal("600"),  "Internet bill"),
-    ("Entertainment",  Decimal("200"),  Decimal("800"),  "Movies"),
-    ("Shopping",       Decimal("500"),  Decimal("3000"), "Clothing"),
-    ("Healthcare",     Decimal("200"),  Decimal("1500"), "Pharmacy"),
+    ("Food & Dining",    Decimal("120"),  Decimal("450"),  "Groceries"),
+    ("Food & Dining",    Decimal("80"),   Decimal("300"),  "Restaurant"),
+    ("Food & Dining",    Decimal("40"),   Decimal("150"),  "Coffee"),
+    ("Transportation",   Decimal("50"),   Decimal("500"),  "Fuel"),
+    ("Transportation",   Decimal("20"),   Decimal("200"),  "Auto rickshaw"),
+    ("Bills & Utilities", Decimal("800"), Decimal("1200"), "Electricity bill"),
+    ("Bills & Utilities", Decimal("300"), Decimal("600"),  "Internet bill"),
+    ("Entertainment",    Decimal("200"),  Decimal("800"),  "Movies"),
+    ("Shopping",         Decimal("500"),  Decimal("3000"), "Clothing"),
+    ("Healthcare",       Decimal("200"),  Decimal("1500"), "Pharmacy"),
 ]
 
 
@@ -129,7 +133,7 @@ class Command(BaseCommand):
         RecurringExpense.objects.create(
             owner=user,
             account=bank,
-            category=categories.get("Utilities"),
+            category=categories.get("Bills & Utilities"),
             amount=Decimal("15000"),
             currency="INR",
             frequency=RecurringExpense.Frequency.MONTHLY,
