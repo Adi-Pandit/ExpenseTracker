@@ -17,9 +17,6 @@ services:
     buildCommand: pip install -r requirements.txt && python manage.py collectstatic --no-input && python manage.py migrate && python manage.py ensure_superuser
     startCommand: gunicorn ExpenseTracker.wsgi --bind 0.0.0.0:$PORT --workers 1 --threads 4 --timeout 60
     healthCheckPath: /api/schema/
-    filters:
-      paths:
-        - backend/**
     envVars:
       - fromGroup: expense-tracker-shared
       - key: DATABASE_URL
@@ -32,9 +29,6 @@ services:
     schedule: "0 0 * * *"
     buildCommand: pip install -r requirements.txt
     startCommand: python manage.py generate_recurring_expenses
-    filters:
-      paths:
-        - backend/**
     envVars:
       - fromGroup: expense-tracker-shared
       - key: DATABASE_URL
@@ -47,9 +41,6 @@ services:
     schedule: "0 1 * * *"
     buildCommand: pip install -r requirements.txt
     startCommand: python manage.py generate_notifications
-    filters:
-      paths:
-        - backend/**
     envVars:
       - fromGroup: expense-tracker-shared
       - key: DATABASE_URL
