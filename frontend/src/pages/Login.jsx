@@ -120,7 +120,7 @@ export default function Login() {
                             <button
                                 type="button" onClick={() => setShowPw(p => !p)}
                                 style={{
-                                    position: 'absolute', right: 6, top: 6,
+                                    position: 'absolute', right: 16, top: 6,
                                     height: 34, width: 34, border: 'none', background: 'transparent',
                                     color: 'var(--text-muted)', cursor: 'pointer',
                                     fontSize: 12, fontWeight: 600, borderRadius: 8,
