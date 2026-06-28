@@ -1,7 +1,25 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+    plugins: [react()],
+    server: {
+        proxy: {
+            '/api': {
+                target: 'https://expense-tracker-api-nyr8.onrender.com',
+                changeOrigin: true,
+                secure: true,
+            },
+            '/auth': {
+                target: 'https://expense-tracker-api-nyr8.onrender.com',
+                changeOrigin: true,
+                secure: true,
+            },
+            '/dashboard': {
+                target: 'https://expense-tracker-api-nyr8.onrender.com',
+                changeOrigin: true,
+                secure: true,
+            },
+        },
+    },
 })
