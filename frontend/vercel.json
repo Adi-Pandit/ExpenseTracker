@@ -11,10 +11,6 @@
     {
       "source": "/dashboard/:path*",
       "destination": "https://expense-tracker-api-nyr8.onrender.com/dashboard/:path*"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
     }
   ]
 }
