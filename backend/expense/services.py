@@ -59,23 +59,18 @@ def get_user_expense_stats(user):
 
     current_month = today.replace(day=1)
     next_month = current_month + relativedelta(months=1)
-    monthly_expenses = Expense.objects.filter(
-        owner=user, date__gte=current_month, date__lt=next_month
-    ).select_related("category")
+    month_qs = Expense.objects.filter(owner=user, date__gte=current_month, date__lt=next_month)
+
+    total_monthly = month_qs.aggregate(Sum("converted_amount"))["converted_amount__sum"] or 0
 
     category_data = {}
-    total_monthly = monthly_expenses.aggregate(Sum("converted_amount"))["converted_amount__sum"] or 0
-
     if total_monthly > 0:
-        for expense in monthly_expenses:
-            category_name = expense.category.name if expense.category else "Uncategorized"
-            category_data[category_name] = (
-                category_data.get(category_name, 0) + expense.converted_amount
-            )
-
+        rows = month_qs.values("category__name").annotate(total=Sum("converted_amount"))
         category_data = {
-            category_name: round((amount / total_monthly) * 100, 2)
-            for category_name, amount in category_data.items()
+            (row["category__name"] or "Uncategorized"): round(
+                (row["total"] / total_monthly) * 100, 2
+            )
+            for row in rows
         }
 
     return {
