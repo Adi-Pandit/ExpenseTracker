@@ -38,6 +38,7 @@ export default function Register() {
                 username: form.username,
                 email: form.email,
                 password: form.password,
+                password_confirm: form.confirm_password,
                 base_currency: form.base_currency,
             })
             loginUser(data)
@@ -45,8 +46,23 @@ export default function Register() {
         } catch (err) {
             const msg = err.response?.data
             if (typeof msg === 'object' && msg !== null) {
-                const first = Object.entries(msg)[0]
-                setError(first ? `${first[0]}: ${[].concat(first[1]).join(' ')}` : 'Registration failed.')
+                const LABELS = {
+                    username: 'Username',
+                    email: 'Email address',
+                    password: 'Password',
+                    password_confirm: 'Confirm password',
+                    first_name: 'First name',
+                    last_name: 'Last name',
+                    base_currency: 'Currency',
+                }
+                const [field, messages] = Object.entries(msg)[0] ?? []
+                if (field) {
+                    const text = [].concat(messages).join(' ')
+                    const label = LABELS[field]
+                    setError(label ? `${label}: ${text}` : text)
+                } else {
+                    setError('Registration failed.')
+                }
             } else {
                 setError(typeof msg === 'string' ? msg : 'Registration failed.')
             }
