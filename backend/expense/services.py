@@ -5,7 +5,7 @@ import xlwt
 from dateutil.relativedelta import relativedelta
 from django.contrib.auth import get_user_model
 from django.db import transaction
-from django.db.models import Sum
+from django.db.models import OuterRef, Q, Subquery, Sum
 from django.http import HttpResponse
 from django.utils import timezone
 from reportlab.lib import colors
@@ -357,15 +357,18 @@ def generate_inactivity_notifications(run_date=None, inactivity_days=INACTIVITY_
     run_date = run_date or datetime.date.today()
     inactivity_cutoff = run_date - datetime.timedelta(days=inactivity_days)
     created_count = 0
+    dedupe_key = f"inactivity:{run_date.isoformat()}:{inactivity_days}"
 
-    for user in User.objects.all():
-        last_expense = (
-            Expense.objects.filter(owner=user).order_by("-date").values_list("date", flat=True).first()
-        )
-        if last_expense and last_expense > inactivity_cutoff:
-            continue
+    last_expense_date = (
+        Expense.objects.filter(owner=OuterRef("pk")).order_by("-date").values("date")[:1]
+    )
+    inactive_users = User.objects.annotate(
+        last_expense_date=Subquery(last_expense_date)
+    ).filter(
+        Q(last_expense_date__isnull=True) | Q(last_expense_date__lte=inactivity_cutoff)
+    )
 
-        dedupe_key = f"inactivity:{run_date.isoformat()}:{inactivity_days}"
+    for user in inactive_users.iterator():
         _, created = Notification.objects.get_or_create(
             owner=user,
             dedupe_key=dedupe_key,
