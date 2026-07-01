@@ -79,8 +79,8 @@ export default function Sidebar({ unreadCount = 0 }) {
             cursor: 'pointer',
             fontSize: 14.5,
             fontWeight: isActive ? 600 : 500,
-            color: isActive ? 'var(--primary)' : 'var(--text-muted)',
-            background: isActive ? 'var(--primary-light)' : 'transparent',
+            color: isActive ? 'var(--primary-fg)' : 'var(--text-muted)',
+            background: isActive ? 'var(--primary)' : 'transparent',
             transition: 'var(--t)',
             userSelect: 'none',
         }
