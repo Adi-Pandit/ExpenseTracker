@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.http import JsonResponse
 from django.urls import include, path
 from drf_spectacular.views import (
     SpectacularAPIView,
@@ -8,7 +9,12 @@ from drf_spectacular.views import (
     SpectacularSwaggerView,
 )
 
+
+def health(request):
+    return JsonResponse({"status": "ok"})
+
 urlpatterns = [
+    path("health/", health),
     path("admin/", admin.site.urls),
     path("api/", include("expense.urls")),
     path("auth/", include("authentication.urls", namespace="authentication")),
