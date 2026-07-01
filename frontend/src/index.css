@@ -3,9 +3,11 @@
     --font: 'Outfit', system-ui, sans-serif;
 
     /* brand */
-    --primary:        #4f46e5;
+    --primary:        #3730a3;
+    --primary-hover:  #312e81;
+    --primary-fg:     #ffffff;
     --primary-light:  #eef2ff;
-    --primary-dark:   #3730a3;
+    --primary-dark:   #1e1b7e;
     --primary-bg:     #eef2ff;
     --primary-border: #c7d2fe;
 
@@ -62,8 +64,14 @@
     --shadow-modal: 0 20px 60px rgba(16,24,40,.18), 0 4px 16px rgba(16,24,40,.08);
     --shadow-btn:   0 1px 3px rgba(79,70,229,.25), 0 1px 2px rgba(79,70,229,.15);
 
+    /* card */
+    --border-card: #e5e7eb;
+    --shadow-card: 0 1px 3px rgba(16,24,40,.06), 0 1px 2px rgba(16,24,40,.04);
+    --shadow-float: 0 4px 6px -1px rgba(16,24,40,.1), 0 2px 4px -1px rgba(16,24,40,.06);
+
     /* layout */
     --sidebar-w:    240px;
+    --sidebar-width: 240px;
     --bottom-nav-h: 64px;
     --page-pad:     28px 32px;
     --page-pad-mob: 16px;
