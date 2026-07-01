@@ -391,16 +391,20 @@ def mark_notification_as_read(notification):
 
 
 def recalculate_user_expenses_to_base_currency(user):
-    expenses_to_update = []
-    for expense in Expense.objects.filter(owner=user):
+    CHUNK_SIZE = 100
+    chunk = []
+
+    for expense in Expense.objects.filter(owner=user).iterator(chunk_size=CHUNK_SIZE):
         exchange_rate, converted_amount = convert_amount(
             expense.amount, expense.currency, user.base_currency
         )
         expense.exchange_rate = exchange_rate
         expense.converted_amount = converted_amount
-        expenses_to_update.append(expense)
+        chunk.append(expense)
 
-    if expenses_to_update:
-        Expense.objects.bulk_update(
-            expenses_to_update, ["exchange_rate", "converted_amount"]
-        )
+        if len(chunk) >= CHUNK_SIZE:
+            Expense.objects.bulk_update(chunk, ["exchange_rate", "converted_amount"])
+            chunk = []
+
+    if chunk:
+        Expense.objects.bulk_update(chunk, ["exchange_rate", "converted_amount"])
