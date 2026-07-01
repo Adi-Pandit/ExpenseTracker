@@ -2,7 +2,7 @@ import calendar
 from datetime import timedelta
 from decimal import Decimal
 
-from django.db.models import Sum
+from django.db.models import Case, Count, DecimalField, Q, Sum, Value, When
 from django.utils.timezone import localdate
 
 from expense.models import Expense
@@ -119,24 +119,39 @@ def add_spending_spike_rule(insights, current_month_expenses):
 
 
 def add_weekend_weekday_rule(insights, current_month_expenses):
-    weekend_total = 0
-    weekday_total = 0
-    weekend_days = set()
-    weekday_days = set()
+    # week_day lookup: 1=Sunday, 2=Monday … 7=Saturday (Django convention)
+    WEEKEND = [1, 7]
+    WEEKDAY = [2, 3, 4, 5, 6]
 
-    for expense in current_month_expenses:
-        if expense.date.weekday() >= 5:
-            weekend_total += expense.converted_amount
-            weekend_days.add(expense.date)
-        else:
-            weekday_total += expense.converted_amount
-            weekday_days.add(expense.date)
+    result = current_month_expenses.aggregate(
+        weekend_total=Sum(
+            Case(
+                When(date__week_day__in=WEEKEND, then="converted_amount"),
+                default=Value(Decimal("0")),
+                output_field=DecimalField(),
+            )
+        ),
+        weekday_total=Sum(
+            Case(
+                When(date__week_day__in=WEEKDAY, then="converted_amount"),
+                default=Value(Decimal("0")),
+                output_field=DecimalField(),
+            )
+        ),
+        weekend_days=Count("date", filter=Q(date__week_day__in=WEEKEND), distinct=True),
+        weekday_days=Count("date", filter=Q(date__week_day__in=WEEKDAY), distinct=True),
+    )
+
+    weekend_total = result["weekend_total"] or Decimal("0")
+    weekday_total = result["weekday_total"] or Decimal("0")
+    weekend_days = result["weekend_days"] or 0
+    weekday_days = result["weekday_days"] or 0
 
     if weekend_total == 0 and weekday_total == 0:
         return
 
-    weekend_average = weekend_total / len(weekend_days) if weekend_days else 0
-    weekday_average = weekday_total / len(weekday_days) if weekday_days else 0
+    weekend_average = weekend_total / weekend_days if weekend_days else Decimal("0")
+    weekday_average = weekday_total / weekday_days if weekday_days else Decimal("0")
 
     if weekend_average > weekday_average * Decimal("1.25") and weekend_days:
         message = (
@@ -165,31 +180,25 @@ def build_smart_insights(user):
     current_start, current_end = current_month_range(today)
     last_start, last_end = last_month_range(today)
 
-    current_month_expenses = list(
-        Expense.objects.filter(owner=user, date__gte=current_start, date__lte=current_end)
-        .select_related("category", "account")
-        .order_by("date", "id")
+    current_qs = Expense.objects.filter(
+        owner=user, date__gte=current_start, date__lte=current_end
     )
-    last_month_expenses = Expense.objects.filter(
+    last_qs = Expense.objects.filter(
         owner=user, date__gte=last_start, date__lte=last_end
     )
 
     current_total = round(
-        sum(expense.converted_amount for expense in current_month_expenses), 2
+        current_qs.aggregate(total=Sum("converted_amount"))["total"] or 0, 2
     )
     last_total = round(
-        last_month_expenses.aggregate(total=Sum("converted_amount"))["total"] or 0, 2
+        last_qs.aggregate(total=Sum("converted_amount"))["total"] or 0, 2
     )
 
     insights = []
     add_monthly_comparison_rule(insights, current_total, last_total)
-    add_category_dominance_rule(insights, Expense.objects.filter(
-        owner=user, date__gte=current_start, date__lte=current_end
-    ), current_total)
-    add_spending_spike_rule(insights, Expense.objects.filter(
-        owner=user, date__gte=current_start, date__lte=current_end
-    ))
-    add_weekend_weekday_rule(insights, current_month_expenses)
+    add_category_dominance_rule(insights, current_qs, current_total)
+    add_spending_spike_rule(insights, current_qs)
+    add_weekend_weekday_rule(insights, current_qs)
 
     if not insights:
         insights.append(
