@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from './context/AuthContext'
-import WakeUpBanner from './components/WakeUpBanner'
 import AppShell from './components/AppShell'
 import Login from './pages/Login'
 import Register from './pages/Register'
@@ -26,7 +25,6 @@ function PublicRoute({ children }) {
 export default function App() {
     return (
         <BrowserRouter>
-            <WakeUpBanner />
             <Routes>
                 <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
                 <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
