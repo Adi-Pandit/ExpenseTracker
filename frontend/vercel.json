@@ -2,15 +2,15 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "https://expense-tracker-api-nyr8.onrender.com/api/$1"
+      "dest": "${{BACKEND_URL}}/api/$1"
     },
     {
       "src": "/auth/(.*)",
-      "dest": "https://expense-tracker-api-nyr8.onrender.com/auth/$1"
+      "dest": "${{BACKEND_URL}}/auth/$1"
     },
     {
       "src": "/dashboard/(.*)",
-      "dest": "https://expense-tracker-api-nyr8.onrender.com/dashboard/$1"
+      "dest": "${{BACKEND_URL}}/dashboard/$1"
     },
     { "handle": "filesystem" },
     {
