@@ -202,7 +202,7 @@ export default function RecurringModal({ recurring, onClose, onSaved }) {
                         </div>
                         <div>
                             <label style={field.label}>Currency</label>
-                            <select value={form.currency} onChange={e => set('currency', e.target.value)} style={{ ...field.input, paddingLeft: 10 }}>
+                            <select value={form.currency} onChange={e => set('currency', e.target.value)} style={{ ...field.input, paddingLeft: 12, paddingRight: 36, cursor: 'pointer' }}>
                                 {CURRENCIES.map(c => <option key={c} value={c}>{c}</option>)}
                             </select>
                         </div>
@@ -212,14 +212,14 @@ export default function RecurringModal({ recurring, onClose, onSaved }) {
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 13, marginBottom: 14 }}>
                         <div>
                             <label style={field.label}>Account</label>
-                            <select value={form.account} onChange={e => set('account', e.target.value)} style={{ ...field.input, paddingLeft: 10 }} required>
+                            <select value={form.account} onChange={e => set('account', e.target.value)} style={{ ...field.input, paddingLeft: 12, paddingRight: 36, cursor: 'pointer' }} required>
                                 <option value="">Select…</option>
                                 {accounts.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
                             </select>
                         </div>
                         <div>
                             <label style={field.label}>Category</label>
-                            <select value={form.category} onChange={e => set('category', e.target.value)} style={{ ...field.input, paddingLeft: 10 }}>
+                            <select value={form.category} onChange={e => set('category', e.target.value)} style={{ ...field.input, paddingLeft: 12, paddingRight: 36, cursor: 'pointer' }}>
                                 <option value="">Uncategorized</option>
                                 {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                             </select>
@@ -241,7 +241,7 @@ export default function RecurringModal({ recurring, onClose, onSaved }) {
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 13, marginBottom: 14 }}>
                         <div>
                             <label style={field.label}>Frequency</label>
-                            <select value={form.frequency} onChange={e => set('frequency', e.target.value)} style={{ ...field.input, paddingLeft: 10 }}>
+                            <select value={form.frequency} onChange={e => set('frequency', e.target.value)} style={{ ...field.input, paddingLeft: 12, paddingRight: 36, cursor: 'pointer' }}>
                                 {FREQUENCIES.map(f => <option key={f.value} value={f.value}>{f.label}</option>)}
                             </select>
                         </div>
