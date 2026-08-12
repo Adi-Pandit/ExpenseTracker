@@ -128,7 +128,7 @@ export default function FilterSheet({ filters, onClose, onApply }) {
                     {/* Category */}
                     <div>
                         <label style={field.label}>Category</label>
-                        <select value={form.category} onChange={e => set('category', e.target.value)} style={{ ...field.input, paddingLeft: 10 }}>
+                        <select value={form.category} onChange={e => set('category', e.target.value)} style={{ ...field.input, paddingLeft: 12, paddingRight: 36, cursor: 'pointer' }}>
                             <option value="">All categories</option>
                             {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                         </select>
@@ -137,7 +137,7 @@ export default function FilterSheet({ filters, onClose, onApply }) {
                     {/* Account */}
                     <div>
                         <label style={field.label}>Account</label>
-                        <select value={form.account} onChange={e => set('account', e.target.value)} style={{ ...field.input, paddingLeft: 10 }}>
+                        <select value={form.account} onChange={e => set('account', e.target.value)} style={{ ...field.input, paddingLeft: 12, paddingRight: 36, cursor: 'pointer' }}>
                             <option value="">All accounts</option>
                             {accounts.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
                         </select>
