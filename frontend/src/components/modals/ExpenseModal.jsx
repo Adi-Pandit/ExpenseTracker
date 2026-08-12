@@ -29,6 +29,21 @@ const field = {
         background: 'var(--bg-card)',
         boxSizing: 'border-box',
     },
+    select: {
+        width: '100%',
+        height: 44,
+        paddingLeft: 12,
+        paddingRight: 36,
+        border: '1.5px solid var(--border-input)',
+        borderRadius: 'var(--radius-md)',
+        fontSize: 15,
+        outline: 'none',
+        fontFamily: 'var(--font)',
+        color: 'var(--text-primary)',
+        background: 'var(--bg-card)',
+        boxSizing: 'border-box',
+        cursor: 'pointer',
+    },
 }
 
 function today() {
@@ -213,7 +228,7 @@ export default function ExpenseModal({ expense, onClose, onSaved }) {
                             <select
                                 value={form.currency}
                                 onChange={e => set('currency', e.target.value)}
-                                style={{ ...field.input, paddingLeft: 10 }}
+                                style={field.select}
                             >
                                 {CURRENCIES.map(c => <option key={c} value={c}>{c}</option>)}
                             </select>
@@ -240,7 +255,7 @@ export default function ExpenseModal({ expense, onClose, onSaved }) {
                             <select
                                 value={form.account}
                                 onChange={e => set('account', e.target.value)}
-                                style={{ ...field.input, paddingLeft: 10 }}
+                                style={field.select}
                                 required
                             >
                                 <option value="">Select…</option>
@@ -254,7 +269,7 @@ export default function ExpenseModal({ expense, onClose, onSaved }) {
                             <select
                                 value={form.category}
                                 onChange={e => set('category', e.target.value)}
-                                style={{ ...field.input, paddingLeft: 10 }}
+                                style={field.select}
                             >
                                 <option value="">Uncategorized</option>
                                 {categories.map(c => (
