@@ -130,7 +130,7 @@ export default function Settings() {
                         </div>
                         <div>
                             <label style={lbl}>Base currency</label>
-                            <select value={profile.base_currency} onChange={e => setProfile(p => ({ ...p, base_currency: e.target.value }))} style={{ ...inp, paddingLeft: 10 }}>
+                            <select value={profile.base_currency} onChange={e => setProfile(p => ({ ...p, base_currency: e.target.value }))} style={{ ...inp, paddingLeft: 12, paddingRight: 36, cursor: 'pointer' }}>
                                 {CURRENCIES.map(c => <option key={c} value={c}>{c}</option>)}
                             </select>
                         </div>
