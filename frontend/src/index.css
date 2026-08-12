@@ -92,6 +92,24 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
+/* Browsers don't inherit font on form elements — force it globally */
+input, select, textarea, button {
+    font-family: inherit;
+    font-size: inherit;
+}
+
+/* Consistent custom dropdown arrow on all selects */
+select {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+    padding-right: 36px !important;
+    cursor: pointer;
+}
+
 #root {
     min-height: 100vh;
     display: flex;
@@ -132,6 +150,8 @@ body {
 .page {
     padding: var(--page-pad);
     animation: lg-fade 0.3s ease both;
+    max-width: 1400px;
+    width: 100%;
 }
 
 @media (max-width: 768px) {
@@ -139,7 +159,7 @@ body {
 }
 
 /* scrollbar */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border-input); border-radius: 3px; }
+::-webkit-scrollbar { width: 6px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; margin-block: 4px; }
+::-webkit-scrollbar-thumb { background: var(--border-input); border-radius: 100px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-subtle); }
