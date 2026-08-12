@@ -10,6 +10,7 @@ import { formatAmount, formatDate, greeting, formatLongDate } from '../utils/for
 import { getDonutColor, getCategoryColor, getInitials } from '../utils/colors'
 import ExpenseModal from '../components/modals/ExpenseModal'
 import { useToast } from '../context/ToastContext'
+import { useIsMobile, useWindowWidth } from '../hooks/useWindowWidth'
 
 const ACCOUNT_COLORS = [
     { bg: 'var(--primary-light)', color: 'var(--primary)' },
@@ -24,6 +25,9 @@ export default function Dashboard() {
     const toast = useToast()
     const navigate = useNavigate()
     const { refreshUnread } = useOutletContext() ?? {}
+    const isMobile = useIsMobile()
+    const windowWidth = useWindowWidth()
+    const isNarrow = windowWidth < 1100  // charts stack below this regardless of mobile
 
     const [summary, setSummary] = useState(null)
     const [trendData, setTrendData] = useState([])
@@ -44,10 +48,13 @@ export default function Dashboard() {
             ])
             setSummary(s)
             const daily = t?.daily_expenses ?? t?.data ?? []
-            setTrendData(Array.isArray(daily) ? daily.map(d => ({
-                label: formatDate(d.date),
-                amount: Number(d.amount ?? 0),
-            })) : [])
+            const todayStr = new Date().toISOString().split('T')[0]
+            setTrendData(Array.isArray(daily) ? daily
+                .filter(d => d.date <= todayStr)
+                .map(d => ({
+                    label: formatDate(d.date),
+                    amount: Number(d.amount ?? 0),
+                })) : [])
             const breakdown = c?.breakdown ?? c?.results ?? (Array.isArray(c) ? c : [])
             setCatData(Array.isArray(breakdown) ? breakdown : [])
             const recentList = r?.results ?? (Array.isArray(r) ? r : [])
@@ -204,7 +211,7 @@ export default function Dashboard() {
             </div>
 
             {/* ── Charts row ── */}
-            <div style={{ display: 'grid', gridTemplateColumns: trendData.length ? '1fr 320px' : '1fr', gap: 14, marginBottom: 24 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: isNarrow ? '1fr' : (trendData.length ? '1fr 300px' : '1fr'), gap: 14, marginBottom: 24 }}>
                 {/* Bar chart */}
                 <div style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-card)', padding: '20px 20px 14px', boxShadow: 'var(--shadow-card)' }}>
                     <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 16 }}>
@@ -219,15 +226,21 @@ export default function Dashboard() {
                             </div>
                         )}
                     </div>
-                    {trendData.length ? (
-                        <ResponsiveContainer width="100%" height={190}>
-                            <BarChart data={trendData} barSize={8} barCategoryGap="35%" margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
+                    {trendData.some(d => d.amount > 0) ? (
+                        <ResponsiveContainer width="100%" height={200}>
+                            <BarChart
+                                data={trendData}
+                                maxBarSize={36}
+                                barCategoryGap="22%"
+                                margin={{ top: 4, right: 8, left: 8, bottom: 0 }}
+                            >
                                 <XAxis
                                     dataKey="label"
                                     tickLine={false}
                                     axisLine={false}
                                     tick={{ fontSize: 11, fill: '#9CA3AF' }}
-                                    interval={trendData.length > 8 ? Math.floor(trendData.length / 7) : 0}
+                                    interval="preserveStartEnd"
+                                    minTickGap={40}
                                 />
                                 <YAxis hide />
                                 <Tooltip
@@ -236,7 +249,7 @@ export default function Dashboard() {
                                     labelStyle={{ fontWeight: 600, color: 'var(--text-primary)' }}
                                     formatter={v => [formatAmount(v, currency), 'Spent']}
                                 />
-                                <Bar dataKey="amount" fill="var(--primary)" radius={[4, 4, 0, 0]} />
+                                <Bar dataKey="amount" fill="var(--primary)" radius={[5, 5, 0, 0]} />
                             </BarChart>
                         </ResponsiveContainer>
                     ) : (
@@ -280,7 +293,7 @@ export default function Dashboard() {
             {insights.length > 0 && (
                 <div style={{ marginBottom: 24 }}>
                     <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 12 }}>Insights</div>
-                    <div style={{ display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 2, scrollbarWidth: 'none' }}>
+                    <div style={{ display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 14, scrollbarWidth: 'thin', scrollbarColor: 'var(--border-input) transparent' }}>
                         {insights.map((ins, i) => {
                             const rawType = (ins.type ?? ins.title ?? '').toLowerCase()
                             let tag, tagColor, tagBg, iconEl
@@ -337,7 +350,7 @@ export default function Dashboard() {
 
             {/* ── Accounts + Recent transactions ── */}
             {(accounts.length > 0 || recent.length > 0) && (
-                <div style={{ display: 'grid', gridTemplateColumns: accounts.length && recent.length ? '1fr 1fr' : '1fr', gap: 14 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : (accounts.length && recent.length ? '1fr 1fr' : '1fr'), gap: 14 }}>
                     {/* Account balances */}
                     {accounts.length > 0 && (
                         <div style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-card)', padding: '18px 20px', boxShadow: 'var(--shadow-card)' }}>
