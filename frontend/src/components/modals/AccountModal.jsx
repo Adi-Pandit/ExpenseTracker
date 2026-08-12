@@ -167,7 +167,7 @@ export default function AccountModal({ account, onClose, onSaved }) {
                             <select
                                 value={form.account_type}
                                 onChange={e => set('account_type', e.target.value)}
-                                style={{ ...field.input, paddingLeft: 10 }}
+                                style={{ ...field.input, paddingLeft: 12, paddingRight: 36, cursor: 'pointer' }}
                             >
                                 {TYPES.map(t => (
                                     <option key={t.value} value={t.value}>{t.label}</option>
