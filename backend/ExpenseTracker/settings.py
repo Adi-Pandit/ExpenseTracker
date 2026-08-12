@@ -197,6 +197,8 @@ else:
 
 CORS_ALLOW_CREDENTIALS = True
 
+CRON_SECRET = os.getenv("CRON_SECRET", "")
+
 EMAIL_HOST = os.environ.get("EMAIL_HOST")
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
 EMAIL_USE_TLS = True
