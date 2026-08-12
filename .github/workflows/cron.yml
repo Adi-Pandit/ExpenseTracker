@@ -1,0 +1,40 @@
+name: Daily Cron Jobs
+
+on:
+  schedule:
+    - cron: "0 0 * * *"   # midnight UTC — generate recurring expenses
+    - cron: "0 1 * * *"   # 1 AM UTC    — generate notifications
+  workflow_dispatch:        # allow manual trigger from GitHub UI
+
+jobs:
+  recurring-expenses:
+    name: Generate Recurring Expenses
+    runs-on: ubuntu-latest
+    if: github.event.schedule == '0 0 * * *' || github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Call cron endpoint
+        run: |
+          response=$(curl -s -o /dev/null -w "%{http_code}" \
+            -X POST "${{ secrets.BACKEND_URL }}/cron/recurring/" \
+            -H "X-Cron-Secret: ${{ secrets.CRON_SECRET }}")
+          echo "Response code: $response"
+          if [ "$response" != "200" ]; then
+            echo "Error: unexpected response $response"
+            exit 1
+          fi
+
+  notifications:
+    name: Generate Notifications
+    runs-on: ubuntu-latest
+    if: github.event.schedule == '0 1 * * *' || github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Call cron endpoint
+        run: |
+          response=$(curl -s -o /dev/null -w "%{http_code}" \
+            -X POST "${{ secrets.BACKEND_URL }}/cron/notifications/" \
+            -H "X-Cron-Secret: ${{ secrets.CRON_SECRET }}")
+          echo "Response code: $response"
+          if [ "$response" != "200" ]; then
+            echo "Error: unexpected response $response"
+            exit 1
+          fi
