@@ -1,0 +1,31 @@
+# Copy this file to terraform.tfvars and fill in real values.
+# terraform.tfvars is gitignored — NEVER commit it.
+
+# ── AWS ─────────────────────────────────────────────────────────────────────────
+aws_region  = "ap-south-1"
+aws_profile = "ledgerly"
+
+# ── Project ──────────────────────────────────────────────────────────────────────
+project_name = "ledgerly"
+environment  = "production"
+
+# ── Scaling ──────────────────────────────────────────────────────────────────────
+# 1 = running  |  0 = stopped (no compute charges)
+desired_count = 1
+
+# Fargate size (256 CPU + 512 MB = ~₹720/month when running 24×7)
+task_cpu    = 256
+task_memory = 512
+
+# ── Application secrets ──────────────────────────────────────────────────────────
+# Paste your actual Supabase connection string (percent-encode special chars in password)
+database_url = "postgresql://postgres.xxxx:PASSWORD@aws-0-ap-south-1.pooler.supabase.com:5432/postgres"
+
+# Generate a new key: python -c "import secrets; print(secrets.token_hex(50))"
+django_secret_key = "your-long-random-secret-key-here"
+
+# Your Vercel frontend URL (no trailing slash)
+cors_allowed_origins = "https://your-app.vercel.app"
+
+# Cron secret (same value as in backend/.env and GitHub secret CRON_SECRET)
+cron_secret = "eb966196a14dec748eb7249e74b350a57c46df979a1c7fe015a79a7208f94337"
