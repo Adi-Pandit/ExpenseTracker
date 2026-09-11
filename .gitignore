@@ -24,9 +24,12 @@ frontend/.env.production
 .idea/
 
 # ── Terraform ──────────────────────────────────────────────────────────────────
-infra/terraform.tfvars          # contains real secrets — never commit
-infra/.terraform/               # local provider cache (auto-generated)
-infra/terraform.tfstate         # local state — use S3 backend for teams
+# terraform.tfvars contains real secrets — never commit
+infra/terraform.tfvars
+# .terraform/ is the local provider cache, auto-generated on terraform init
+infra/.terraform/
+# state files track deployed resources — use S3 backend for teams
+infra/terraform.tfstate
 infra/terraform.tfstate.backup
 infra/tfplan
 
