@@ -23,6 +23,13 @@ frontend/.env.production
 .vscode/
 .idea/
 
+# ── Terraform ──────────────────────────────────────────────────────────────────
+infra/terraform.tfvars          # contains real secrets — never commit
+infra/.terraform/               # local provider cache (auto-generated)
+infra/terraform.tfstate         # local state — use S3 backend for teams
+infra/terraform.tfstate.backup
+infra/tfplan
+
 # ── OS ─────────────────────────────────────────────────────────────────────────
 .DS_Store
 Thumbs.db
