@@ -12,29 +12,58 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.schedule == '0 0 * * *' || github.event_name == 'workflow_dispatch'
     steps:
+      - name: Check BACKEND_URL is set
+        run: |
+          if [ -z "${{ secrets.BACKEND_URL }}" ]; then
+            echo "❌ BACKEND_URL secret is not set."
+            echo "   Go to Settings → Secrets → Actions and add BACKEND_URL."
+            echo "   Value should be your backend URL, e.g. http://<ip>:8000"
+            exit 1
+          fi
+
       - name: Call cron endpoint
         run: |
+          BACKEND_URL="${{ secrets.BACKEND_URL }}"
+          # Strip trailing slash to avoid double-slash in URL
+          BACKEND_URL="${BACKEND_URL%/}"
+
           response=$(curl -s -o /dev/null -w "%{http_code}" \
-            -X POST "${{ secrets.BACKEND_URL }}/cron/recurring/" \
+            --max-time 30 \
+            -X POST "${BACKEND_URL}/cron/recurring/" \
             -H "X-Cron-Secret: ${{ secrets.CRON_SECRET }}")
           echo "Response code: $response"
           if [ "$response" != "200" ]; then
             echo "Error: unexpected response $response"
             exit 1
           fi
+          echo "✅ Recurring expenses generated."
 
   notifications:
     name: Generate Notifications
     runs-on: ubuntu-latest
     if: github.event.schedule == '0 1 * * *' || github.event_name == 'workflow_dispatch'
     steps:
+      - name: Check BACKEND_URL is set
+        run: |
+          if [ -z "${{ secrets.BACKEND_URL }}" ]; then
+            echo "❌ BACKEND_URL secret is not set."
+            echo "   Go to Settings → Secrets → Actions and add BACKEND_URL."
+            echo "   Value should be your backend URL, e.g. http://<ip>:8000"
+            exit 1
+          fi
+
       - name: Call cron endpoint
         run: |
+          BACKEND_URL="${{ secrets.BACKEND_URL }}"
+          BACKEND_URL="${BACKEND_URL%/}"
+
           response=$(curl -s -o /dev/null -w "%{http_code}" \
-            -X POST "${{ secrets.BACKEND_URL }}/cron/notifications/" \
+            --max-time 30 \
+            -X POST "${BACKEND_URL}/cron/notifications/" \
             -H "X-Cron-Secret: ${{ secrets.CRON_SECRET }}")
           echo "Response code: $response"
           if [ "$response" != "200" ]; then
             echo "Error: unexpected response $response"
             exit 1
           fi
+          echo "✅ Notifications generated."
