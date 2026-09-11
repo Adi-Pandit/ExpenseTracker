@@ -1,259 +1,192 @@
-# Expense Tracker
+# Ledgerly — Expense Tracker
 
-A comprehensive Django-based expense tracking application with budget management, category organization, and detailed analytics.
+A full-stack expense tracking app with budgets, recurring expenses, analytics, and multi-currency support.
 
-## Features
-
-### Core Functionality
-
-- **User Authentication**: Secure registration and login system
-- **Expense Management**: Add, edit, delete, and categorize expenses
-- **Budget Planning**: Set monthly budgets with category-wise allocation
-- **Category Management**: Create custom expense categories
-- **Dashboard Analytics**: Visual charts and statistics for expenses and budgets
-- **Export Options**: Export data to Excel and PDF formats
-
-### Technical Features
-
-- **Responsive Design**: Bootstrap-based UI that works on all devices
-- **Real-time Search**: AJAX-powered search functionality
-- **Data Visualization**: Interactive charts using Chart.js
-- **Database Flexibility**: Supports both MySQL and SQLite databases
-- **PDF Reports**: Generate professional PDF reports using ReportLab
-
-## Installation
-
-### Prerequisites
-
-- Python 3.8 or higher
-- MySQL (optional - SQLite will be used as fallback)
-
-### Setup Instructions
-
-1. **Clone the repository**
-
-    ```bash
-    git clone https://github.com/yourusername/expense-tracker.git
-    cd expense-tracker
-    ```
-
-2. **Create virtual environment**
-
-    ```bash
-    python -m venv .venv
-    .venv\Scripts\activate  # On Windows
-    # source .venv/bin/activate  # On Linux/Mac
-    ```
-
-3. **Install dependencies**
-
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-4. **Database Setup**
-    - For MySQL: Create a database and update `.env` file
-    - For SQLite: No additional setup required (automatic fallback)
-
-5. **Environment Configuration**
-   Create a `.env` file in the root directory:
-
-    ```env
-    # For MySQL (optional)
-    DB_NAME=your_database_name
-    DB_USER=your_mysql_username
-    DB_USER_PASSWORD=your_mysql_password
-    DB_HOST=localhost
-
-    # Leave empty for SQLite fallback
-    ```
-
-6. **Run migrations**
-
-    ```bash
-    python manage.py makemigrations
-    python manage.py migrate
-    ```
-
-7. **Create superuser (optional)**
-
-    ```bash
-    python manage.py createsuperuser
-    ```
-
-8. **Run the development server**
-
-    ```bash
-    python manage.py runserver
-    ```
-
-9. **Access the application**
-   Open your browser and go to: `http://127.0.0.1:8000`
-
-## Usage
-
-### Getting Started
-
-1. **Register**: Create a new account or login with existing credentials
-2. **Add Categories**: Create expense categories (e.g., Food, Transport, Entertainment)
-3. **Set Budget**: Define monthly budgets for different categories
-4. **Track Expenses**: Add daily expenses with proper categorization
-5. **View Analytics**: Check dashboard for spending patterns and budget adherence
-
-### Key Features Guide
-
-#### Expense Management
-
-- Navigate to "Expenses" section
-- Click "Add Expense" to record new transactions
-- Use search functionality to find specific expenses
-- Export data to Excel or PDF
-
-#### Budget Planning
-
-- Go to "Budget" section
-- Set monthly budget amounts per category
-- View budget vs actual spending charts
-- Generate budget reports
-
-#### Category Management
-
-- Access "Categories" to create custom expense categories
-- Organize expenses by type for better tracking
-
-## Project Structure
-
-```
-ExpenseTracker/
-├── ExpenseTracker/          # Main Django project
-│   ├── settings.py         # Django settings
-│   ├── urls.py            # Main URL configuration
-│   └── wsgi.py            # WSGI configuration
-├── authentication/         # User authentication app
-├── budget/                 # Budget management app
-├── expense/                # Expense tracking app
-├── overview/               # Dashboard and analytics app
-├── usercategory/           # Category management app
-├── templates/              # HTML templates
-├── static/                 # Static files (CSS, JS, images)
-├── requirements.txt        # Python dependencies
-├── .env                    # Environment variables (not in git)
-├── .gitignore             # Git ignore rules
-└── README.md              # This file
-```
-
-## API Endpoints
-
-### Authentication
-
-- `POST /authentication/register/` - User registration
-- `POST /authentication/login/` - User login
-- `POST /authentication/logout/` - User logout
-
-### Expenses
-
-- `GET /` - Expense dashboard
-- `POST /add-expenses/` - Add new expense
-- `POST /search-expenses/` - Search expenses (AJAX)
-- `GET /export_excel/` - Export expenses to Excel
-- `GET /export_pdf/` - Export expenses to PDF
-
-### Budget
-
-- `GET /budget/` - Budget dashboard
-- `POST /budget/add-budget/` - Add budget
-- `GET /budget/stats/` - Budget statistics
-- `GET /budget/export_pdf/` - Export budget to PDF
-
-### Categories
-
-- `GET /usercategory/` - Category management
-- `POST /usercategory/add-category/` - Add category
-
-## Database Schema
-
-### Models Overview
-
-- **User**: Django's built-in user model
-- **Expense**: Amount, description, category, date, owner
-- **Budget**: Monthly budget with category allocations
-- **BudgetAmount**: Category-wise budget breakdown
-- **Category**: User-defined expense categories
-
-## Deployment
-
-### Production Setup
-
-1. Set `DEBUG = False` in settings.py
-2. Configure production database
-3. Set up static files serving
-4. Configure email settings for user activation
-5. Use a production WSGI server (gunicorn)
-
-### Environment Variables for Production
-
-```env
-DEBUG=False
-SECRET_KEY=your-secret-key-here
-DB_NAME=production_db
-DB_USER=production_user
-DB_USER_PASSWORD=secure_password
-DB_HOST=production_host
-EMAIL_HOST=smtp.gmail.com
-EMAIL_PORT=587
-EMAIL_HOST_USER=your-email@gmail.com
-EMAIL_HOST_PASSWORD=your-email-password
-```
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## Troubleshooting
-
-### Common Issues
-
-**Database Connection Error**
-
-- Ensure MySQL is running (if using MySQL)
-- Check `.env` file configuration
-- Falls back to SQLite automatically
-
-**PDF Export Issues**
-
-- Ensure ReportLab is installed: `pip install reportlab`
-- Check file permissions for PDF generation
-
-**Static Files Not Loading**
-
-- Run `python manage.py collectstatic` for production
-- Ensure DEBUG=True for development
-
-**Email Not Working**
-
-- Configure EMAIL\_\* settings in `.env`
-- Use a service like Gmail or SendGrid
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgments
-
-- Built with Django web framework
-- Frontend styling with Bootstrap
-- Charts powered by Chart.js
-- PDF generation using ReportLab
-- Icons from various free icon libraries
-
-## Support
-
-For support, email support@expensetracker.com or create an issue in the GitHub repository.
+**Stack:** React 19 + Vite (frontend) · Django 6 + DRF (backend) · PostgreSQL · JWT auth
 
 ---
 
-**Happy expense tracking!** 📊💰
+## Local Development
+
+### Prerequisites
+
+- Python 3.13+
+- Node.js 20+
+- PostgreSQL running locally
+
+### Backend
+
+```bash
+cd backend
+python -m venv .venv
+.venv\Scripts\activate        # Windows
+# source .venv/bin/activate   # macOS / Linux
+
+pip install -r requirements.txt
+
+# Create backend/.env (copy and fill in values)
+cp .env.example .env          # or create manually — see Environment Variables below
+
+python manage.py migrate
+python manage.py runserver    # http://127.0.0.1:8000
+```
+
+### Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev                   # http://localhost:5173
+```
+
+### Seed demo data
+
+```bash
+cd backend
+python manage.py seed_demo_data --username <your-username>
+```
+
+---
+
+## Environment Variables
+
+### Backend (`backend/.env`)
+
+```env
+SECRET_KEY=your-long-random-secret-key
+DEBUG=True
+ALLOWED_HOSTS=localhost,127.0.0.1
+
+DB_NAME=expense_tracker
+DB_USER=postgres
+DB_PASSWORD=yourpassword
+DB_HOST=localhost
+DB_PORT=5432
+
+# Production only (overrides DB_* above when set)
+DATABASE_URL=postgresql://user:pass@host:5432/db
+
+CORS_ALLOWED_ORIGINS=http://localhost:5173
+
+CRON_SECRET=your-cron-secret
+```
+
+### Frontend (`frontend/.env`)
+
+```env
+VITE_API_URL=http://127.0.0.1:8000
+```
+
+---
+
+## Deployment
+
+The backend deploys to **AWS ECS Fargate** (ap-south-1). The frontend deploys to **Vercel**.
+
+### AWS ECS — first-time setup
+
+```bash
+cd infra
+
+# 1. Copy and fill in the vars file (contains secrets — never commit it)
+cp terraform.tfvars.example terraform.tfvars
+
+# 2. Init and apply
+terraform init
+terraform apply
+
+# 3. Build and push the first Docker image
+aws ecr get-login-password --region ap-south-1 --profile ledgerly \
+  | docker login --username AWS --password-stdin <ECR_URL>
+
+docker build -t <ECR_URL>:latest ./backend
+docker push <ECR_URL>:latest
+
+# 4. Force ECS to pull the new image
+aws ecs update-service \
+  --cluster ledgerly-cluster \
+  --service ledgerly-service \
+  --force-new-deployment \
+  --profile ledgerly \
+  --region ap-south-1
+```
+
+After the first deploy, GitHub Actions handles all subsequent deployments on every push to `master`.
+
+### Get the backend URL
+
+The task gets a public IP on every deploy. Run this to find it:
+
+```bash
+TASK_ARN=$(aws ecs list-tasks \
+  --cluster ledgerly-cluster \
+  --service-name ledgerly-service \
+  --query 'taskArns[0]' --output text \
+  --profile ledgerly --region ap-south-1)
+
+ENI_ID=$(aws ecs describe-tasks \
+  --cluster ledgerly-cluster --tasks "$TASK_ARN" \
+  --query 'tasks[0].attachments[0].details[?name==`networkInterfaceId`].value' \
+  --output text --profile ledgerly --region ap-south-1)
+
+aws ec2 describe-network-interfaces \
+  --network-interface-ids "$ENI_ID" \
+  --query 'NetworkInterfaces[0].Association.PublicIp' \
+  --output text --profile ledgerly --region ap-south-1
+```
+
+Then update the `BACKEND_URL` secret in **GitHub → Settings → Secrets → Actions**.
+
+### Stop the backend (no compute charges)
+
+```bash
+aws ecs update-service \
+  --cluster ledgerly-cluster \
+  --service ledgerly-service \
+  --desired-count 0 \
+  --profile ledgerly --region ap-south-1
+```
+
+Storage (ECR + CloudWatch) still runs at ~₹2/month.
+
+### Start the backend again
+
+```bash
+aws ecs update-service \
+  --cluster ledgerly-cluster \
+  --service ledgerly-service \
+  --desired-count 1 \
+  --profile ledgerly --region ap-south-1
+```
+
+### Tear down everything
+
+```bash
+cd infra
+terraform destroy
+```
+
+---
+
+## GitHub Actions Secrets
+
+| Secret | Description |
+|--------|-------------|
+| `AWS_ACCESS_KEY_ID` | IAM user access key (`ledgerly` user) |
+| `AWS_SECRET_ACCESS_KEY` | IAM user secret key |
+| `BACKEND_URL` | Current ECS task URL, e.g. `http://<ip>:8000` |
+| `CRON_SECRET` | Matches `CRON_SECRET` in backend env |
+
+---
+
+## API
+
+Base URL (local): `http://127.0.0.1:8000`
+
+| Prefix | Description |
+|--------|-------------|
+| `/auth/` | JWT login, register, refresh, logout |
+| `/api/` | Expenses, budgets, accounts, categories, recurring |
+| `/dashboard/` | Overview, insights, analytics |
+| `/health/` | Health check |
+| `/api/docs/` | Swagger UI |
