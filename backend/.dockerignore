@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+.eggs/
+dist/
+build/
+.venv/
+venv/
+env/
+
+# Django
+.env
+*.env
+db.sqlite3
+media/
+staticfiles/
+
+# Dev tools
+.git/
+.gitignore
+*.md
+README*
+CHANGELOG*
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+
+# Docker
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# Terraform / infra
+infra/
+
+# OS
+.DS_Store
+Thumbs.db
